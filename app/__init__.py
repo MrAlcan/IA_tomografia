@@ -1,6 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template, send_from_directory
 from app.configuraciones.extensiones import db, jwt, bcrypt
 from app.rutas.rutas import main_bp
+from datetime import datetime
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,5 +19,9 @@ def create_app():
 
     # Registro de blueprints
     app.register_blueprint(main_bp)
+
+    @app.before_request
+    def print_request_time():
+        print(f"Hora de solicitud: {datetime.now()}")
 
     return app
