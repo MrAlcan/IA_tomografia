@@ -13,7 +13,7 @@ def register():
 @main_bp.route('/')
 def index():
     current_time = datetime.now()
-    return render_template('index.html', current_time=current_time)
+    return render_template('inicio.html', current_time=current_time)
 
 '''
 @main_bp.route('/login', methods=['POST'])
