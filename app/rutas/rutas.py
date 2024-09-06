@@ -1,9 +1,158 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for
 from datetime import datetime
-
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+from app.servicios.serviciosAutenticacion import ServiciosAutenticacion
+from app.servicios.serviciosVistas import ServiciosVistas
+import numpy as np
+import cv2
 main_bp = Blueprint('main', __name__)
+import os
+from PIL import Image
+
+from io import BytesIO
+
+
+ruta_modelo_relativa = os.path.join('app', 'ia', 'deteccion_tumor.keras')
+ruta_modelo = os.path.abspath(ruta_modelo_relativa)
+
+print(f"ruta del modelo: {ruta_modelo}")
+
+try:
+    modelo = load_model(ruta_modelo)
+    print("modelo cargado con éxito.")
+except Exception as e:
+    print(f"error al cargar el modelo: {e}")
+
+
+
+
+@main_bp.route('/tomografia_resultados', methods=['GET', 'POST'])
+def vista_tomografia_resultados():
+    current_time = datetime.now()
+    resultados = []
+
+    if request.method == 'POST':
+        if 'fileInput' not in request.files:
+            return redirect(url_for('main.vista_tomografia_resultados'))
+
+        files = request.files.getlist('fileInput')
+
+        for file in files:
+            if file.filename == '':
+                resultados.append("Nombre de archivo vacío")
+                continue
+
+            try:
+                # Leer la imagen desde el archivo usando PIL
+                img = Image.open(BytesIO(file.read()))
+                img = img.resize((150, 150))  # Redimensionar la imagen
+                img_array = image.img_to_array(img)
+                img_array = np.expand_dims(img_array, axis=0)
+                img_array /= 255.0  # Normalizar si es necesario
+
+                # Hacer predicción
+                pred = modelo.predict(img_array)
+                pred_class = np.argmax(pred, axis=1)[0]
+
+                etiquetas = ['sin_tumor', 'con_tumor']
+                resultado = etiquetas[pred_class]
+                resultados.append(resultado)
+
+            except Exception as e:
+                resultados.append(f"Error procesando {file.filename}: {str(e)}")
+
+    return render_template('tomografia_resultados.html', current_time=current_time, resultados=resultados)
+
+
+#-----------------VISTAS----------------------------------------
+@main_bp.route('/ingresar', methods=['GET'])
+def vista_iniciar_sesion():
+    current_time = datetime.now()
+    return render_template('ingresar.html', current_time=current_time)
+
+@main_bp.route('/inicio', methods=['GET'])
+def vista_inicio():
+    current_time = datetime.now()
+    return render_template('inicio.html', current_time=current_time)
+
+
+@main_bp.route('/usuarios', methods=['GET'])
+def vista_usuarios():
+    current_time = datetime.now()
+    return render_template('usuarios.html', current_time=current_time)
+
+@main_bp.route('/tomografia_listar', methods=['GET'])
+def vista_tomografia_listar():
+    current_time = datetime.now()
+    return render_template('tomografia_listar.html', current_time=current_time)
+
+# @main_bp.route('/tomografia_resultados', methods=['GET'])
+# def vista_tomografia_resultados():
+#     current_time = datetime.now()
+#     return render_template('tomografia_resultados.html', current_time=current_time)
+
+#-------------API--------------------------------------------
+
+'''
+@main_bp.route('/ingresar', methods=['GET'])
+def iniciar_sesion():
+    current_time = datetime.now()
+    return render_template('ingresar.html', current_time=current_time)
+'''
+
+@main_bp.route('/ingresar', methods=['POST'])
+def validar_usuario():
+    print("ingreso al backend")
+    datos_login = request.get_json()
+    print(datos_login)
+    respuesta, id_rol = ServiciosAutenticacion.autenticar(datos_login['nombre_usuario'], datos_login['contrasena'])
+    print(respuesta)
+    if respuesta==404:
+        cuerpo = {'codigo': 404,
+                  'respuesta': 'Usuario no encontrado'}
+        return jsonify(cuerpo)
+    elif respuesta==401:
+        cuerpo = {'codigo': 401,
+                  'respuesta': 'Contraseña incorrecta'}
+        return jsonify(cuerpo)
+    else:
+        cuerpo = {'codigo': 200,
+                  'token': respuesta,
+                  'rol': id_rol}
+        print(respuesta)
+        return jsonify(cuerpo)
+'''
+@main_bp.route('/inicio', methods=['GET'])
+@jwt_required
+def inicio():
+    datos_usuario = get_jwt_identity()
+    print(datos_usuario)
+    current_time = datetime.now()
+    return render_template('inicio.html', current_time=current_time)
+'''
+
+@main_bp.route('/api/inicio', methods=['GET'])
+@jwt_required()
+def inicio():
+    print("entro al api")
+    datos_usuario = get_jwt_identity()
+    print(datos_usuario)
+    cuerpo = {'codigo':200,
+              'identidad': datos_usuario}
+    return jsonify(cuerpo)
+
+@main_bp.route('/api/usuarios', methods=['GET'])
+@jwt_required()
+def obtener_usuarios():
+    identidad = get_jwt_identity()
+    usuarios = ServiciosVistas.obtener_usuarios_roles()
+    cuerpo = {  'codigo': 200,
+                'identidad': identidad,
+                'usuarios': usuarios}
+    return jsonify(cuerpo)
 
 @main_bp.route('/register', methods=['POST'])
 def register():
@@ -36,3 +185,4 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 '''
+

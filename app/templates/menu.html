@@ -1,0 +1,63 @@
+<!-- Fragmento de menú -->
+<div class="sidebar-menu">
+    <div class="sidebar-header">
+        <div class="logo">
+            <a href="/inicio"><img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="logo"></a>
+        </div>
+    </div>
+    <div class="main-menu">
+        <div class="menu-inner">
+            <nav>
+                <ul class="metismenu" id="menu">
+                    <li class="active">
+                        <a href="/" aria-expanded="true"><i class="ti-dashboard"></i><span>Inicio</span></a>
+
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-layout-sidebar-left"></i><span>Gestion de Usuarios
+                                
+                            </span></a>
+                        <ul class="collapse">
+                            <li><a href="/usuarios">Usuarios</a></li>
+                            <li><a href="/roles">Roles de Usuario</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-pie-chart"></i><span>Pacientes</span></a>
+                        <ul class="collapse">
+                            <li><a href="/">Informacion</a></li>
+                            <li><a href="/">Signos vitales</a></li>
+                            <li><a href="/">Estados</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-pie-chart"></i><span>Evaluaciones</span></a>
+                        <ul class="collapse">
+                            <li><a href="/tomografia_listar">Tomografia</a></li>
+                            <li><a href="/tomografia_resultados">Consultas</a></li>
+                            <li><a href="/">Historial clinico</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.getAttribute('href');
+                fetch(url)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.querySelector('#content').innerHTML = data;
+                    })
+                    .catch(error => console.error('Error loading content:', error));
+            });
+        });
+    });
+</script>

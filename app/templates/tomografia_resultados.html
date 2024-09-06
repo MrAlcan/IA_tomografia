@@ -1,0 +1,178 @@
+{% extends 'plantilla.html' %}
+
+{% block cabecera %}
+<link rel="shortcut icon" type="image/png" href="{{url_for('static',filename='assets/images/icon/favicon.ico')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/font-awesome.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/themify-icons.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/metisMenu.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/owl.carousel.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/slicknav.min.css')}}">
+<!-- amcharts css -->
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<!-- Start datatable css -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+<!-- style css -->
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/typography.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+<!-- modernizr css -->
+<script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+{% endblock %}
+
+{% block contenido %}
+<div class="page-title-area">
+    <div class="row align-items-center">
+        <div class="col-sm-6">
+            <div class="breadcrumbs-area clearfix">
+                <h4 class="page-title pull-left">Evaluaciones</h4>
+                <ul class="breadcrumbs pull-left">
+                    <li><a href="">Evaluaciones</a></li>
+                    <li><span>Consultas</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-6 clearfix">
+            <div class="user-profile pull-right">
+                <img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar">
+                <h4 class="user-name dropdown-toggle" data-toggle="dropdown">Kumkum Rai <i class="fa fa-angle-down"></i></h4>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Message</a>
+                    <a class="dropdown-item" href="#">Settings</a>
+                    <a class="dropdown-item" href="#">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <!-- Formulario -->
+        <div class="col-lg-6 col-ml-12">
+            <div class="row">
+                <!-- basic form start -->
+                <div class="col-12 mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="header-title">Evaluar Tomografias</h4>
+                            <form id="imageForm" action="{{ url_for('main.vista_tomografia_resultados') }}" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="paciente-nombre">Nombre del Paciente</label>
+                                    <input class="form-control" type="text" id="paciente-nombre" name="paciente-nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="paciente-codigo">Codigo de Paciente</label>
+                                    <input class="form-control" type="text" id="paciente-codigo" name="paciente-codigo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="doctor">Doctor</label>
+                                    <input class="form-control" type="text" id="doctor" name="doctor">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fileInput">Cargar Imagenes</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="fileInput" name="fileInput" accept="image/*" multiple>
+                                        <label class="custom-file-label" for="fileInput">Selecciona las imagenes</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Evaluar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-ml-12">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h4 class="header-title">Imagen Cargada</h4>
+                    <canvas id="imageCanvas" width="500" height="500" style="border: 1px solid #ddd; display: block; margin: 0 auto;"></canvas>
+                    <div id="thumbnails" class="mt-3 d-flex flex-wrap"></div>
+                    {% if resultados %}
+                        <h2>Resultados de la Predicción:</h2>
+                        <ul>
+                            {% for res in resultados %}
+                                <li>{{ res }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+<!-- bootstrap 4 js -->
+<script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+
+<!-- Start datatable js -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+<!-- others plugins -->
+<script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/usuarios.js')}}"></script>
+
+<script>
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const fileInput = document.getElementById('fileInput');
+    const thumbnailsContainer = document.getElementById('thumbnails');
+
+    fileInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        thumbnailsContainer.innerHTML = ''; 
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const thumbnail = document.createElement('img');
+                    thumbnail.src = e.target.result;
+                    thumbnail.style.width = '100px';
+                    thumbnail.style.height = '100px';
+                    thumbnail.style.objectFit = 'cover';
+                    thumbnail.style.margin = '5px';
+                    thumbnail.style.cursor = 'pointer';
+                    thumbnail.dataset.src = e.target.result; 
+
+                    thumbnail.addEventListener('click', function() {
+                        const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+                        const width = img.width * ratio;
+                        const height = img.height * ratio;
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                        const selectedImg = new Image();
+                        selectedImg.onload = function() {
+                            ctx.drawImage(selectedImg, 0, 0, canvas.width, canvas.height);
+                        };
+                        selectedImg.src = this.dataset.src;
+                    });
+                    
+                    thumbnailsContainer.appendChild(thumbnail);
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{% endblock %}

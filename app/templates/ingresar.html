@@ -1,0 +1,150 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Iniciar Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='assets/images/icon/favicon.ico')}}">
+
+    <!--link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}"-->
+
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/metisMenu.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/slicknav.min.css')}}">
+    <!-- amchart css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <!-- others css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/typography.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/default-css.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/responsive.css')}}">
+    <!-- modernizr css -->
+    <script src="{{url_for('static', filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+</head>
+
+<body>
+    <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <!-- preloader area start -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+    <!-- preloader area end -->
+    <!-- login area start -->
+    <div class="login-area login-s2">
+        <div class="container">
+            <div class="login-box ptb--100">
+                <form id="ingresar_form">
+                    <div class="login-form-head">
+                        <h4>Iniciar Sesión</h4>
+                        <p>Hola, inicia sesión para poder ingresar al sistema de la Clinica del Sur</p>
+                    </div>
+                    <div class="login-form-body">
+                        <div class="form-gp">
+                            <label for="nombre_usuario">Nombre de Usuario</label>
+                            <input type="text" id="nombre_usuario">
+                            <i class="ti-email"></i>
+                            <div class="text-danger"></div>
+                        </div>
+                        <div class="form-gp">
+                            <label for="contrasena">Contraseña</label>
+                            <input type="password" id="contrasena">
+                            <i class="ti-lock"></i>
+                            <div class="text-danger"></div>
+                        </div>
+                        <div class="row mb-4 rmber-area">
+                            <div class="col-6">
+                                <div class="custom-control custom-checkbox mr-sm-2">
+                                    <input type="checkbox" class="custom-control-input" id="customControlAutosizing">
+                                    <label class="custom-control-label" for="customControlAutosizing">Recuerdame</label>
+                                </div>
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="#">¿Olvido su contraseña?</a>
+                            </div>
+                        </div>
+                        <div class="submit-btn-area">
+                            <button id="form_submit" type="submit">Ingresar <i class="ti-arrow-right"></i></button>
+                        </div>
+                        <!--div class="form-footer text-center mt-5">
+                            <p class="text-muted">Don't have an account? <a href="register.html">Sign up</a></p>
+                        </div-->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- login area end -->
+
+    <!-- jquery latest version -->
+    <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+    <!-- bootstrap 4 js -->
+    <script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+    
+    <!-- others plugins -->
+    <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+
+    <script>
+        url_base = 'http://localhost:5000'
+        document.getElementById('ingresar_form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario de forma tradicional
+
+            const datos_formulario = new FormData(this);
+            const nombre_us = document.getElementById('nombre_usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+            //const datos = Object.fromEntries(datos_formulario);
+            const datos = {
+                nombre_usuario: nombre_us,
+                contrasena: contrasena
+            };
+
+            try {
+                const respuesta = await fetch(`/ingresar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+
+                const resultado = await respuesta.json();
+                console.log('Éxito:', resultado);
+                if(resultado.codigo==200){
+                    localStorage.setItem('token', resultado.token);
+                    console.log(resultado.token)
+                    if(resultado.rol==1){
+                        console.log('Administrador')
+                        window.location.href = '/inicio';
+                    }else if(resultado.rol==2){
+                        console.log('Doctor')
+                    }else if(resultado.rol==3){
+                        console.log('Enfermera')
+                    }
+                }
+                if(resultado.codigo!=200){
+                    console.log('Error por alguna razon')
+                }
+            } catch (error) {
+                console.error('Errores:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

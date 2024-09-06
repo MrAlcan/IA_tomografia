@@ -3,6 +3,7 @@ from app.configuraciones.extensiones import db, jwt, bcrypt
 from app.rutas.rutas import main_bp
 from datetime import datetime
 from app.configuraciones.baseDatos import iniciar_datos
+from app.modelos.vistas import iniciar_vistas
 
 
 def create_app():
