@@ -1,6 +1,6 @@
 from app.modelos.usuario import Usuario
 from app.serializadores.serializadorUsuario import SerializadorUsuario
-from app.configuraciones.extensiones import db, bcrypt
+from app.configuraciones.extensiones import db, bcrypt, text
 
 class ServiciosUsuario():
     def crear(nombre, contrasena, nombre_per, ap_paterno, ap_materno, carnet, cargo, id_rol):
@@ -62,3 +62,11 @@ class ServiciosUsuario():
                 return None, 401
         else:
             return None, 404
+        
+    def obtener_vista_usuario_rol():
+        try:
+            usuarios = db.session.execute(text('SELECT * FROM usuario_roles'))
+            respuesta = SerializadorUsuario.serializar_usuarios_roles(usuarios)
+            return respuesta
+        except:
+            return None
