@@ -40,7 +40,7 @@
         <div class="col-sm-6 clearfix">
             <div class="user-profile pull-right">
                 <img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar">
-                <h4 class="user-name dropdown-toggle" data-toggle="dropdown">Pepito Perez <i class="fa fa-angle-down"></i></h4>
+                <h4 id="perfil_nombre_usuario" class="user-name dropdown-toggle" data-toggle="dropdown"><span>Pepito Perez</span> <i class="fa fa-angle-down"></i></h4>
                 <div class="dropdown-menu">
 
                     <a class="dropdown-item" href="#">Configuracion</a>
@@ -58,16 +58,17 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">Usuarios del Sistema</h4>
+                    <button id="boton_agregar_usuario" type="button" class="btn btn-rounded btn-success mb-3">Agregar Usuarios</button>
                     <div class="data-tables">
                         <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Nombres</th>
-                                    <th>Apellidos</th>
-                                    <th>Cargo</th>
-                                    <th>Rol</th>
-                                    <th>Opciones</th>
+                                    <th scope="col">No.</th>
+                                    <th scope="col">Nombres</th>
+                                    <th scope="col">Apellidos</th>
+                                    <th scope="col">Cargo</th>
+                                    <th scope="col">Rol</th>
+                                    <th scope="col">Opciones</th>
                                 </tr>
                             </thead>
                             
@@ -84,6 +85,7 @@
         
     </div>
 </div>
+    <script src="{{url_for('static', filename='assets/js/usuarios.js')}}"></script>
 
     <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
     <!-- bootstrap 4 js -->
@@ -105,5 +107,5 @@
     <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
     <!--propios-->
     <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
-    <script src="{{url_for('static', filename='assets/js/usuarios.js')}}"></script>
+    
 {% endblock %}

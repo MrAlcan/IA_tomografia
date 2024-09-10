@@ -6,6 +6,8 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from app.servicios.serviciosAutenticacion import ServiciosAutenticacion
 from app.servicios.serviciosVistas import ServiciosVistas
+from app.servicios.serviciosRol import ServiciosRol
+from app.servicios.serviciosUsuario import ServiciosUsuario
 import numpy as np
 import cv2
 main_bp = Blueprint('main', __name__)
@@ -19,7 +21,7 @@ ruta_modelo_relativa = os.path.join('app', 'ia', 'deteccion_tumor.keras')
 ruta_modelo = os.path.abspath(ruta_modelo_relativa)
 
 print(f"ruta del modelo: {ruta_modelo}")
-
+'''
 try:
     modelo = load_model(ruta_modelo)
     print("modelo cargado con éxito.")
@@ -65,7 +67,7 @@ def vista_tomografia_resultados():
                 resultados.append(f"Error procesando {file.filename}: {str(e)}")
 
     return render_template('tomografia_resultados.html', current_time=current_time, resultados=resultados)
-
+'''
 
 #-----------------VISTAS----------------------------------------
 @main_bp.route('/ingresar', methods=['GET'])
@@ -83,6 +85,11 @@ def vista_inicio():
 def vista_usuarios():
     current_time = datetime.now()
     return render_template('usuarios.html', current_time=current_time)
+
+@main_bp.route('/usuarios/agregar', methods=['GET'])
+def vista_agregar_usuarios():
+    current_time = datetime.now()
+    return render_template('crear_usuario.html', current_time=current_time)
 
 @main_bp.route('/tomografia_listar', methods=['GET'])
 def vista_tomografia_listar():
@@ -152,6 +159,32 @@ def obtener_usuarios():
     cuerpo = {  'codigo': 200,
                 'identidad': identidad,
                 'usuarios': usuarios}
+    return jsonify(cuerpo)
+
+@main_bp.route('/api/usuarios/agregar', methods=['GET'])
+@jwt_required()
+def api_agregar_usuarios_get():
+    identidad = get_jwt_identity()
+    roles = ServiciosRol.obtener_todos()
+    cuerpo = {  'codigo': 200,
+                'identidad': identidad,
+                'roles': roles}
+    return jsonify(cuerpo)
+
+@main_bp.route('/api/usuarios/agregar', methods=['POST'])
+@jwt_required()
+def api_agregar_usuarios_post():
+    identidad = get_jwt_identity()
+    datos_usuario = request.get_json()
+    nuevo_usuario = ServiciosUsuario.crear(datos_usuario['nombre_cuenta'], datos_usuario['contrasena'], datos_usuario['nombres'], datos_usuario['ap_paterno'], datos_usuario['ap_materno'], datos_usuario['carnet'], datos_usuario['cargo'], datos_usuario['id_rol'])
+    if nuevo_usuario:
+        cuerpo = {  'codigo': 200,
+                    'identidad': identidad,
+                    'nuevo_usuario': nuevo_usuario}
+    else:
+        cuerpo = {  'codigo': 400,
+                    'identidad': identidad,
+                    'nuevo_usuario': None}
     return jsonify(cuerpo)
 
 @main_bp.route('/register', methods=['POST'])

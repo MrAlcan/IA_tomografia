@@ -29,6 +29,11 @@ const consultar_datos = async (direccion, metodo='GET', cuerpo=null) => {
             //console.log(resultado.token)
             console.log('normal')
             console.log(resultado)
+            const perfil_nombre_usuario = document.querySelector("#perfil_nombre_usuario > span");
+            const nombre_apellido = resultado.identidad.nombres_usuario + " "+resultado.identidad.apellido_paterno;
+            console.log(nombre_apellido);
+            console.log(perfil_nombre_usuario.innerText);
+            perfil_nombre_usuario.innerText = nombre_apellido;
             return await resultado;
         }
         if(resultado.codigo!=200){
