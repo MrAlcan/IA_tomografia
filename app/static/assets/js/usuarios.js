@@ -52,7 +52,7 @@ function generarTabla(datos){
         listaEditar.classList.add('mr-3');
         const listaEliminar = document.createElement('li');
         const botonEditar = document.createElement('a');
-        botonEditar.setAttribute('href', '#');
+        botonEditar.setAttribute('href', `/usuarios/editar/${dato.id_usuario}`);
         botonEditar.classList.add('text-secondary');
         const botonEliminar = document.createElement('a');
         botonEliminar.setAttribute('href', '#');

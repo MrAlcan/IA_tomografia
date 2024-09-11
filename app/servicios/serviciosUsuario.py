@@ -27,6 +27,8 @@ class ServiciosUsuario():
                 usuario_modificado.apellido_paterno_usuario = ap_paterno
             if ap_materno:
                 usuario_modificado.apellido_materno_usuario = ap_materno
+            if cargo:
+                usuario_modificado.cargo_usuario = cargo
             if carnet:
                 usuario_modificado.carnet_usuario = carnet
             if id_rol:

@@ -91,6 +91,12 @@ def vista_agregar_usuarios():
     current_time = datetime.now()
     return render_template('crear_usuario.html', current_time=current_time)
 
+@main_bp.route('/usuarios/editar/<id>', methods=['GET'])
+def vista_editar_usuarios(id):
+    id_usuario_editar = id
+    current_time = datetime.now()
+    return render_template('editar_usuario.html', current_time=current_time, id_usuario_editar=id_usuario_editar)
+
 @main_bp.route('/tomografia_listar', methods=['GET'])
 def vista_tomografia_listar():
     current_time = datetime.now()
@@ -178,6 +184,35 @@ def api_agregar_usuarios_post():
     datos_usuario = request.get_json()
     nuevo_usuario = ServiciosUsuario.crear(datos_usuario['nombre_cuenta'], datos_usuario['contrasena'], datos_usuario['nombres'], datos_usuario['ap_paterno'], datos_usuario['ap_materno'], datos_usuario['carnet'], datos_usuario['cargo'], datos_usuario['id_rol'])
     if nuevo_usuario:
+        cuerpo = {  'codigo': 200,
+                    'identidad': identidad,
+                    'nuevo_usuario': nuevo_usuario}
+    else:
+        cuerpo = {  'codigo': 400,
+                    'identidad': identidad,
+                    'nuevo_usuario': None}
+    return jsonify(cuerpo)
+
+@main_bp.route('/api/usuarios/editar/<id>', methods=['GET'])
+@jwt_required()
+def api_editar_usuarios_get(id):
+    identidad = get_jwt_identity()
+    roles = ServiciosRol.obtener_todos()
+    usuario_editar = ServiciosUsuario.obtener_id(id)
+    cuerpo = {  'codigo': 200,
+                'identidad': identidad,
+                'roles': roles,
+                'usuario_editar': usuario_editar}
+    return jsonify(cuerpo)
+
+@main_bp.route('/api/usuarios/editar/<id>', methods=['POST'])
+@jwt_required()
+def api_editar_usuarios_post(id):
+    identidad = get_jwt_identity()
+    datos_usuario = request.get_json()
+    nuevo_usuario = ServiciosUsuario.actualizar(id, datos_usuario['nombre_cuenta'], datos_usuario['contrasena'], datos_usuario['nombres'], datos_usuario['ap_paterno'], datos_usuario['ap_materno'], datos_usuario['carnet'], datos_usuario['cargo'], datos_usuario['id_rol'])
+    if nuevo_usuario:
+        print("editado")
         cuerpo = {  'codigo': 200,
                     'identidad': identidad,
                     'nuevo_usuario': nuevo_usuario}
