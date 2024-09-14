@@ -123,6 +123,8 @@
                     throw new Error('Error en la respuesta del servidor');
                 }
 
+                window.location.href = '/inicio';
+
                 const resultado = await respuesta.json();
                 console.log('Éxito:', resultado);
                 if(resultado.codigo==200){
@@ -143,6 +145,7 @@
                     console.log('Error por alguna razon')
                 }
             } catch (error) {
+                //console.log(resultado);
                 console.error('Errores:', error);
             }
         });

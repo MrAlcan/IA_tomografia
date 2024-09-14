@@ -1,4 +1,4 @@
-function generarSelect(datos){
+/*function generarSelect(datos){
 
     const selectRoles = document.getElementById('input_rol');
 
@@ -11,11 +11,21 @@ function generarSelect(datos){
         selectRoles.appendChild(opcionRol);
     });
 
-}
+}*/
 
 document.addEventListener('DOMContentLoaded', () => {
 
     const nav_gestion = document.getElementById('nav_gestion_usuarios');
+    const nav_usuarios = document.getElementById('nav_usuarios');
+    nav_gestion.classList.add('active');
+    nav_usuarios.classList.add('active');
+    const lista_gestion = document.querySelector('#nav_gestion_usuarios ul');
+    console.log(lista_gestion);
+    lista_gestion.classList.add('in');
+
+    console.log(document.cookie.split("=")[1]);
+
+    /*const nav_gestion = document.getElementById('nav_gestion_usuarios');
     const nav_usuarios = document.getElementById('nav_usuarios');
     nav_gestion.classList.add('active');
     nav_usuarios.classList.add('active');
@@ -36,12 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(error);
     });
     //console.log(datos_servidor);
-    //const usuarios = datos_servidor['usuarios'];
+    //const usuarios = datos_servidor['usuarios'];*/
     
     
 
 });
-
+/*
 document.getElementById('crear_usuario_form').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevenir el envío del formulario de forma tradicional
 
@@ -66,6 +76,7 @@ document.getElementById('crear_usuario_form').addEventListener('submit', async f
         cargo: cargo,
         id_rol: rol
     };
+    console.log(datos);
 
     const nuevo_usuario = consultar_datos('/api/usuarios/agregar', 'POST', datos)
     .then(data=>{
@@ -73,7 +84,7 @@ document.getElementById('crear_usuario_form').addEventListener('submit', async f
         if(data.codigo==200){
             console.log("usuario creado correctamente");
             console.log(data.nuevo_usuario);
-            window.location.href = '/usuarios';
+            //window.location.href = '/usuarios';
         }else if(data.codigo==400){
             console.log("usuario no creado");
         }
@@ -83,4 +94,4 @@ document.getElementById('crear_usuario_form').addEventListener('submit', async f
     });
 
     
-});
+});*/

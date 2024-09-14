@@ -11,7 +11,7 @@ class SerializadorPaciente():
                     'carnet' : paciente.carnet_paciente,
                     'seguro' : paciente.seguro_paciente,
                     'fecha_nacimiento' : paciente.fecha_nacimiento_paciente,
-                    'paciente' : paciente.edad_paciente
+                    'edad' : paciente.edad_paciente
                 }
                 lista_pacientes.append(cuerpo)
             return lista_pacientes
@@ -28,7 +28,7 @@ class SerializadorPaciente():
                 'carnet' : paciente.carnet_paciente,
                 'seguro' : paciente.seguro_paciente,
                 'fecha_nacimiento' : paciente.fecha_nacimiento_paciente,
-                'paciente' : paciente.edad_paciente
+                'edad' : paciente.edad_paciente
             }
             return cuerpo
         else:

@@ -13,8 +13,8 @@ class SerializadorControlSignos():
                     'saturacion' : control.saturacion_control,
                     'diuresis' : control.diuresis_control,
                     'catarsis' : control.catarsis_control,
-                    'id_hoja' : control.id_hoja_signos,
-                    'id_registro_enfermeria' : control.id_registro_control
+                    'id_hoja' : control.id_hoja_signos
+                    #'id_registro_enfermeria' : control.id_registro_control
                 }
                 lista_controles.append(cuerpo)
             return lista_controles
@@ -33,8 +33,8 @@ class SerializadorControlSignos():
                 'saturacion' : control.saturacion_control,
                 'diuresis' : control.diuresis_control,
                 'catarsis' : control.catarsis_control,
-                'id_hoja' : control.id_hoja_signos,
-                'id_registro_enfermeria' : control.id_registro_control
+                'id_hoja' : control.id_hoja_signos
+                #'id_registro_enfermeria' : control.id_registro_control
             }
             return cuerpo
         else:

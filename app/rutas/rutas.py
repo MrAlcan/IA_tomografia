@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies
 from flask import Blueprint, render_template, request, redirect, url_for
 from datetime import datetime
 from tensorflow.keras.models import load_model
@@ -15,6 +15,7 @@ import os
 from PIL import Image
 
 from io import BytesIO
+
 
 
 ruta_modelo_relativa = os.path.join('app', 'ia', 'deteccion_tumor.keras')
@@ -71,7 +72,7 @@ def vista_tomografia_resultados():
 
 #-----------------VISTAS----------------------------------------
 @main_bp.route('/ingresar', methods=['GET'])
-def vista_iniciar_sesion():
+def ingresar():
     current_time = datetime.now()
     return render_template('ingresar.html', current_time=current_time)
 
@@ -82,9 +83,12 @@ def vista_inicio():
 
 
 @main_bp.route('/usuarios', methods=['GET'])
+@jwt_required()
 def vista_usuarios():
+    usuarios = ServiciosVistas.obtener_usuarios_roles()
+    datos_usuario = get_jwt_identity()
     current_time = datetime.now()
-    return render_template('usuarios.html', current_time=current_time)
+    return render_template('usuarios.html', current_time=current_time, usuarios=usuarios, usuario_sesion=datos_usuario)
 
 @main_bp.route('/usuarios/agregar', methods=['GET'])
 def vista_agregar_usuarios():
@@ -148,13 +152,13 @@ def inicio():
 '''
 
 @main_bp.route('/api/inicio', methods=['GET'])
-@jwt_required()
 def inicio():
     print("entro al api")
-    datos_usuario = get_jwt_identity()
-    print(datos_usuario)
-    cuerpo = {'codigo':200,
-              'identidad': datos_usuario}
+    #datos_usuario = get_jwt_identity()
+    #print(datos_usuario)
+    #cuerpo = {'codigo':200,
+    #          'identidad': datos_usuario}
+    cuerpo = {'codigo':200}
     return jsonify(cuerpo)
 
 @main_bp.route('/api/usuarios', methods=['GET'])

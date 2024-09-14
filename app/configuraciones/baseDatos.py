@@ -9,8 +9,8 @@ def iniciar_datos():
     if not roles:
         roles_nuevos = []
         roles_nuevos.append(Rol('Administrador','Administrador total del sistema'))
-        roles_nuevos.append(Rol('Doctor','Perito investigador encargado de recabar las imagenes'))
-        roles_nuevos.append(Rol('Enfermera','Experto en balistica'))
+        roles_nuevos.append(Rol('Doctor (a)','Perito investigador encargado de recabar las imagenes'))
+        roles_nuevos.append(Rol('Enfermero (a)','Experto en balistica'))
         db.session.add_all(roles_nuevos)
         db.session.commit()
 
