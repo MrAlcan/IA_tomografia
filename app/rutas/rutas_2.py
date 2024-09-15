@@ -8,6 +8,7 @@ from app.servicios.serviciosVistas import ServiciosVistas
 from app.servicios.serviciosRol import ServiciosRol
 from app.servicios.serviciosUsuario import ServiciosUsuario
 from app.servicios.serviciosPaciente import ServiciosPaciente
+from app.servicios.serviciosHojaControl import ServiciosHojaControl
 import numpy as np
 import cv2
 
@@ -218,5 +219,53 @@ def editar_paciente_post(datos_usuario, id):
     paciente_modificado = ServiciosPaciente.actualizar(id=id, nombres=datos['input_nombres'], apellido_paterno=datos['input_apellido_paterno'], apellido_materno=datos['input_apellido_materno'], carnet=datos['input_carnet'], seguro=datos['input_seguro'], fecha_nacimiento=datos['input_fecha_nacimiento'], edad=datos['input_edad'])
     if paciente_modificado:
         return redirect(url_for('main.pacientes'))
+    else:
+        return jsonify({'codigo': 400})
+    
+
+@main_bp.route('/control_signos_vitales', methods=['GET'])
+@jwt_required()
+def control_signos_vitales():
+    identidad = get_jwt_identity()
+    hojas_control = ServiciosHojaControl.obtener_todos()
+    return render_template('hoja_control.html', identidad = identidad, hojas_control = hojas_control)
+
+@main_bp.route('/control_signos_vitales/agregar', methods = ['GET'])
+@jwt_required()
+def agregar_control_signos_vitales():
+    identidad = get_jwt_identity()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('crear_hoja_control.html', identidad=identidad, pacientes=pacientes)
+
+@main_bp.route('/control_signos_vitales/agregar', methods=['POST'])
+@token_requerido
+def agregar_control_signos_vitales_post(datos_usuario):
+    identidad = datos_usuario
+    datos = request.form
+    print(datos)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], datos['input_paciente'])
+    print(nueva_hoja)
+    if nueva_hoja:
+        return redirect(url_for('main.control_signos_vitales'))
+    else:
+        return jsonify({'codigo': 400})
+
+@main_bp.route('/control_signos_vitales/editar/<id>', methods=['GET'])
+@jwt_required()
+def control_signos_vitales_editar(id):
+    identidad = get_jwt_identity()
+    editar_hoja_control = ServiciosHojaControl.obtener_id(id)[0]
+    print(editar_hoja_control)
+    paciente_control = ServiciosPaciente.obtener_id(editar_hoja_control['id_paciente'])
+    return render_template('editar_hoja_control.html', identidad = identidad, editar_hoja = editar_hoja_control, paciente = paciente_control)
+
+@main_bp.route('/control_signos_vitales/editar/<id>', methods=['POST'])
+@token_requerido
+def control_signos_vitales_editar_post(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    editar_hoja_control = ServiciosHojaControl.actualizar(id, datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'])
+    if editar_hoja_control:
+        return redirect(url_for('main.control_signos_vitales')) 
     else:
         return jsonify({'codigo': 400})
