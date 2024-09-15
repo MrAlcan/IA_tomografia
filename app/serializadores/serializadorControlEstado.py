@@ -4,7 +4,7 @@ class SerializadorControlEstado():
             lista_controles = []
             for control in controles_estado:
                 cuerpo = {
-                    'id_control' : control.id_control_estado,
+                    'id_control_estado' : control.id_control_estado,
                     'antibiotico' : control.antibiotico_estado,
                     'dias_internado' : control.dias_internado,
                     'fecha' : control.fecha_estado,
@@ -19,7 +19,7 @@ class SerializadorControlEstado():
     def serializar_unico(control):
         if control:
             cuerpo = {
-                'id_control' : control.id_control_estado,
+                'id_control_estado' : control.id_control_estado,
                 'antibiotico' : control.antibiotico_estado,
                 'dias_internado' : control.dias_internado,
                 'fecha' : control.fecha_estado,

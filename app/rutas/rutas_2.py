@@ -9,6 +9,8 @@ from app.servicios.serviciosRol import ServiciosRol
 from app.servicios.serviciosUsuario import ServiciosUsuario
 from app.servicios.serviciosPaciente import ServiciosPaciente
 from app.servicios.serviciosHojaControl import ServiciosHojaControl
+from app.servicios.serviciosControlEstado import ServiciosControlEstado
+from app.servicios.serviciosControlSignos import ServiciosControlSignos
 import numpy as np
 import cv2
 
@@ -254,7 +256,7 @@ def agregar_control_signos_vitales_post(datos_usuario):
 @jwt_required()
 def control_signos_vitales_editar(id):
     identidad = get_jwt_identity()
-    editar_hoja_control = ServiciosHojaControl.obtener_id(id)[0]
+    editar_hoja_control = ServiciosHojaControl.obtener_id(id)
     print(editar_hoja_control)
     paciente_control = ServiciosPaciente.obtener_id(editar_hoja_control['id_paciente'])
     return render_template('editar_hoja_control.html', identidad = identidad, editar_hoja = editar_hoja_control, paciente = paciente_control)
@@ -269,3 +271,19 @@ def control_signos_vitales_editar_post(datos_usuario, id):
         return redirect(url_for('main.control_signos_vitales')) 
     else:
         return jsonify({'codigo': 400})
+
+@main_bp.route('/control_signos_vitales/ver/<id>', methods=['GET'])
+@jwt_required()
+def control_signos_vitales_ver(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    control_estados = ServiciosControlEstado.obtener_hoja(id)
+    control_signos = ServiciosControlSignos.obtener_hoja(id)
+    return render_template('ver_hoja_control.html', identidad=identidad, hoja=hoja_control, estados=control_estados, signos=control_signos)
+
+@main_bp.route('/control_signos_vitales/agregar_estado/<id>', methods=['GET'])
+@jwt_required()
+def control_estado_agregar(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    return render_template('crear_control_estado.html', identidad=identidad, hoja=hoja_control)

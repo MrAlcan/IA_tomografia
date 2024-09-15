@@ -19,6 +19,14 @@ class ServiciosControlEstado():
         else:
             return None
     
+    def obtener_hoja(id_hoja):
+        control_estado = ControlEstado.query.filter_by(id_hoja_control_estado = id_hoja)
+        respuesta = SerializadorControlEstado.serializar(control_estado)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+    
     def crear(antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control):
         nuevo_control_estado = ControlEstado(antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control)
         db.session.add(nuevo_control_estado)

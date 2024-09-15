@@ -19,6 +19,14 @@ class ServiciosControlSignos():
         else:
             return None
     
+    def obtener_hoja(id_hoja):
+        control_signo = ControlSignos.query.filter_by(id_hoja_signos=id_hoja)
+        respuesta = SerializadorControlSignos.serializar(control_signo)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+    
     def crear(fecha, hora, presion_sistolica, presion_diastolica, respiracion, saturacion, diuresis, catarsis, hoja_control):
         nuevo_control = ControlSignos(fecha, hora, presion_sistolica, presion_diastolica, respiracion, saturacion, diuresis, catarsis, hoja_control)
         db.session.add(nuevo_control)
