@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, verify_jwt_in_request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, verify_jwt_in_request, unset_jwt_cookies
 from flask import Blueprint, render_template, request, redirect, url_for
 from functools import wraps
 from datetime import datetime
@@ -16,6 +16,19 @@ import cv2
 
 from flask import request, jsonify
 import jwt
+
+def no_iniciar_sesion(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            verify_jwt_in_request()  # Verifica si hay un token válido en las cookies
+            current_user = get_jwt_identity()  # Obtén la identidad del usuario (si el token es válido)
+            print(current_user)
+            return redirect(url_for('main.vista_inicio'))  # Si está autenticado, redirige a otra vista
+        except:
+            # Si no hay token o si el token no es válido, permite acceder a la vista de login
+            return f(*args, **kwargs)
+    return wrapper
 
 def token_requerido(f):
     @wraps(f)
@@ -51,11 +64,14 @@ main_bp = Blueprint('main', __name__)
 
 
 @main_bp.route('/ingresar', methods=['GET'])
+@no_iniciar_sesion
 def ingresar():
     current_time = datetime.now()
+    print(request.headers)
     return render_template('ingresar.html', current_time=current_time)
 
 @main_bp.route('/ingresar', methods=['POST'])
+@no_iniciar_sesion
 def validar_usuario():
     print("ingreso al backend")
     datos_login = request.get_json()
@@ -81,6 +97,14 @@ def validar_usuario():
                   'token': respuesta}
         return resp
         #return resp
+
+@main_bp.route('/cerrar_sesion', methods=['GET'])
+@jwt_required()
+def cerrar_sesion():
+    resp = make_response(redirect(url_for('main.ingresar')))  # Redirige a la página de login o inicio
+    unset_jwt_cookies(resp)  # Elimina las cookies del JWT
+    return resp  # Retorna la respuesta con las cookies eliminadas
+
 
 @main_bp.route('/inicio', methods=['POST', 'GET'])
 @jwt_required()
