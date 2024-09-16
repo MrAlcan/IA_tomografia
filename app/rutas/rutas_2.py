@@ -287,3 +287,34 @@ def control_estado_agregar(id):
     identidad = get_jwt_identity()
     hoja_control = ServiciosHojaControl.obtener_id(id)
     return render_template('crear_control_estado.html', identidad=identidad, hoja=hoja_control)
+
+@main_bp.route('/control_signos_vitales/agregar_estado/<id>', methods = ['POST'])
+@token_requerido
+def control_estado_agregar_post(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    #print(datos)
+    control_estado_nuevo = ServiciosControlEstado.crear(datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'], id)
+    if control_estado_nuevo:
+        return redirect(url_for('main.control_signos_vitales_ver', id=id))
+    else:
+        return jsonify({'codigo': 400})
+
+
+@main_bp.route('/control_signos_vitales/agregar_signo/<id>', methods=['GET'])
+@jwt_required()
+def control_signo_agregar(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    return render_template('crear_control_signo.html', identidad=identidad, hoja=hoja_control)
+
+@main_bp.route('/control_signos_vitales/agregar_signo/<id>', methods=['POST'])
+@token_requerido
+def control_signo_agregar_post(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
+    if control_signo_nuevo:
+        return redirect(url_for('main.contro_signos_vitales_ver', id=id))
+    else:
+        return jsonify({'codigo':400})

@@ -141,11 +141,22 @@
                                             <tr>
                                                 <td>{{signo.fecha}}</td>
                                                 <td>{{signo.hora}}</td>
-                                                <td>{{signo.presion_sistolica}} {{signo.presion_diastolica}}</td>
+                                                <td>{{signo.presion_sistolica}} / {{signo.presion_diastolica}}</td>
                                                 <td>{{signo.respiracion}}</td>
                                                 <td>{{signo.saturacion}}</td>
-                                                <td>{{signo.diuresis}}</td>
-                                                <td>{{signo.catarsis}}</td>
+                                                {% if signo.diuresis==1 %}
+                                                    <td>+</td>
+                                                {% else %}
+                                                    <td>-</td>
+                                                {% endif %}
+                                                {% if signo.catarsis==1 %}
+                                                    <td>+</td>
+                                                {% else %}
+                                                    <td>-</td>
+                                                {% endif %}
+                                                
+                                                <!--td>{{signo.diuresis}}</td>
+                                                <td>{{signo.catarsis}}</td-->
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}" class="text-secondary"><i class="fa fa-edit"></i></a></li>

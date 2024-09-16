@@ -28,6 +28,13 @@ class ServiciosControlEstado():
             return None
     
     def crear(antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control):
+        if not dias_internado or dias_internado=='':
+            dias_internado = '-'
+        if not dias_post_operatorio or dias_post_operatorio=='':
+            dias_post_operatorio = '-'
+        if not antibiotico or antibiotico=='':
+            antibiotico = '-'
+        
         nuevo_control_estado = ControlEstado(antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control)
         db.session.add(nuevo_control_estado)
         db.session.commit()
