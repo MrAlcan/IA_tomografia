@@ -105,6 +105,84 @@ def cerrar_sesion():
     unset_jwt_cookies(resp)  # Elimina las cookies del JWT
     return resp  # Retorna la respuesta con las cookies eliminadas
 
+@main_bp.route('/configuracion')
+@jwt_required()
+def configuracion():
+    identidad = get_jwt_identity()
+    return render_template('configuracion.html', identidad = identidad)
+
+@main_bp.route('/configuracion', methods=['POST'])
+@token_requerido
+def configuracion_post(datos_usuario):
+    identidad = datos_usuario
+    print(identidad)
+    datos = request.form
+    print(datos)
+    usuario_modificado = ServiciosUsuario.actualizar(id=identidad['id_usuario'], nombre=datos['input_nombre_cuenta'], nombre_per=datos['input_nombres'],ap_paterno=datos['input_apellido_paterno'],ap_materno=datos['input_apellido_materno'],cargo=datos['input_cargo'],carnet=datos['input_carnet'])
+    if usuario_modificado:
+        respuesta, id_rol = ServiciosAutenticacion.actualizar_token(identidad['id_usuario'])
+        resp = make_response(redirect(url_for('main.vista_inicio')))
+        set_access_cookies(resp, respuesta)
+        return resp
+    else:
+        print('hubo un error')
+        return jsonify({'codigo': 400}) # mejorar
+    
+@main_bp.route('/configuracion/contrasena', methods=['GET', 'POST'])
+@token_requerido
+def editar_contrasena(datos_usuario):
+    identidad = datos_usuario
+    estado = False
+    antigua = ''
+    nueva = ''
+    if request.method=='POST':
+        datos = request.form
+        print(datos)
+        antigua_contrasena = datos['input_antigua_contrasena']
+        nueva_contrasena = datos['input_nueva_contrasena']
+        print(identidad['id_usuario'])
+        respuesta = ServiciosUsuario.cambiar_contrasena(identidad['id_usuario'], antigua_contrasena, nueva_contrasena)
+        if respuesta == 200:
+            print("contrasena modificada exitosamente")
+            return redirect(url_for('main.vista_inicio'))
+        else:
+            antigua = antigua_contrasena
+            nueva = nueva_contrasena
+            estado = True
+            #return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+    return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+'''
+@main_bp.route('/configuracion/contrasena/<estado>/<antigua>/<nueva>', methods=['GET'])
+@jwt_required()
+def editar_contrasena(estado = None, antigua=None, nueva=None):
+    print(estado)
+    print(estado)
+    print(antigua)
+    print(nueva)
+    
+    
+    identidad = get_jwt_identity()
+    return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+@main_bp.route('/configuracion/contrasena', methods=['POST'])
+@token_requerido
+def editar_contrasena_post(datos_usuario):
+    identidad = datos_usuario
+    datos = request.form
+    print(datos)
+    antigua_contrasena = datos['input_antigua_contrasena']
+    nueva_contrasena = datos['input_nueva_contrasena']
+    print(identidad['id_usuario'])
+    respuesta = ServiciosUsuario.cambiar_contrasena(identidad['id_usuario'], antigua_contrasena, nueva_contrasena)
+    if respuesta == 200:
+        print("contrasena modificada exitosamente")
+        return redirect(url_for('main.vista_inicio'))
+    else:
+        print('contrasenas desiguales')
+        return redirect(url_for('main.editar_contrasena', estado = 'True', antigua = antigua_contrasena, nueva = nueva_contrasena))
+'''
 
 @main_bp.route('/inicio', methods=['POST', 'GET'])
 @jwt_required()

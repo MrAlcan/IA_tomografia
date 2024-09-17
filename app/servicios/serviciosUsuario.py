@@ -13,6 +13,8 @@ class ServiciosUsuario():
 
     def actualizar(id, nombre=None, contrasena=None, nombre_per=None, ap_paterno=None, ap_materno=None, carnet=None, cargo=None, id_rol=None):
         usuario_modificado = Usuario.query.get(id)
+        print('-- usuario: --')
+        print(usuario_modificado.nombres_usuario)
         if usuario_modificado:
             if nombre:
                 usuario_modificado.nombre_cuenta_usuario = nombre
@@ -54,6 +56,20 @@ class ServiciosUsuario():
         usuario = Usuario.query.filter_by(nombre_cuenta_usuario = nombre).first()
         respuesta = SerializadorUsuario.serializar_unico(usuario)
         return respuesta
+    
+    def cambiar_contrasena(id, antigua, nueva):
+        usuario = Usuario.query.get(id)
+        if usuario:
+            if bcrypt.check_password_hash(usuario.contrasena_usuario, antigua):
+                contrasena_hash = bcrypt.generate_password_hash(nueva).decode('utf-8')
+                usuario.contrasena_usuario = contrasena_hash
+                db.session.commit()
+                #modificar
+                return 200
+            else:
+                return 401
+        else:
+            return 404
     
     def verificar_contrasena(nombre, contrasena):
         usuario = Usuario.query.filter_by(nombre_cuenta_usuario = nombre).first()
