@@ -43,7 +43,74 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Usuarios del Sistema</h4>
-                        <button id="boton_agregar_usuario" type="button" class="btn btn-rounded btn-success mb-3">Agregar Usuarios</button>
+                        <!--button id="boton_agregar_usuario" type="button" class="btn btn-rounded btn-success mb-3">Agregar Usuarios</button-->
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-user"></i> Agregar Usuario</a>
+                        <!--button type="button" class="btn btn-primary btn-flat btn-lg mt-3" data-toggle="modal" data-target="#exampleLongModalLong2">Launch demo modal</button-->
+                                <!-- Modal -->
+                        <div class="modal fade" id="LongModalLongCrear">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Usuario</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <form id="crear_usuario_form" action="/usuarios/agregar" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                            <div class="form-group">
+                                                <label for="input_nombres" class="col-form-label">Nombres</label>
+                                                <input class="form-control" name="input_nombres" type="text" value="" id="input_nombres">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_apellido_paterno" class="col-form-label">Apellido Paterno</label>
+                                                <input class="form-control" type="text" value="" id="input_apellido_paterno" name="input_apellido_paterno">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_apellido_materno" class="col-form-label">Apellido Materno</label>
+                                                <input class="form-control" type="text" value="" id="input_apellido_materno" name="input_apellido_materno">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_carnet" class="col-form-label">Cedula de Identidad</label>
+                                                <input class="form-control" type="text" value="" id="input_carnet" name="input_carnet">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_cargo" class="col-form-label">Cargo de Usuario</label>
+                                                <input class="form-control" type="text" value="" id="input_cargo" name="input_cargo">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_nombre_cuenta" class="col-form-label">Cuenta de Usuario</label>
+                                                <input class="form-control" type="text" value="" id="input_nombre_cuenta" name="input_nombre_cuenta">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="input_contrasena" class="col-form-label">Contraseña</label>
+                                                <input class="form-control" type="password" value="" id="input_contrasena" name="input_contrasena">
+                                            </div>
+                                                        
+                                            <div class="form-group">
+                                                <label class="col-form-label">Rol de Usuario</label>
+                                                <select class="custom-select" id="input_rol" name="input_rol">
+                                                    <option selected="selected">Selecciona un Rol</option>
+                                                    {% for rol in roles %}
+                                                        <option value="{{rol.id_rol}}">{{rol.nombre}}</option>
+                                                    {% endfor %}
+                                                                
+                                                </select>
+                                            </div>
+                                            <button id="boton_agregar_usuario" type="submit" class="btn btn-success">Agregar Usuario</button>
+                
+                                        </form>
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
                         <div class="data-tables">
                             
                             <table id="dataTable" class="text-center">
@@ -70,20 +137,88 @@
                                                 <td>{{usuario.nombre_rol}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        <li class="mr-3"><a href="/usuarios/editar/{{usuario.id_usuario}}" class="text-secondary"><i class="fa fa-edit"></i></a></li>
+                                                        <!--li class="mr-3"><a href="/usuarios/editar/{{usuario.id_usuario}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{usuario.id_usuario}}"><i class="fa fa-edit"></i></a></li>
                                                         <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
-                                    
-                                    
-                                
-                                    
                                 </tbody>
                             </table>
                         </div>
+                        {% if usuarios %}
+                            {% for usuario_editar in usuarios %}
+                                <div class="modal fade" id="LongModalLongEditar{{usuario_editar.id_usuario}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Usuario</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+        
+                                                <form id="crear_usuario_form" action="/usuarios/editar/{{usuario_editar.id_usuario}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                    <div class="form-group">
+                                                        <label for="input_nombres" class="col-form-label">Nombres</label>
+                                                        <input class="form-control" name="input_nombres" type="text" value="{{usuario_editar.nombres}}" id="input_nombres" >
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_apellido_paterno" class="col-form-label">Apellido Paterno</label>
+                                                            <input class="form-control" type="text" id="input_apellido_paterno" name="input_apellido_paterno" value="{{usuario_editar.apellido_paterno}}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_apellido_materno" class="col-form-label">Apellido Materno</label>
+                                                            <input class="form-control" type="text" id="input_apellido_materno" name="input_apellido_materno" value="{{usuario_editar.apellido_materno}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="input_carnet" class="col-form-label">Cedula de Identidad</label>
+                                                        <input class="form-control" type="text" id="input_carnet" name="input_carnet" value="{{usuario_editar.carnet}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="input_cargo" class="col-form-label">Cargo de Usuario</label>
+                                                        <input class="form-control" type="text" id="input_cargo" name="input_cargo" value="{{usuario_editar.cargo}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="input_nombre_cuenta" class="col-form-label">Cuenta de Usuario</label>
+                                                        <input class="form-control" type="text" id="input_nombre_cuenta" name="input_nombre_cuenta" value="{{usuario_editar.cuenta}}">
+                                                    </div>
+                                                        <!--div class="form-group">
+                                                            <label for="input_contrasena" class="col-form-label">Contraseña</label>
+                                                            <input class="form-control" type="password" value="" id="input_contrasena" name="input_contrasena" value="{{usuario_editar.contrasena}}">
+                                                        </div-->
+                                                                
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Rol de Usuario</label>
+                                                        <select class="custom-select" id="input_rol" name="input_rol">
+                                                            <option>Selecciona un Rol</option>
+                                                            {% for rol in roles %}
+                                                                {% if usuario_editar.id_rol == rol.id_rol%}
+                                                                    <option value="{{rol.id_rol}}" selected>{{rol.nombre}}</option>
+                                                                {% else %}
+                                                                    <option value="{{rol.id_rol}}">{{rol.nombre}}</option>
+                                                                {% endif %}
+                                                                    
+                                                            {% endfor %}
+                                                                        
+                                                        </select>
+                                                    </div>
+                                                    <button id="boton_editar_usuario" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
+                        
+                                                </form>
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

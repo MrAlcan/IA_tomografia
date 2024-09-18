@@ -37,8 +37,11 @@ class ServiciosControlSignos():
         else:
             return None
     
-    def actualizar(id, fecha, hora, presion_sistolica, presion_diastolica, respiracion, saturacion, diuresis, catarsis, hoja_control):
+    def actualizar(id, fecha=None, hora=None, presion_sistolica=None, presion_diastolica=None, respiracion=None, saturacion=None, diuresis=None, catarsis=None, hoja_control=None):
+        print("ingreso a los servicios de actualizacion del control de signos")
+
         editar_control = ControlSignos.query.get(id)
+        print(editar_control)
         if editar_control:
             if fecha:
                 editar_control.fecha_control = fecha
@@ -58,5 +61,11 @@ class ServiciosControlSignos():
                 editar_control.catarsis_control = catarsis
             if hoja_control:
                 editar_control.id_hoja_signos = hoja_control
+            db.session.commit()
+            respuesta = SerializadorControlSignos.serializar_unico(editar_control)
+            if respuesta:
+                return respuesta
+            else:
+                return None
         else:
             return None

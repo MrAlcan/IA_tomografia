@@ -198,10 +198,11 @@ def usuarios():
     identidad = get_jwt_identity()
     print(identidad)
     usuarios = ServiciosVistas.obtener_usuarios_roles()
+    roles = ServiciosRol.obtener_todos()
     if request.method == 'POST':
         #no hay post
         print("helloda")
-    return render_template('usuarios.html', identidad=identidad, usuarios=usuarios)
+    return render_template('usuarios.html', identidad=identidad, usuarios=usuarios, roles=roles)
 
 @main_bp.route('/usuarios/agregar', methods=['GET'])
 @jwt_required()
@@ -332,7 +333,8 @@ def editar_paciente_post(datos_usuario, id):
 def control_signos_vitales():
     identidad = get_jwt_identity()
     hojas_control = ServiciosHojaControl.obtener_todos()
-    return render_template('hoja_control.html', identidad = identidad, hojas_control = hojas_control)
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('hoja_control.html', identidad = identidad, hojas_control = hojas_control, pacientes = pacientes)
 
 @main_bp.route('/control_signos_vitales/agregar', methods = ['GET'])
 @jwt_required()
@@ -402,6 +404,17 @@ def control_estado_agregar_post(datos_usuario, id):
     else:
         return jsonify({'codigo': 400})
 
+@main_bp.route('/control_signos_vitales/editar_estado/<id>/<hoja>', methods = ['POST'])
+@token_requerido
+def control_estado_editar_post(datos_usuario, id, hoja):
+    identidad = datos_usuario
+    datos = request.form
+    control_estado_editar = ServiciosControlEstado.actualizar(id, datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'])
+    if control_estado_editar:
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+    else:
+        return jsonify({'codigo': 400})
+
 
 @main_bp.route('/control_signos_vitales/agregar_signo/<id>', methods=['GET'])
 @jwt_required()
@@ -417,6 +430,31 @@ def control_signo_agregar_post(datos_usuario, id):
     datos = request.form
     control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
     if control_signo_nuevo:
-        return redirect(url_for('main.contro_signos_vitales_ver', id=id))
+        return redirect(url_for('main.control_signos_vitales_ver', id=id))
     else:
         return jsonify({'codigo':400})
+    
+@main_bp.route('/control_signos_vitales/editar_signo/<id>/<hoja>', methods=['POST'])
+@token_requerido
+def control_signo_editar_post(datos_usuario, id, hoja):
+    identidad = datos_usuario
+    datos = request.form
+    print(id)
+    control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
+    if control_signo_editar:
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+    else:
+        return jsonify({'codigo':400})
+    
+
+    
+@main_bp.route('/control_signos_vitales/pdf/<id>', methods=['GET'])
+@jwt_required()
+def control_signos_vitales_pdf(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    control_estados = ServiciosControlEstado.obtener_hoja(id)
+    control_signos = ServiciosControlSignos.obtener_hoja(id)
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respueta = ServiciosHojaControl.generar_informe(hoja_control, control_estados, control_signos, nombre_usuario)
+    return redirect(url_for('main.control_signos_vitales_ver', id=id))

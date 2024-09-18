@@ -43,7 +43,63 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Hojas de Control de los Signos Vitales de Pacientes de la Clinica</h4>
-                        <button id="boton_agregar_hoja" type="button" class="btn btn-rounded btn-success mb-3">Agregar Hoja</button>
+                        <!--button id="boton_agregar_hoja" type="button" class="btn btn-rounded btn-success mb-3">Agregar Hoja</button-->
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Hoja de Control</a>
+
+                        <div class="modal fade" id="LongModalLongCrear">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Hoja de Control de Signos Vitales</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="crear_paciente_form" action="/control_signos_vitales/agregar" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Paciente de la clinica</label>
+                                                    <select class="custom-select" id="input_paciente" name="input_paciente">
+                                                        <option selected="selected">Selecciona un Paciente</option>
+                                                        {% for paciente in pacientes %}
+                                                            <option value="{{paciente.id_paciente}}">{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}</option>
+                                                        {% endfor %}
+                                                                
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_peso" class="col-form-label">Peso</label>
+                                                    <input class="form-control" name="input_peso" type="number" value="" id="input_peso" min="0" max="400" step="0.01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_talla" class="col-form-label">Talla</label>
+                                                    <input class="form-control" type="number" value="" id="input_talla" name="input_talla" min="0" max="250" step="0.01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_servicio" class="col-form-label">Servicio</label>
+                                                    <input class="form-control" type="text" value="" id="input_servicio" name="input_servicio">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_pieza" class="col-form-label">Pieza del Paciente</label>
+                                                    <input class="form-control" type="text" value="" id="input_pieza" name="input_pieza">
+                                                </div>      
+                                                <button id="boton_agregar_hoja" type="submit" class="btn btn-success mb-3">Agregar Hoja</button>
+                
+                                            </form>
+                                        
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <br>
+                        <br>
                         <div class="data-tables">
                             
                             <table id="dataTable" class="text-center">
@@ -74,8 +130,9 @@
                                                 <td>{{hoja.edad}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        <li class="mr-3"><a href="/control_signos_vitales/ver/{{hoja.id_paciente}}" class="text-secondary"><i class="ti-eye"></i></a></li>
-                                                        <li class="mr-3"><a href="/control_signos_vitales/editar/{{hoja.id_paciente}}" class="text-secondary"><i class="fa fa-edit"></i></a></li>
+                                                        <li class="mr-3"><a href="/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>
+                                                        <!--li class="mr-3"><a href="/control_signos_vitales/editar/{{hoja.id_paciente}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>
                                                         <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
@@ -86,6 +143,60 @@
                                 </tbody>
                             </table>
                         </div>
+                        {% if hojas_control %}
+                            {% for editar_hoja in hojas_control %}
+                                <div class="modal fade" id="LongModalLongEditar{{editar_hoja.id_hoja}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Hoja de Control de Signos Vitales</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar/{{editar_hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                        <div class="form-group">
+                                                            <label class="col-form-label">Paciente de la clinica</label>
+                                                            <input class="form-control" value="{{editar_hoja.nombres}} {{editar_hoja.apellido_paterno}} {{editar_hoja.apellido_materno}}" type="text" disabled>
+                                                            <!--select class="custom-select" id="input_paciente" name="input_paciente">
+                                                                <option selected="selected">Selecciona un Paciente</option>
+                                                                {% for paciente in pacientes %}
+                                                                    <option value="{{paciente.id_paciente}}">{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}</option>
+                                                                {% endfor %}
+                                                                        
+                                                            </select-->
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_peso" class="col-form-label">Peso</label>
+                                                            <input class="form-control" name="input_peso" type="number" value="{{editar_hoja.peso}}" id="input_peso" min="0" max="400" step="0.01">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_talla" class="col-form-label">Talla</label>
+                                                            <input class="form-control" type="number" value="{{editar_hoja.talla}}" id="input_talla" name="input_talla" min="0" max="250" step="0.01">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_servicio" class="col-form-label">Servicio</label>
+                                                            <input class="form-control" type="text" value="{{editar_hoja.servicio}}" id="input_servicio" name="input_servicio">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_pieza" class="col-form-label">Pieza del Paciente</label>
+                                                            <input class="form-control" type="text" value="{{editar_hoja.pieza}}" id="input_pieza" name="input_pieza">
+                                                        </div>      
+                                                        <button id="boton_agregar_hoja" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
+                        
+                                                    </form>
+                                                
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
