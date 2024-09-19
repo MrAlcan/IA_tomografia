@@ -43,7 +43,65 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Pacientes de la Clinica</h4>
-                        <button id="boton_agregar_paciente" type="button" class="btn btn-rounded btn-success mb-3">Agregar Paciente</button>
+                        <!--button id="boton_agregar_paciente" type="button" class="btn btn-rounded btn-success mb-3">Agregar Paciente</button-->
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-user"></i> Agregar Paciente</a>
+                        <div class="modal fade" id="LongModalLongCrear">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Paciente</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="crear_paciente_form" action="/pacientes/agregar" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                                <div class="form-group">
+                                                    <label for="input_nombres" class="col-form-label">Nombres</label>
+                                                    <input class="form-control" name="input_nombres" type="text" value="" id="input_nombres">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_apellido_paterno" class="col-form-label">Apellido Paterno</label>
+                                                    <input class="form-control" type="text" value="" id="input_apellido_paterno" name="input_apellido_paterno">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_apellido_materno" class="col-form-label">Apellido Materno</label>
+                                                    <input class="form-control" type="text" value="" id="input_apellido_materno" name="input_apellido_materno">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_carnet" class="col-form-label">Cedula de Identidad</label>
+                                                    <input class="form-control" type="text" value="" id="input_carnet" name="input_carnet">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                    <input class="form-control" type="text" value="" id="input_seguro" name="input_seguro">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_fecha_nacimiento" class="col-form-label">Fecha de Nacimiento</label>
+                                                    <input class="form-control" type="date" value="" id="input_fecha_nacimiento" name="input_fecha_nacimiento">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_edad" class="col-form-label">Edad</label>
+                                                    <input class="form-control" type="number" value="" id="input_edad" name="input_edad">
+                                                </div>
+                                                        
+                                                
+                                                <button id="boton_agregar_paciente" type="submit" class="btn btn-success mb-3">Agregar Paciente</button>
+                
+                                            </form>
+                                        
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <br>
+                        <br>
                         <div class="data-tables">
                             
                             <table id="dataTable" class="text-center">
@@ -74,7 +132,8 @@
                                                 <td>{{paciente.edad}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        <li class="mr-3"><a href="/pacientes/editar/{{paciente.id_paciente}}" class="text-secondary"><i class="fa fa-edit"></i></a></li>
+                                                        <!--li class="mr-3"><a href="/pacientes/editar/{{paciente.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{paciente.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{paciente.id_paciente}}"><i class="fa fa-edit"></i></a></li>
                                                         <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
@@ -85,6 +144,64 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        {% if pacientes %}
+                            {% for paciente_editar in pacientes%}
+                                <div class="modal fade" id="LongModalLongEditar{{paciente_editar.id_paciente}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Datos del Paciente</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="crear_paciente_form" action="/pacientes/editar/{{paciente_editar.id_paciente}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                        <div class="form-group">
+                                                            <label for="input_nombres" class="col-form-label">Nombres</label>
+                                                            <input class="form-control" name="input_nombres" type="text" value="{{paciente_editar.nombres}}" id="input_nombres">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_apellido_paterno" class="col-form-label">Apellido Paterno</label>
+                                                            <input class="form-control" type="text" value="{{paciente_editar.apellido_paterno}}" id="input_apellido_paterno" name="input_apellido_paterno">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_apellido_materno" class="col-form-label">Apellido Materno</label>
+                                                            <input class="form-control" type="text" value="{{paciente_editar.apellido_materno}}" id="input_apellido_materno" name="input_apellido_materno">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_carnet" class="col-form-label">Cedula de Identidad</label>
+                                                            <input class="form-control" type="text" value="{{paciente_editar.carnet}}" id="input_carnet" name="input_carnet">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                            <input class="form-control" type="text" value="{{paciente_editar.seguro}}" id="input_seguro" name="input_seguro">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_fecha_nacimiento" class="col-form-label">Fecha de Nacimiento</label>
+                                                            <input class="form-control" type="date" value="{{paciente_editar.fecha_nacimiento}}" id="input_fecha_nacimiento" name="input_fecha_nacimiento">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_edad" class="col-form-label">Edad</label>
+                                                            <input class="form-control" type="number" value="{{paciente_editar.edad}}" id="input_edad" name="input_edad">
+                                                        </div>
+                                                                
+                                                        
+                                                        <button id="boton_editar_paciente" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
+                        
+                                                    </form>
+                                                
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

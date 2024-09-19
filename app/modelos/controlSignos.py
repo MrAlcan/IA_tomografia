@@ -5,7 +5,7 @@ class ControlSignos(db.Model):
 
     id_control_signos = db.Column(db.Integer, primary_key=True)
     fecha_control = db.Column(db.Date, nullable=False)
-    hora_control = db.Column(db.Time, nullable=False)
+    hora_control = db.Column(db.String(3), nullable=False)
     presion_sistolica_control = db.Column(db.Integer, nullable=False)
     presion_diastolica_control = db.Column(db.Integer, nullable=False)
     respiracion_control = db.Column(db.Integer, nullable=False)

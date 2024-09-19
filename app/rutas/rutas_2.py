@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, verify_jwt_in_request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, verify_jwt_in_request, unset_jwt_cookies
 from flask import Blueprint, render_template, request, redirect, url_for
 from functools import wraps
 from datetime import datetime
@@ -22,6 +22,19 @@ from app.servicios.serviciosResultadoEstudio import ServiciosResultadoEstudio
 
 from flask import request, jsonify
 import jwt
+
+def no_iniciar_sesion(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            verify_jwt_in_request()  # Verifica si hay un token válido en las cookies
+            current_user = get_jwt_identity()  # Obtén la identidad del usuario (si el token es válido)
+            print(current_user)
+            return redirect(url_for('main.vista_inicio'))  # Si está autenticado, redirige a otra vista
+        except:
+            # Si no hay token o si el token no es válido, permite acceder a la vista de login
+            return f(*args, **kwargs)
+    return wrapper
 
 def token_requerido(f):
     @wraps(f)
@@ -56,12 +69,19 @@ def token_requerido(f):
 main_bp = Blueprint('main', __name__)
 
 
+<<<<<<< HEAD
 @main_bp.route('/', methods=['GET'])
+=======
+@main_bp.route('/ingresar', methods=['GET'])
+@no_iniciar_sesion
+>>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88
 def ingresar():
     current_time = datetime.now()
+    print(request.headers)
     return render_template('ingresar.html', current_time=current_time)
 
 @main_bp.route('/ingresar', methods=['POST'])
+@no_iniciar_sesion
 def validar_usuario():
     print("ingreso al backend")
     datos_login = request.get_json()
@@ -88,6 +108,92 @@ def validar_usuario():
         return resp
         #return resp
 
+@main_bp.route('/cerrar_sesion', methods=['GET'])
+@jwt_required()
+def cerrar_sesion():
+    resp = make_response(redirect(url_for('main.ingresar')))  # Redirige a la página de login o inicio
+    unset_jwt_cookies(resp)  # Elimina las cookies del JWT
+    return resp  # Retorna la respuesta con las cookies eliminadas
+
+@main_bp.route('/configuracion')
+@jwt_required()
+def configuracion():
+    identidad = get_jwt_identity()
+    return render_template('configuracion.html', identidad = identidad)
+
+@main_bp.route('/configuracion', methods=['POST'])
+@token_requerido
+def configuracion_post(datos_usuario):
+    identidad = datos_usuario
+    print(identidad)
+    datos = request.form
+    print(datos)
+    usuario_modificado = ServiciosUsuario.actualizar(id=identidad['id_usuario'], nombre=datos['input_nombre_cuenta'], nombre_per=datos['input_nombres'],ap_paterno=datos['input_apellido_paterno'],ap_materno=datos['input_apellido_materno'],cargo=datos['input_cargo'],carnet=datos['input_carnet'])
+    if usuario_modificado:
+        respuesta, id_rol = ServiciosAutenticacion.actualizar_token(identidad['id_usuario'])
+        resp = make_response(redirect(url_for('main.vista_inicio')))
+        set_access_cookies(resp, respuesta)
+        return resp
+    else:
+        print('hubo un error')
+        return jsonify({'codigo': 400}) # mejorar
+    
+@main_bp.route('/configuracion/contrasena', methods=['GET', 'POST'])
+@token_requerido
+def editar_contrasena(datos_usuario):
+    identidad = datos_usuario
+    estado = False
+    antigua = ''
+    nueva = ''
+    if request.method=='POST':
+        datos = request.form
+        print(datos)
+        antigua_contrasena = datos['input_antigua_contrasena']
+        nueva_contrasena = datos['input_nueva_contrasena']
+        print(identidad['id_usuario'])
+        respuesta = ServiciosUsuario.cambiar_contrasena(identidad['id_usuario'], antigua_contrasena, nueva_contrasena)
+        if respuesta == 200:
+            print("contrasena modificada exitosamente")
+            return redirect(url_for('main.vista_inicio'))
+        else:
+            antigua = antigua_contrasena
+            nueva = nueva_contrasena
+            estado = True
+            #return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+    return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+'''
+@main_bp.route('/configuracion/contrasena/<estado>/<antigua>/<nueva>', methods=['GET'])
+@jwt_required()
+def editar_contrasena(estado = None, antigua=None, nueva=None):
+    print(estado)
+    print(estado)
+    print(antigua)
+    print(nueva)
+    
+    
+    identidad = get_jwt_identity()
+    return render_template('cambiar_contrasena.html', identidad = identidad, estado=estado, antigua=antigua, nueva=nueva)
+
+@main_bp.route('/configuracion/contrasena', methods=['POST'])
+@token_requerido
+def editar_contrasena_post(datos_usuario):
+    identidad = datos_usuario
+    datos = request.form
+    print(datos)
+    antigua_contrasena = datos['input_antigua_contrasena']
+    nueva_contrasena = datos['input_nueva_contrasena']
+    print(identidad['id_usuario'])
+    respuesta = ServiciosUsuario.cambiar_contrasena(identidad['id_usuario'], antigua_contrasena, nueva_contrasena)
+    if respuesta == 200:
+        print("contrasena modificada exitosamente")
+        return redirect(url_for('main.vista_inicio'))
+    else:
+        print('contrasenas desiguales')
+        return redirect(url_for('main.editar_contrasena', estado = 'True', antigua = antigua_contrasena, nueva = nueva_contrasena))
+'''
+
 @main_bp.route('/inicio', methods=['POST', 'GET'])
 @jwt_required()
 def vista_inicio():
@@ -102,10 +208,11 @@ def usuarios():
     identidad = get_jwt_identity()
     print(identidad)
     usuarios = ServiciosVistas.obtener_usuarios_roles()
+    roles = ServiciosRol.obtener_todos()
     if request.method == 'POST':
         #no hay post
         print("helloda")
-    return render_template('usuarios.html', identidad=identidad, usuarios=usuarios)
+    return render_template('usuarios.html', identidad=identidad, usuarios=usuarios, roles=roles)
 
 @main_bp.route('/usuarios/agregar', methods=['GET'])
 @jwt_required()
@@ -238,7 +345,8 @@ def editar_paciente_post(datos_usuario, id):
 def control_signos_vitales():
     identidad = get_jwt_identity()
     hojas_control = ServiciosHojaControl.obtener_todos()
-    return render_template('hoja_control.html', identidad = identidad, hojas_control = hojas_control)
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('hoja_control.html', identidad = identidad, hojas_control = hojas_control, pacientes = pacientes)
 
 @main_bp.route('/control_signos_vitales/agregar', methods = ['GET'])
 @jwt_required()
@@ -308,6 +416,17 @@ def control_estado_agregar_post(datos_usuario, id):
     else:
         return jsonify({'codigo': 400})
 
+@main_bp.route('/control_signos_vitales/editar_estado/<id>/<hoja>', methods = ['POST'])
+@token_requerido
+def control_estado_editar_post(datos_usuario, id, hoja):
+    identidad = datos_usuario
+    datos = request.form
+    control_estado_editar = ServiciosControlEstado.actualizar(id, datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'])
+    if control_estado_editar:
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+    else:
+        return jsonify({'codigo': 400})
+
 
 @main_bp.route('/control_signos_vitales/agregar_signo/<id>', methods=['GET'])
 @jwt_required()
@@ -323,10 +442,11 @@ def control_signo_agregar_post(datos_usuario, id):
     datos = request.form
     control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
     if control_signo_nuevo:
-        return redirect(url_for('main.contro_signos_vitales_ver', id=id))
+        return redirect(url_for('main.control_signos_vitales_ver', id=id))
     else:
         return jsonify({'codigo':400})
     
+<<<<<<< HEAD
 
 
 ############# SOLICITAR EVALUACION GUARDA ############
@@ -448,3 +568,29 @@ def obtener_resultado(id):
         return jsonify(data)
     else:
         return jsonify({'error': 'Resultado no encontrado'}), 404
+=======
+@main_bp.route('/control_signos_vitales/editar_signo/<id>/<hoja>', methods=['POST'])
+@token_requerido
+def control_signo_editar_post(datos_usuario, id, hoja):
+    identidad = datos_usuario
+    datos = request.form
+    print(id)
+    control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
+    if control_signo_editar:
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+    else:
+        return jsonify({'codigo':400})
+    
+
+    
+@main_bp.route('/control_signos_vitales/pdf/<id>', methods=['GET'])
+@jwt_required()
+def control_signos_vitales_pdf(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    control_estados = ServiciosControlEstado.obtener_hoja(id)
+    control_signos = ServiciosControlSignos.obtener_hoja(id)
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respueta = ServiciosHojaControl.generar_informe(hoja_control, control_estados, control_signos, nombre_usuario)
+    return redirect(url_for('main.control_signos_vitales_ver', id=id))
+>>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88

@@ -85,10 +85,21 @@
                                         <label for="input_fecha" class="col-form-label">Fecha</label>
                                         <input class="form-control" name="input_fecha" type="date" value="" id="input_fecha">
                                     </div>
-                                    <div class="form-group">
+                                    <!--div class="form-group">
                                         <label for="input_hora" class="col-form-label">Hora</label>
                                         <input class="form-control" name="input_hora" type="time" value="" id="input_hora">
-                                    </div>
+                                    </div-->
+                                    <div class="form-group">
+                                        <label class="col-form-label">Hora</label>
+                                        <select class="custom-select" id="input_hora" name="input_hora">
+                                            <option selected="selected">Selecciona la Hora</option>
+                                            <option value="6">06:00</option>
+                                            <option value="10">10:00</option>
+                                            <option value="15">15:00</option>
+                                            <option value="21">21:00</option>
+               
+                                        </select>
+                                    </div> 
                                     <div class="form-group">
                                         <label for="input_presion_sistolica" class="col-form-label">Presión Sistolica</label>
                                         <input class="form-control" type="number" value="" id="input_presion_sistolica" name="input_presion_sistolica" min="0" max="250" step="1">

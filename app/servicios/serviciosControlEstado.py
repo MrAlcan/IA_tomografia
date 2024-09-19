@@ -44,7 +44,7 @@ class ServiciosControlEstado():
         else:
             return None
     
-    def actualizar(id, antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control):
+    def actualizar(id, antibiotico=None, dias_internado=None, fecha=None, dias_post_operatorio=None, hoja_control=None):
         editar_control = ControlEstado.query.get(id)
         if editar_control:
             if antibiotico:
