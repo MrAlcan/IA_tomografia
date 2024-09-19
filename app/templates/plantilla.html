@@ -35,7 +35,7 @@
         
                             </li>
                             <li id="nav_gestion_usuarios">
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-layout-sidebar-left"></i><span>Gestion de Usuarios
+                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-group"></i><span>Gestion de Usuarios
                                         
                                     </span></a>
                                 <ul class="collapse">
@@ -44,7 +44,7 @@
                                 </ul>
                             </li>
                             <li id="nav_gestion_pacientes">
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-pie-chart"></i><span>Gestion de Pacientes</span></a>
+                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-wheelchair"></i><span>Gestion de Pacientes</span></a>
                                 <ul class="collapse">
                                     <li id="nav_pacientes"><a href="/pacientes">Pacientes</a></li>
                                     <li id="nav_signos_vitales"><a href="/control_signos_vitales">Hoja de Signos Vitales</a></li>
@@ -54,13 +54,17 @@
                                 </ul>
                             </li>
                             <li id="nav_gestion_consultas">
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-pie-chart"></i><span>Evaluaciones</span></a>
+                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-agenda"></i><span>Evaluaciones</span></a>
                                 <ul class="collapse">
                                     
                                     <li id="nav_lista_tomografias"><a href="/tomografia_listar">Tomografia</a></li>
                                     <li id="nav_resultados_tomografias"><a href="/tomografia_resultados">Consultas</a></li>
                                     <li id="nav_historial_clinico"><a href="/">Historial clinico</a></li>
                                 </ul>
+                            </li>
+                            <li id="nav_reportes">
+                                <a href="reportes" aria-expanded="true"><i class="ti-files"></i><span>Reportes</span></a>
+        
                             </li>
                         </ul>
                     </nav>
@@ -102,7 +106,7 @@
                         </div>
                         <div class="col-sm-6 clearfix">
                             <div class="user-profile pull-right">
-                                <img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar">
+                                <!--img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar"-->
                                 <!--h4 id="perfil_nombre_usuario" class="user-name dropdown-toggle" data-toggle="dropdown"><span>Pepito Perez</span> <i class="fa fa-angle-down"></i></h4-->
                                 <h4 class="user-name dropdown-toggle" data-toggle="dropdown">{{identidad.nombres_usuario}} {{identidad.apellido_paterno}} <i class="fa fa-angle-down"></i></h4>
                                 <div class="dropdown-menu">

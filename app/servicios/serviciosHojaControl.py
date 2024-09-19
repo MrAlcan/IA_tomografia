@@ -11,6 +11,7 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from datetime import datetime
 import queue
+from io import BytesIO
 
 
 def obtener_ultima_hoja(hojas):
@@ -68,13 +69,19 @@ class ServiciosHojaControl():
             return respuesta
         else:
             return None
+    
+    def obtener_hojas_paciente(id):
+        print(id)
+
 
     def generar_informe(hoja, estados, signos, nombre_usuario):
         '''w, h = letter
         c = canvas.Canvas('prueba.pdf', letter)'''
 
+        buffer = BytesIO()
 
-        pdf = SimpleDocTemplate('prueba.pdf', pagesize=letter)
+
+        pdf = SimpleDocTemplate(buffer, pagesize=letter)
         elementos = []
 
         estilos = getSampleStyleSheet()
@@ -265,4 +272,7 @@ class ServiciosHojaControl():
         # Generar el PDF  ----------------  pdf.build(elementos)
         pdf.build(elementos, onFirstPage=add_header, onLaterPages=add_header)
 
-        return 200
+        buffer.seek(0)
+        return buffer
+
+        #return 200

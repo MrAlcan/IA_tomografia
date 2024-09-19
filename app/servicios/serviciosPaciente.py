@@ -51,3 +51,6 @@ class ServiciosPaciente():
             return respuesta
         else:
             return None
+
+    def generar_reporte_completo(id, nombres_usuario):
+        print(nombres_usuario)

@@ -457,4 +457,30 @@ def control_signos_vitales_pdf(id):
     control_signos = ServiciosControlSignos.obtener_hoja(id)
     nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
     respueta = ServiciosHojaControl.generar_informe(hoja_control, control_estados, control_signos, nombre_usuario)
-    return redirect(url_for('main.control_signos_vitales_ver', id=id))
+    print('-'*50)
+    print('DEBUG')
+    print(respueta)
+    print(len(respueta.getvalue()))
+
+    response = make_response(respueta.read())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename="hoja_signos_vitales_{hoja_control["nombres"]}_{hoja_control["apellido_paterno"]}.pdf"'
+
+    return response
+    
+    #return redirect(url_for('main.control_signos_vitales_ver', id=id))
+
+@main_bp.route('/reportes', methods = ['GET'])
+@jwt_required()
+def reportes():
+    identidad = get_jwt_identity()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('reportes.html', identidad=identidad, pacientes=pacientes)
+
+@main_bp.route('/reportes/generar/<id>', methods=['GET'])
+@jwt_required()
+def generar_reporte_paciente(id):
+    
+    identidad = get_jwt_identity()
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario)
