@@ -15,8 +15,10 @@ class Consulta(db.Model):
     internacion_consulta = db.Column(db.Integer, default=0, nullable=True)
     id_doctor_tratante = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
     id_paciente_consulta = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
+    codigo_consulta = db.Column(db.Integer, default=0, nullable=True)
+    estado_consulta = db.Column(db.Integer, default=1, nullable=True)
 
-    def __init__(self, motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion=None):
+    def __init__(self, motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta):
         self.motivo_consulta = motivo
         self.historia_enfermedad_actual = historia
         self.enfermedades_consulta = enfermedades
@@ -28,3 +30,6 @@ class Consulta(db.Model):
         self.internacion_consulta = internacion
         self.id_doctor_tratante = doctor
         self.id_paciente_consulta = paciente
+        self.codigo_consulta = codigo_consulta
+        self.estado_consulta = estado_consulta
+        

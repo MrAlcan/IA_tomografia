@@ -2,6 +2,8 @@ from app.configuraciones.extensiones import db
 from app.serializadores.serializadorHojaControl import SerializadorHojaControl
 from app.modelos.hojaControl import HojaControl
 from app.modelos.paciente import Paciente
+from app.servicios.serviciosControlEstado import ServiciosControlEstado
+from app.servicios.serviciosControlSignos import ServiciosControlSignos
 import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -72,6 +74,32 @@ class ServiciosHojaControl():
     
     def obtener_hojas_paciente(id):
         print(id)
+        lista_hojas = []
+        hojas = db.session.query(Paciente, HojaControl).join(HojaControl).filter_by(id_paciente_hoja=id).all()
+        hojas = SerializadorHojaControl.serializar_pacientes_hoja_control(hojas)
+
+        if hojas:
+
+            for hoja in hojas:
+                print(hoja)
+                #lista_estados = []
+                #lista_signos = []
+                id_hoja = hoja['id_hoja']
+                lista_estados = ServiciosControlEstado.obtener_hoja(id_hoja)
+                lista_signos = ServiciosControlSignos.obtener_hoja(id_hoja)
+                cuerpo = {
+                    'datos_hoja': hoja,
+                    'datos_estados': lista_estados,
+                    'datos_signos': lista_signos
+                }
+                lista_hojas.append(cuerpo)
+            return lista_hojas
+        else:
+            return None
+    
+
+
+        
 
 
     def generar_informe(hoja, estados, signos, nombre_usuario):

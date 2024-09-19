@@ -1,6 +1,21 @@
 from app.modelos.paciente import Paciente
 from app.serializadores.serializadorPaciente import SerializadorPaciente
+from app.servicios.serviciosHojaControl import ServiciosHojaControl
+from app.servicios.serviciosConsultas import ServiciosConsultas
+from app.servicios.serviciosEnfermeria import ServiciosEnfermeras
+from app.servicios.serviciosIndicaciones import ServiciosIndicaciones
 from app.configuraciones.extensiones import db
+
+import os
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from datetime import datetime
+import queue
+from io import BytesIO
 
 class ServiciosPaciente():
     def obtener_todos():
@@ -54,3 +69,4 @@ class ServiciosPaciente():
 
     def generar_reporte_completo(id, nombres_usuario):
         print(nombres_usuario)
+        hojas_paciente = ServiciosHojaControl.obtener_hojas_paciente(id)
