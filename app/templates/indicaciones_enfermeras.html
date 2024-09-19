@@ -1,0 +1,118 @@
+{% extends 'plantilla.html' %}
+
+{% block cabecera %}
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static',filename='assets/images/icon/favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/metisMenu.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/slicknav.min.css')}}">
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/typography.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+
+    <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+{% endblock %}
+
+{% block titulo_contenido %}
+    <div class="breadcrumbs-area clearfix">                  
+        <h4 class="page-title pull-left">Evaluaciones</h4>
+        <ul class="breadcrumbs pull-left">
+            <li><a href="/inicio">Inicio</a></li>
+            <li><span>Indicaciones Enfermeras</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block contenido %}
+
+    <div class="main-content-inner">
+        <div class="row">
+
+            <div class="col-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title">Indicaciones de Enfermeras</h4>
+                        <button id="boton_agregar_paciente" type="button" class="btn btn-rounded btn-success mb-3">Agregar Registro</button>
+                        <div class="data-tables">
+                            
+                            <table id="dataTable" class="text-center">
+                                
+                                <thead class="bg-light text-capitalize">
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>procedimiento</th>
+                                        <th>observaciones</th>
+                                        <th>fecha</th>
+                                        <th>hora</th>
+                                        <th>Enfermera</th>
+                                        
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% if listado %}
+                                        {% for lista in listado %}
+                                            <tr>
+                                                <td>{{lista.id_registro}}</td>
+                                                <td>{{lista.procedimiento}}</td>
+                                                <td>{{lista.observaciones}} </td>
+                                                <td>{{lista.fecha}}</td>
+                                                <td>{{lista.hora}}</td>
+                                                <td>{{lista.id_enfermera}}</td>
+                                               
+                                                <td>
+                                                    <ul class="d-flex justify-content-center">
+                                                        <li class="mr-3"><a href="" class="text-secondary"><i class="fa fa-edit"></i></a></li>
+                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='assets/js/ind_enf.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+
+
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/responsive.bootstrap.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+    <!--propios-->
+    <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
+    
+{% endblock %}

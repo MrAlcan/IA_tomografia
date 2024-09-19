@@ -15,7 +15,9 @@ class SerializadorConsulta():
                     'tratamiento' : consulta.tratamiento_consulta,
                     'internacion' : consulta.internacion_consulta,
                     'id_doctor' : consulta.id_doctor_tratante,
-                    'id_paciente' : consulta.id_paciente_consulta
+                    'id_paciente' : consulta.id_paciente_consulta,
+                    'codigo_consulta' : consulta.codigo_consulta,
+                    'estado_consulta' : consulta.estado_consulta
                 }
                 lista_consultas.append(cuerpo)
             return lista_consultas
@@ -36,7 +38,9 @@ class SerializadorConsulta():
                 'tratamiento' : consulta.tratamiento_consulta,
                 'internacion' : consulta.internacion_consulta,
                 'id_doctor' : consulta.id_doctor_tratante,
-                'id_paciente' : consulta.id_paciente_consulta
+                'id_paciente' : consulta.id_paciente_consulta,
+                'codigo_consulta' : consulta.codigo_consulta,
+                'estado_consulta' : consulta.estado_consulta
             }
             return cuerpo
         else:

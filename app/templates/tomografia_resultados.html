@@ -20,66 +20,77 @@
 <link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
 <link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
 <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/resultados.css')}}">
 <!-- modernizr css -->
 <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
 {% endblock %}
 
-{% block contenido %}
-<div class="page-title-area">
-    <div class="row align-items-center">
-        <div class="col-sm-6">
-            <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Evaluaciones</h4>
-                <ul class="breadcrumbs pull-left">
-                    <li><a href="">Evaluaciones</a></li>
-                    <li><span>Consultas</span></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-sm-6 clearfix">
-            <div class="user-profile pull-right">
-                <img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar">
-                <h4 id="perfil_nombre_usuario" class="user-name dropdown-toggle" data-toggle="dropdown"><span>Pepito Perez</span> <i class="fa fa-angle-down"></i></h4>
-                <div class="dropdown-menu">
-
-                    <a class="dropdown-item" href="#">Configuracion</a>
-                    <a class="dropdown-item" href="#">Cerrar Sesion</a>
-                </div>
-            </div>
-        </div>
+{% block titulo_contenido %}
+    <div class="breadcrumbs-area clearfix">                  
+        <h4 class="page-title pull-left">Evaluaciones</h4>
+        <ul class="breadcrumbs pull-left">
+            <li><a href="/inicio">Inicio</a></li>
+            <li><span>Tomografías</span></li>
+        </ul>
     </div>
-</div>
+{% endblock %}
+
+{% block contenido %}
 <div class="container">
     <div class="row">
         <!-- Formulario -->
         <div class="col-lg-6 col-ml-12">
             <div class="row">
-                <!-- basic form start -->
+                <!-- formulario básico start -->
                 <div class="col-12 mt-5">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title">Evaluar Tomografias</h4>
-                            <form id="imageForm" action="{{ url_for('main.vista_tomografia_resultados') }}" method="POST" enctype="multipart/form-data">
+                            <h4 class="header-title">Evaluar Tomografías</h4>
+                            <form id="formularioImagenes" action="/tomografia_resultados/agregar" method="POST" enctype="multipart/form-data" class="formulario-centro">
                                 <div class="form-group">
-                                    <label for="paciente-nombre">Nombre del Paciente</label>
-                                    <input class="form-control" type="text" id="paciente-nombre" name="paciente-nombre">
+                                    <label for="codigoPaciente">Código de Paciente</label>
+                                    <select class="custom-select" id="codigoPaciente" name="codigoPaciente">
+                                        <option selected="selected">Selecciona el codigo del Paciente</option>
+                                        {% for paciente in pacientes %}
+                                            <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="nombrePaciente">Nombre del Paciente</label>
+                                    <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly>
                                 </div>
                                 <div class="form-group">
-                                    <label for="paciente-codigo">Codigo de Paciente</label>
-                                    <input class="form-control" type="text" id="paciente-codigo" name="paciente-codigo">
+                                    <label for="nombrePaciente">Consulta</label>
+                                    <select class="custom-select" id="idConsulta" name="idConsulta">
+                                        <option selected="selected">Selecciona el codigo de Consulta</option>
+                                        {% for consulta in consultas %}
+                                            <option value="{{consulta.id_consulta}}">{{consulta.codigo_consulta}}</option>
+                                        {% endfor %}
+                                                
+                                    </select>
+                                </div>
+                              
+                                
+                                <div class="form-group">
+                                    <label for="nombreDoctor">Doctor</label>
+                                    
+                                    <input class="form-control" type="text" id="nombreDoctor" value="{{identidad.nombres_usuario}} {{identidad.apellido_paterno}} {{identidad.apellido_materno}}" readonly>
+                                    <input type="hidden" id="doctor" name="doctor" value="{{identidad.id_usuario}}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="doctor">Doctor</label>
-                                    <input class="form-control" type="text" id="doctor" name="doctor">
-                                </div>
-                                <div class="form-group">
-                                    <label for="fileInput">Cargar Imagenes</label>
+                                    <label for="entradaImagenes">Cargar Imágenes</label>
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="fileInput" name="fileInput" accept="image/*" multiple>
-                                        <label class="custom-file-label" for="fileInput">Selecciona las imagenes</label>
+                                        <input type="file" class="custom-file-input" id="entradaImagenes" name="entradaImagenes" accept="image/*" multiple>
+                                        <label class="custom-file-label" for="entradaImagenes">Selecciona las imágenes</label>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Evaluar</button>
+                                <hr>
+                                <div class="botones-centro">
+                                    <button type="submit" class="btn btn-primary pr-4 pl-4">Evaluar</button>
+                                    <button type="button" id="limpiarCampos" class="btn btn-danger pr-4 pl-4 ml-2">Limpiar</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -90,9 +101,10 @@
         <div class="col-lg-6 col-ml-12">
             <div class="card mt-5">
                 <div class="card-body">
-                    <h4 class="header-title">Imagen Cargada</h4>
-                    <canvas id="imageCanvas" width="500" height="500" style="border: 1px solid #ddd; display: block; margin: 0 auto;"></canvas>
-                    <div id="thumbnails" class="mt-3 d-flex flex-wrap"></div>
+                    <h4 class="header-title">Vista Previa</h4>
+                    <div id="contenedorMiniaturas" class="mt-3 d-flex flex-wrap"></div>
+                    <canvas id="canvasImagenes" width="500" height="500" style="border: 1px solid #ddd; display: block; margin: 0 auto;"></canvas>
+                    
                     {% if resultados %}
                         <h2>Resultados de la Predicción:</h2>
                         <ul>
@@ -122,57 +134,9 @@
 <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
-<!-- others plugins -->
+<!-- otros plugins -->
 <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
 <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
-<script src="{{url_for('static', filename='assets/js/usuarios.js')}}"></script>
+<script src="{{url_for('static', filename='assets/js/resultadosTomografias.js')}}"></script>
 
-<script>
-    const canvas = document.getElementById('imageCanvas');
-    const ctx = canvas.getContext('2d');
-    const fileInput = document.getElementById('fileInput');
-    const thumbnailsContainer = document.getElementById('thumbnails');
-
-    fileInput.addEventListener('change', function(event) {
-        const files = event.target.files;
-        thumbnailsContainer.innerHTML = ''; 
-
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const thumbnail = document.createElement('img');
-                    thumbnail.src = e.target.result;
-                    thumbnail.style.width = '100px';
-                    thumbnail.style.height = '100px';
-                    thumbnail.style.objectFit = 'cover';
-                    thumbnail.style.margin = '5px';
-                    thumbnail.style.cursor = 'pointer';
-                    thumbnail.dataset.src = e.target.result; 
-
-                    thumbnail.addEventListener('click', function() {
-                        const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
-                        const width = img.width * ratio;
-                        const height = img.height * ratio;
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                        const selectedImg = new Image();
-                        selectedImg.onload = function() {
-                            ctx.drawImage(selectedImg, 0, 0, canvas.width, canvas.height);
-                        };
-                        selectedImg.src = this.dataset.src;
-                    });
-                    
-                    thumbnailsContainer.appendChild(thumbnail);
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        });
-    });
-</script>
 {% endblock %}

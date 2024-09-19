@@ -11,8 +11,14 @@ from app.servicios.serviciosPaciente import ServiciosPaciente
 from app.servicios.serviciosHojaControl import ServiciosHojaControl
 from app.servicios.serviciosControlEstado import ServiciosControlEstado
 from app.servicios.serviciosControlSignos import ServiciosControlSignos
+from app.servicios.serviciosIndicaciones import ServiciosIndicaciones
+from app.servicios.serviciosEnfermeria import ServiciosEnfermeras
+from app.servicios.serviciosConsultas import ServiciosConsultas
 import numpy as np
 import cv2
+import os
+from werkzeug.utils import secure_filename
+from app.servicios.serviciosResultadoEstudio import ServiciosResultadoEstudio
 
 from flask import request, jsonify
 import jwt
@@ -50,7 +56,7 @@ def token_requerido(f):
 main_bp = Blueprint('main', __name__)
 
 
-@main_bp.route('/ingresar', methods=['GET'])
+@main_bp.route('/', methods=['GET'])
 def ingresar():
     current_time = datetime.now()
     return render_template('ingresar.html', current_time=current_time)
@@ -206,8 +212,10 @@ def agregar_pacientes_post(datos_usuario):
         return jsonify({'codigo': 400})
 
 @main_bp.route('/pacientes/editar/<id>', methods=['GET'])
+
 @jwt_required()
 def editar_pacientes(id):
+    print(id)
     identidad = get_jwt_identity()
     paciente_editar = ServiciosPaciente.obtener_id(id)
     print(paciente_editar)
@@ -318,3 +326,125 @@ def control_signo_agregar_post(datos_usuario, id):
         return redirect(url_for('main.contro_signos_vitales_ver', id=id))
     else:
         return jsonify({'codigo':400})
+    
+
+
+############# SOLICITAR EVALUACION GUARDA ############
+
+@main_bp.route('/tomografia_resultados/agregar', methods=['POST'])
+@token_requerido
+def tomografia_resultados_agregar(datos_usuario):
+    datos = request.form
+    codigo_paciente = datos.get('codigoPaciente')
+    doctor = datos.get('doctor')
+    id_consulta_estudio = datos.get('idConsulta')
+
+    if 'entradaImagenes' not in request.files:
+        return jsonify({'mensaje': 'error en solicitud'}), 400
+
+    imagenes = request.files.getlist('entradaImagenes')
+    ruta_relativa = os.path.join('app', 'static','imagenes')
+    ruta = os.path.abspath(ruta_relativa)
+
+    fecha = datetime.now().date()
+    hora = datetime.now()
+    fecha_formateada = fecha.strftime('%Y%m%d')
+    hora_formateada = hora.strftime('%H%M%S')
+
+    carpeta_nombre = f"{codigo_paciente}_{id_consulta_estudio or 'vacio'}_{fecha_formateada}_{hora_formateada}"
+    carpeta_path = os.path.join(ruta, carpeta_nombre)
+    if not os.path.exists(carpeta_path):
+        os.makedirs(carpeta_path)
+
+    for imagen in imagenes:
+        if imagen.filename:
+            filename = secure_filename(imagen.filename)
+            ruta_imagen = os.path.join(carpeta_path, filename)
+            imagen.save(ruta_imagen)
+            ruta_relativa_imagen = os.path.join(carpeta_nombre, filename).replace("\\", "/")
+
+            resultado = ServiciosResultadoEstudio.crear(
+                fecha=fecha,
+                ruta=ruta_relativa_imagen,  
+                doctor=doctor,
+                paciente=codigo_paciente,
+                consulta=id_consulta_estudio, 
+                resultado=1
+            )
+            
+            if not resultado:
+                return jsonify({'mensaje': f'Error al crear registro para {filename}'}), 400
+
+    return redirect(url_for('main.tomografia_listar'))
+    
+############ VISTA LISTADO ##################
+
+@main_bp.route('/tomografia_listar', methods=['GET'])
+@jwt_required()
+def tomografia_listar():
+    identidad = get_jwt_identity()
+    listado = ServiciosResultadoEstudio.obtener_todos()
+    return render_template('tomografia_listar.html', identidad=identidad, listado=listado)
+
+############ VISTA LISTADO ENFERMERA INDIC##################
+
+@main_bp.route('/indicaciones_doctor', methods=['GET'])
+@jwt_required()
+def indicaciones_doctor():
+    identidad = get_jwt_identity()
+    listado = ServiciosIndicaciones.obtener_todos()
+    return render_template('indicaciones_doctor.html', identidad=identidad, listado=listado)
+
+############ VISTA LISTADO DOCTOR INDIC##################
+
+@main_bp.route('/indicaciones_enfermeras', methods=['GET'])
+@jwt_required()
+def indicaciones_enfermeras():
+    identidad = get_jwt_identity()
+    listado = ServiciosEnfermeras.obtener_todos()
+    return render_template('indicaciones_enfermeras.html', identidad=identidad, listado=listado)
+
+
+#################OBTENER ID PARA LISTA TOMOGRAFIA##################
+@main_bp.route('/obtener_nombre_paciente/<int:id>', methods=['GET'])
+@jwt_required()
+def obtener_nombre_paciente(id):
+    paciente = ServiciosPaciente.obtener_id(id)
+    print(paciente)
+    if paciente:
+        return jsonify(paciente)
+    else:
+        return jsonify({'nose encontro'})
+
+
+############ VISTA PPARA EVALUACION ##################
+@main_bp.route('/tomografia_resultados', methods=['GET'])
+@jwt_required()
+
+def tomografia_resultados():
+    identidad = get_jwt_identity()
+    consultas = ServiciosConsultas.obtener_todos()
+    pacientes = ServiciosPaciente.obtener_todos()
+    print(pacientes)
+    return render_template('tomografia_resultados.html', identidad=identidad, consultas=consultas,pacientes=pacientes) 
+
+
+#############ID DE LISTA PARA MODAL#################
+@main_bp.route('/obtener_resultado/<id>', methods=['GET'])
+@jwt_required()
+def obtener_resultado(id):
+    print(id)
+    resultado = ServiciosResultadoEstudio.query.get(id)
+    
+    if resultado:
+        # Preparar los datos para enviarlos como respuesta en JSON
+        data = {
+            'id_resultado': resultado.id_resultado,
+            'codigo_paciente': resultado.paciente.codigo,
+            'nombre_completo': f"{resultado.paciente.nombre} {resultado.paciente.apellido_p} {resultado.paciente.apellido_m}",
+            'consulta_codigo': resultado.consulta.codigo,
+            'doctor_nombre': f"{resultado.doctor.nombre} {resultado.doctor.apellido_p} {resultado.doctor.apellido_m}",
+        }
+        return jsonify(data)
+    else:
+        return jsonify({'error': 'Resultado no encontrado'}), 404
