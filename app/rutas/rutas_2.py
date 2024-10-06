@@ -70,7 +70,18 @@ main_bp = Blueprint('main', __name__)
 
 
 @main_bp.route('/', methods=['GET'])
+=======
+@main_bp.route('/ingresar', methods=['GET'])
+@no_iniciar_sesion
+>>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88
 def ingresar():
+    current_time = datetime.now()
+    print(request.headers)
+    return render_template('ingresar.html', current_time=current_time)
+
+@main_bp.route('/ingresar', methods=['GET'])
+@no_iniciar_sesion
+def ingresar_2():
     current_time = datetime.now()
     print(request.headers)
     return render_template('ingresar.html', current_time=current_time)
@@ -441,6 +452,7 @@ def control_signo_agregar_post(datos_usuario, id):
     else:
         return jsonify({'codigo':400})
     
+<<<<<<< HEAD
 
 
 ############# SOLICITAR EVALUACION GUARDA ############
@@ -564,11 +576,8 @@ def obtener_resultado(id):
         return jsonify(data)
     else:
         return jsonify({'error': 'Resultado no encontrado'}), 404
-
-
-from datetime import datetime
-
-@main_bp.route('/resultados/editar/<id>', methods=['POST'])
+=======
+@main_bp.route('/control_signos_vitales/editar_signo/<id>/<hoja>', methods=['POST'])
 @token_requerido
 def resultados_editar(datos_usuario, id):
     identidad = datos_usuario
@@ -581,9 +590,18 @@ def resultados_editar(datos_usuario, id):
     if datos_modificado:
         return redirect(url_for('main.tomografia_listar'))
     else:
-        print('Hubo un error al actualizar')
-        return jsonify({'codigo': 400, 'mensaje': 'no act'}), 400
-    
-    
+        return jsonify({'codigo':400})
     
 
+    
+@main_bp.route('/control_signos_vitales/pdf/<id>', methods=['GET'])
+@jwt_required()
+def control_signos_vitales_pdf(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    control_estados = ServiciosControlEstado.obtener_hoja(id)
+    control_signos = ServiciosControlSignos.obtener_hoja(id)
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respueta = ServiciosHojaControl.generar_informe(hoja_control, control_estados, control_signos, nombre_usuario)
+    return redirect(url_for('main.control_signos_vitales_ver', id=id))
+>>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88

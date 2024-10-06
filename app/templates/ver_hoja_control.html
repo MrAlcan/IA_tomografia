@@ -78,7 +78,10 @@
                             </div>
                         </div>
                         <br>
-                        <a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-edit"> Generar Informe</i></a>
+                        <!--a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-file-pdf-o"> Generar Informe</i></a>
+                        <button type="button" class="btn btn-outline-info mb-3"><a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></button-->
+                        <a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a>
+                        <br>
                         <br>
                         <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a>
                         <br>

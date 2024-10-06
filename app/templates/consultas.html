@@ -1,0 +1,341 @@
+{% extends 'plantilla.html' %}
+
+{% block cabecera %}
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static',filename='assets/images/icon/favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/metisMenu.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/slicknav.min.css')}}">
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/typography.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+
+    <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+{% endblock %}
+
+{% block titulo_contenido %}
+    <div class="breadcrumbs-area clearfix">                  
+        <h4 class="page-title pull-left">Gestion de Pacientes</h4>
+        <ul class="breadcrumbs pull-left">
+            <li><a href="/inicio">Inicio</a></li>
+            <li><span>Vonsultas</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block contenido %}
+
+    <div class="main-content-inner">
+        <div class="row">
+
+            <div class="col-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title">Consultas de Pacientes</h4>
+                        <!--button id="boton_agregar_paciente" type="button" class="btn btn-rounded btn-success mb-3">Agregar Paciente</button-->
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="fa fa-file-text"></i> Agregar Consulta</a>
+                        <div class="modal fade" id="LongModalLongCrear">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Consulta</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="crear_paciente_form" action="/consultas/agregar" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                            
+                                                <div class="form-group">
+                                                    <label for="codigoPaciente">Código de Paciente</label>
+                                                    <select class="custom-select" id="codigoPaciente" name="codigoPaciente">
+                                                        <option selected="selected">Selecciona el codigo del Paciente</option>
+                                                        {% for paciente in pacientes %}
+                                                            <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="nombrePaciente">Nombre del Paciente</label>
+                                                    <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="input_motivo_consulta" class="col-form-label">Motivo de Consulta</label>
+                                                    <input class="form-control" name="input_motivo_consulta" type="text" value="" id="input_motivo_consulta">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_historia_enfermedad" class="col-form-label">Descripción Enfermedad Actual</label>
+                                                    <input class="form-control" type="textarea" value="" id="input_historia_enfermedad" name="input_historia_enfermedad">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_enfermedades" class="col-form-label">Enfermedades</label>
+                                                    <input class="form-control" type="text" value="" id="input_enfermedades" name="input_enfermedades">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_tabaco">Consulmo de Tabaco</label>
+                                                    <select class="custom-select" id="input_tabaco" name="input_tabaco">
+                                                        <option selected="selected">Selecciona una opcion</option>
+                                                        <option value="Si">Si</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_alcohol">Consulmo de Alcohol</label>
+                                                    <select class="custom-select" id="input_alcohol" name="input_alcohol">
+                                                        <option selected="selected">Selecciona una opcion</option>
+                                                        <option value="Si">Si</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_drogas">Consulmo de Drogas</label>
+                                                    <select class="custom-select" id="input_drogas" name="input_drogas">
+                                                        <option selected="selected">Selecciona una opcion</option>
+                                                        <option value="Si">Si</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_diagnostico" class="col-form-label">Diagnostico</label>
+                                                    <input class="form-control" type="text" value="" id="input_diagnostico" name="input_diagnostico">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_tratamiento" class="col-form-label">Tratamiento</label>
+                                                    <input class="form-control" type="text" value="" id="input_tratamiento" name="input_tratamiento">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="input_internacion_paciente">Internación del Paciente</label>
+                                                    <select class="custom-select" id="input_internacion_paciente" name="input_internacion_paciente">
+                                                        <option selected="selected">Selecciona una opcion</option>
+                                                        <option value="1">Si</option>
+                                                        <option value="0">No</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="input_codigo_consulta" class="col-form-label">Código de Consulta</label>
+                                                    <input class="form-control" type="text" value="" id="input_codigo_consulta" name="input_codigo_consulta">
+                                                </div>
+                                                        
+                                                
+                                                <button id="boton_agregar_consulta" type="submit" class="btn btn-success mb-3">Agregar Consulta</button>
+                
+                                            </form>
+                                        
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <br>
+                        <br>
+                        <div class="data-tables">
+                            
+                            <table id="dataTable" class="text-center">
+                                
+                                <thead class="bg-light text-capitalize">
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Apellidos</th>
+                                        <th>Nombres</th>
+                                        <th>Carnet</th>
+                                        <th>Doctor</th>
+                                        <th>Motivo de Consulta</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% if consultas %}
+                                        {% for consulta in consultas %}
+                                            <tr>
+                                                <td>{{consulta.id_consulta}}</td>
+                                                <td>{{consulta.apellido_paterno_paciente}} {{consulta.apellido_materno_paciente}}</td>
+                                                <td>{{consulta.nombres_paciente}}</td>
+                                                <td>{{consulta.carnet_paciente}}</td>
+                                                <td>{{consulta.apellido_paterno_usuario}} {{consulta.apellido_materno_usuario}}</td>
+                                                <td>{{consulta.motivo}}</td>
+                                                <td>
+                                                    <ul class="d-flex justify-content-center">
+                                                        <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
+                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if consultas %}
+                            {% for consulta in consultas%}
+                                <div class="modal fade" id="LongModalLongEditar{{consulta.id_consulta}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Consulta</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                
+                                                <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                    <!--
+                                                        
+                                                    -->
+                                                        
+                                                        
+                                                        <div class="form-group">
+                                                            <label for="nombrePaciente">Nombre del Paciente</label>
+                                                            <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly value="{{consulta.nombres_paciente}} {{consulta.apellido_paterno_paciente}} {{consulta.apellido_materno_paciente}}">
+                                                        </div>
+        
+                                                        <div class="form-group">
+                                                            <label for="input_motivo_consulta" class="col-form-label">Motivo de Consulta</label>
+                                                            <input class="form-control" name="input_motivo_consulta" type="text" value="{{consulta.motivo}}" id="input_motivo_consulta">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_historia_enfermedad" class="col-form-label">Descripción Enfermedad Actual</label>
+                                                            <input class="form-control" type="textarea" value="{{consulta.historia_enfermedad}}" id="input_historia_enfermedad" name="input_historia_enfermedad">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_enfermedades" class="col-form-label">Enfermedades</label>
+                                                            <input class="form-control" type="text" value="{{consulta.enfermedades}}" id="input_enfermedades" name="input_enfermedades">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_tabaco">Consulmo de Tabaco</label>
+                                                            <select class="custom-select" id="input_tabaco" name="input_tabaco">
+                                                                
+                                                                {% if consulta.tabaco == "Si" %}
+                                                                    <option value="Si" selected>Si</option>
+                                                                    <option value="No">No</option>
+                                                                {% else %}
+                                                                    <option value="Si">Si</option>
+                                                                    <option value="No" selected>No</option>
+                                                                {% endif %}
+                                                                
+                                                               
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_alcohol">Consulmo de Alcohol</label>
+                                                            <select class="custom-select" id="input_alcohol" name="input_alcohol">
+                                                                {% if consulta.alcohol == "Si" %}
+                                                                    <option value="Si" selected>Si</option>
+                                                                    <option value="No">No</option>
+                                                                {% else %}
+                                                                    <option value="Si">Si</option>
+                                                                    <option value="No" selected>No</option>
+                                                                {% endif %}
+                                                                
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_drogas">Consulmo de Drogas</label>
+                                                            <select class="custom-select" id="input_drogas" name="input_drogas">
+                                                                {% if consulta.drogas == "Si" %}
+                                                                    <option value="Si" selected>Si</option>
+                                                                    <option value="No">No</option>
+                                                                {% else %}
+                                                                    <option value="Si">Si</option>
+                                                                    <option value="No" selected>No</option>
+                                                                {% endif %}
+                                                                
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_diagnostico" class="col-form-label">Diagnostico</label>
+                                                            <input class="form-control" type="text" value="{{consulta.diagnostico}}" id="input_diagnostico" name="input_diagnostico">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_tratamiento" class="col-form-label">Tratamiento</label>
+                                                            <input class="form-control" type="text" value="{{consulta.tratamiento}}" id="input_tratamiento" name="input_tratamiento">
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label for="input_internacion_paciente">Internación del Paciente</label>
+                                                            <select class="custom-select" id="input_internacion_paciente" name="input_internacion_paciente">
+                                                                {% if consulta.internacion == 1 %}
+                                                                    <option value="1" selected>Si</option>
+                                                                    <option value="0">No</option>
+                                                                {% else %}
+                                                                    <option value="1">Si</option>
+                                                                    <option value="0" selected>No</option>
+                                                                {% endif %}
+                                                                
+                                                            </select>
+                                                        </div>
+        
+                                                        <div class="form-group">
+                                                            <label for="input_codigo_consulta" class="col-form-label">Código de Consulta</label>
+                                                            <input class="form-control" type="text" value="{{consulta.codigo_consulta}}" id="input_codigo_consulta" name="input_codigo_consulta">
+                                                        </div>
+                                                                
+                                                        
+                                                        <button id="boton_agregar_consulta" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
+                        
+                                                    </form>
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='assets/js/consultas.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+
+
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/responsive.bootstrap.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+    <!--propios-->
+    <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
+    
+{% endblock %}
