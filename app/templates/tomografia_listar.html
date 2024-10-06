@@ -70,14 +70,14 @@
                                                 <td>{{lista.consulta.codigo}} </td>
                                                 <td>{{lista.doctor.nombre }} {{lista.doctor.apellido_p}} {{lista.doctor.apellido_m}}</td>
                                                 <td>
-                                                    <img src="{{url_for('static', filename='/imagenes/'+ lista.ruta)}}" style="max-width: 50px; max-height: 50px;" data-toggle="modal" data-target="#exampleModalCenter" data-imagen="{{url_for('static', filename='/imagenes/'+ lista.ruta)}}" data-resultado="{{'SIN TUMOR' if lista.resultado_estudio == 0 else 'CON TUMOR'}}" data-id="{{lista.id_resultado}}"class="imagen-thumbnail"/>
+                                                    <img src="{{url_for('static', filename='/imagenes/'+ lista.ruta)}}" style="max-width: 50px; max-height: 50px;" data-toggle="modal" data-target="#exampleModalCenter{{lista.id_resultado}}" />
                                                 </td>
 
                                                 <td>{{lista.fecha_estudio}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <li class="mr-3">
-                                                            <a href="#" class="text-secondary edit-button" data-toggle="modal" data-target="#exampleModalCenter2" data-imagen="{{url_for('static', filename='/imagenes/'+ lista.ruta)}}" data-resultado="{{'SIN TUMOR' if lista.resultado_estudio == 0 else 'CON TUMOR'}}" data-id="{{lista.id_resultado}}">
+                                                            <a href="#" class="text-secondary edit-button" data-toggle="modal" data-target="#LongModalLongEditar{{lista.id_resultado}}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
                                                         </li>
@@ -86,7 +86,7 @@
                                                 </td>
                                                 <td>
                                                     {% if lista.resultado_estudio == 1 %}
-                                                        <span class="badge badge-danger">CON TUMOR</span>
+                                                        <span class="badge badge-danger" >CON TUMOR</span>
                                                     {% else %}
                                                         <span class="badge badge-primary">SIN TUMOR</span>
                                                     {% endif %}
@@ -107,76 +107,99 @@
             
         </div>
     </div>
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Resultado de Tomografía</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <img id="modalImage" src="" style="width: 80%; height: auto; display: block; margin: 0 auto;" />
-                    <div class="alert alert-danger" style="margin:10px 10px;"role="alert">
-                        
-                        <strong><p id="modalResultado"></p></strong>
-                        
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Resultado de Tomografía</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    
-                    <div class="alert alert-danger" style="margin:10px 10px;"role="alert">
-                        <p id="idResultado">
-                    </div>
-                    <form id="" method="post" action="">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="codigo">Código Paciente</label>
-                                <input type="text" class="form-control" id="codigoModal2" name="codigoModal2" >
+    {% if listado %}
+        {% for lista in listado %}
+            <div class="modal fade" id="exampleModalCenter{{lista.id_resultado}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Resultado de Tomografía</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img id="" src="{{url_for('static', filename='/imagenes/'+ lista.ruta)}}" style="width: 80%; height: auto; display: block; margin: 0 auto;" />
+            
+                            <div class="alert alert-danger" style="margin:10px 10px;"role="alert">
+                                
+                                <strong><p >{% if lista.resultado_estudio == 1 %}
+                                    CON TUMOR
+                                {% else %}
+                                    SIN TUMOR
+                                {% endif %}</p></strong>
+                                
                             </div>
-                            <div class="form-group">
-                                <label for="nombre">Nombres y Apellidos</label>
-                                <input type="text" class="form-control" id="nombreModal2" name="nombreModal2" >
-                            </div>
-                            <div class="form-group">
-                                <label for="consulta">Consulta</label>
-                                <input type="text" class="form-control" id="consultaModal2" name="consultaModal2" >
-                            </div>
-                            <div class="form-group">
-                                <label for="doctor">Doctor</label>
-                                <input type="text" class="form-control" id="doctorModal2" name="doctorModal2" >
-                            </div>
-                            
-                            <input type="hidden" id="id_resultadoModal2" name="id_resultadoModal2">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
-                
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if listado %}
+        {% for lista in listado %}
+        <div class="modal fade" id="LongModalLongEditar{{lista.id_resultado}}">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Resultado Tomografia</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formularioEditar" method="post" action="/resultados/editar/{{lista.id_resultado}}" enctype="multipart/form-data">
+                        
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label for="codigo">Código Paciente</label>
+                                    
+                                    <select class="custom-select" id="codigoModal2" name="codigoModal2">
+                                        <option value="">{{lista.paciente.carnet}}</option>
+                                        {% for paciente in pacientes %}
+                                            <option value="{{ lista.paciente.id_paciente }}" {% if lista.paciente.id_paciente == lista.paciente.id_paciente %}selected{% endif %}>
+                                                {{ paciente.carnet }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nombre">Nombres y Apellidos</label>
+                                    <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto" 
+                                        value="{{ lista.paciente.nombre }} {{ lista.paciente.apellido_p }} {{ lista.paciente.apellido_m }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="consulta">Consulta</label>
+                                    <input type="text" class="form-control" id="consulta" name="consulta" value="{{lista.consulta.codigo}}" >
+                                    
+                                    <input type="hidden" class="form-control" id="consultaModal2" name="consultaModal2" value="{{lista.consulta.id_consulta}}" >
+                                            
+                                                
+                                </div>
+                                <div class="form-group">
+                                    <label for="doctor">Doctor</label>
+                                    <input type="text" class="form-control" id="doctorModal2" name="doctorModal2"value="{{lista.doctor.nombre }} {{ lista.doctor.apellido_p }} {{ lista.doctor.apellido_m }}" readonly >
+                                </div>
+                                
+                               
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
             </div>
         </div>
-    </div>
-    
-
+        
+        {% endfor %}
+    {% endif %}
     
 
     <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>

@@ -34,11 +34,13 @@ class ServiciosResultadoEstudio():
                 'paciente': {
                     'nombre': resultado.paciente.nombres_paciente,  
                     'apellido_p': resultado.paciente.apellido_paterno_paciente,  
-                    'apellido_m': resultado.paciente.apellido_materno_paciente,  
+                    'apellido_m': resultado.paciente.apellido_materno_paciente,
+                    'carnet': resultado.paciente.carnet_paciente, 
+                    'id_paciente': resultado.paciente.id_paciente,
                 },
                 'consulta': {
                     'codigo': resultado.consulta.codigo_consulta,  
-                      
+                    'id_consulta': resultado.consulta.id_consulta,  
                 }
             }
             resultados.append(datos_resultado)
@@ -51,3 +53,18 @@ class ServiciosResultadoEstudio():
             return respuesta
         else:
             return None
+        
+    @staticmethod
+    def actualizar(id, paciente=None, consulta=None):
+        try:
+            resultado = ResultadoEstudio.query.get(id)
+            if resultado:
+                resultado.id_paciente_estudio = paciente
+                resultado.id_consulta_estudio = consulta
+                db.session.commit()
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"Error al actualizar el resultado: {e}")
+            return False
