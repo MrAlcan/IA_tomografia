@@ -70,3 +70,4 @@ class ServiciosPaciente():
     def generar_reporte_completo(id, nombres_usuario):
         print(nombres_usuario)
         hojas_paciente = ServiciosHojaControl.obtener_hojas_paciente(id)
+        
