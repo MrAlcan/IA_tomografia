@@ -9,11 +9,13 @@ class RegistroEnfermeria(db.Model):
     fecha_registro = db.Column(db.Date, nullable=True)
     hora_registro = db.Column(db.Time, nullable=True)
     id_enfermera_cargo = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
+    id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
 
-    def __init__(self, procedimiento, observaciones, fecha, hora, enfermera):
+    def __init__(self, procedimiento, observaciones, fecha, hora, enfermera,paciente):
         self.procedimiento_enfermeria = procedimiento
         self.observaciones_enfermeria = observaciones
         self.fecha_registro = fecha
         self.hora_registro = hora
         self.id_enfermera_cargo = enfermera
+        self.id_paciente = paciente
 

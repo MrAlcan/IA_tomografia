@@ -111,6 +111,17 @@
             responsive: true
         });
     }
+    if ($('#dataTable4').length) {
+        $('#dataTable4').DataTable({
+            responsive: true
+        });
+    }
+    if ($('#dataTable5').length) {
+        $('#dataTable5').DataTable({
+            responsive: true
+        });
+    }
+
 
 
     /*================================

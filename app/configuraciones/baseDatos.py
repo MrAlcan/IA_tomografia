@@ -69,7 +69,8 @@ def iniciar_datos():
             observaciones='Sin observaciones adicionales', 
             fecha=date.today(), 
             hora=time(9, 0),  
-            enfermera=1  
+            enfermera=1,
+            paciente=1  
         )
         db.session.add(registro_nuevo) 
         db.session.commit()  

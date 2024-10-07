@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, send_file
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, verify_jwt_in_request, unset_jwt_cookies
 from flask import Blueprint, render_template, request, redirect, url_for
 from functools import wraps
@@ -14,11 +14,16 @@ from app.servicios.serviciosControlSignos import ServiciosControlSignos
 from app.servicios.serviciosIndicaciones import ServiciosIndicaciones
 from app.servicios.serviciosEnfermeria import ServiciosEnfermeras
 from app.servicios.serviciosConsultas import ServiciosConsultas
+from app.servicios.servicioDiagnostico import ServiciosDiagnostico
 import numpy as np
 import cv2
 import os
 from werkzeug.utils import secure_filename
 from app.servicios.serviciosResultadoEstudio import ServiciosResultadoEstudio
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
 
 from flask import request, jsonify
 import jwt
@@ -335,8 +340,13 @@ def ver_pacientes(id):
     identidad = get_jwt_identity()
     paciente = ServiciosPaciente.obtener_id(id)
     consultas = ServiciosConsultas.obtener_usuario_paciente_id(id)
+    indicacionesMedicas = ServiciosIndicaciones.obtener_lista_id(id)
+    controlEnfermera = ServiciosEnfermeras.obtener_lista_id(id)
     hojas_control = ServiciosHojaControl.obtener_todos_paciente(id)
-    return render_template('ver_pacientes.html', identidad = identidad, paciente = paciente, consultas = consultas, hojas_control = hojas_control)
+    daconsultas = ServiciosConsultas.obtener_todos()
+    listado2 = ServiciosResultadoEstudio.obtener_lista_id(id)
+    listado = ServiciosDiagnostico.obtener_lista_id(id)
+    return render_template('ver_pacientes.html', identidad = identidad, paciente = paciente, consultas = consultas, hojas_control = hojas_control, controlEnfermera=controlEnfermera,indicacionesMedicas=indicacionesMedicas,daconsultas=daconsultas,listado=listado,listado2=listado2)
 
 @main_bp.route('/pacientes/control_signos_vitales/ver/<id>', methods = ['GET'])
 @jwt_required()
@@ -398,6 +408,65 @@ def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
         return redirect(url_for('main.ver_pacientes', id=id))
     else:
         return jsonify({'codigo': 400})
+    
+
+
+@main_bp.route('/pacientes/indicaciones/agregar/<id>', methods=['POST'])
+@token_requerido
+def agregar_indicaciones(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    
+    nueva_hoja = ServiciosIndicaciones.crear(datos['fechaInd'], datos['horaInd'], datos['descripcionInd'], datos['doctorInd'], id)
+    print(nueva_hoja)
+    if nueva_hoja:
+        return redirect(url_for('main.ver_pacientes', id=id))
+    else:
+        return jsonify({'codigo': 400})
+    
+@main_bp.route('/pacientes/enfermeras/agregar/<id>', methods=['POST'])
+@token_requerido
+def agregar_control_enf(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    
+    nueva_hoja = ServiciosEnfermeras.crear(datos['procedimientoEnf'], datos['observacionesEnf'], 
+                                             datos['fechaEnf'], datos['horaEnf'], datos['EnfInd'], id)
+    
+    if nueva_hoja:
+        return redirect(url_for('main.ver_pacientes', id=id))
+    else:
+        return jsonify({'codigo': 400})
+
+
+
+@main_bp.route('/pacientes/indicaciones/editar/<id>', methods=['POST'])
+@token_requerido
+def editar_indicacion(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    paciente = datos['id_paciente']
+    editar_control_enf = ServiciosIndicaciones.actualizar(id,datos['fechaInd'], datos['horaInd'], datos['descripcionInd'], datos['doctorInd'])
+    if editar_control_enf:
+        return redirect(url_for('main.ver_pacientes', id=paciente))
+    else:
+        return jsonify({'codigo': 400})
+    
+@main_bp.route('/pacientes/enfermeras/editar/<id>', methods=['POST'])
+@token_requerido
+def editar_control_enf(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    paciente = datos['id_paciente']
+    editar_control_enf = ServiciosEnfermeras.actualizar(id , datos['procedimientoEnfedit'], datos['observacionesEnfedit'], 
+                                             datos['fechaEnfedit'], datos['horaEnfedit'], datos['EnfIndedit'])
+    
+    
+    if editar_control_enf:
+        return redirect(url_for('main.ver_pacientes', id=paciente))
+    else:
+        return jsonify({'codigo': 400})
+
 
 @main_bp.route('/control_signos_vitales/agregar', methods=['POST'])
 @token_requerido
@@ -502,59 +571,144 @@ def tomografia_resultados_agregar(datos_usuario):
     codigo_paciente = datos.get('codigoPaciente')
     doctor = datos.get('doctor')
     id_consulta_estudio = datos.get('idConsulta')
-
+    id_paciente = datos.get('idPaciente')
+    
     if 'entradaImagenes' not in request.files:
         return jsonify({'mensaje': 'error en solicitud'}), 400
 
     imagenes = request.files.getlist('entradaImagenes')
-    ruta_relativa = os.path.join('app', 'static','imagenes')
+    ruta_relativa = os.path.join('app', 'static', 'imagenes')
     ruta = os.path.abspath(ruta_relativa)
-
     fecha = datetime.now().date()
     hora = datetime.now()
     fecha_formateada = fecha.strftime('%Y%m%d')
     hora_formateada = hora.strftime('%H%M%S')
-
     carpeta_nombre = f"{codigo_paciente}_{id_consulta_estudio or 'vacio'}_{fecha_formateada}_{hora_formateada}"
     carpeta_path = os.path.join(ruta, carpeta_nombre)
+    
     if not os.path.exists(carpeta_path):
         os.makedirs(carpeta_path)
 
+    resultados_imagenes = [] 
     for imagen in imagenes:
         if imagen.filename:
             filename = secure_filename(imagen.filename)
             ruta_imagen = os.path.join(carpeta_path, filename)
             imagen.save(ruta_imagen)
             ruta_relativa_imagen = os.path.join(carpeta_nombre, filename).replace("\\", "/")
-
             imagen = Image.open(ruta_imagen)
             opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
-            imagen = cv2.resize(opencvImage,(150,150))
-            imagen = imagen.reshape(1,150,150,3)
+            imagen = cv2.resize(opencvImage, (150, 150))
+            imagen = imagen.reshape(1, 150, 150, 3)
             p = modelo.predict(imagen)
-            #print(p)
-            p = np.argmax(p,axis=1)[0]
+            p = np.argmax(p, axis=1)[0]
+            resultado_ia = 1 if p != 3 else 0
+            resultados_imagenes.append(resultado_ia)
 
-            resultado_ia = 0
+  
+    resultado_final = 1 if 1 in resultados_imagenes else 0  
+    nuevo_diagnostico = ServiciosDiagnostico.crear(
+        fecha=fecha,
+        ruta=carpeta_nombre,  
+        doctor=doctor,
+        paciente=id_paciente,
+        consulta=id_consulta_estudio,
+        resultado=resultado_final
+    )
 
-            if p == 3:
-                resultado_ia = 0
-            else:
-                resultado_ia = 1
-
-            resultado = ServiciosResultadoEstudio.crear(
-                fecha=fecha,
-                ruta=ruta_relativa_imagen,  
-                doctor=doctor,
-                paciente=codigo_paciente,
-                consulta=id_consulta_estudio, 
-                resultado=resultado_ia
-            )
-            
-            if not resultado:
-                return jsonify({'mensaje': f'Error al crear registro para {filename}'}), 400
+    if nuevo_diagnostico:
+        for imagen in imagenes:
+            if imagen.filename:
+                ruta_imagen = os.path.join(carpeta_path, secure_filename(imagen.filename))
+                ruta_relativa_imagen = os.path.join(carpeta_nombre, secure_filename(imagen.filename)).replace("\\", "/")
+                
+                resultado = ServiciosResultadoEstudio.crear(
+                    fecha=fecha,
+                    ruta=ruta_relativa_imagen,
+                    doctor=doctor,
+                    paciente=id_paciente,
+                    consulta=id_consulta_estudio,
+                    resultado=resultado_ia,
+                    diagnostico=nuevo_diagnostico['id_diagnostico']  
+                )
+                if not resultado:
+                    return jsonify({'mensaje': f'Error al crear registro para {imagen.filename}'}), 400
 
     return redirect(url_for('main.tomografia_listar'))
+
+
+@main_bp.route('/tomografia_resultados/paciente/agregar', methods=['POST'])
+@token_requerido
+def tomografia_resultados_agregar_paciente(datos_usuario):
+    datos = request.form
+    codigo_paciente = datos.get('codigoPaciente')
+    doctor = datos.get('doctor')
+    id_consulta_estudio = datos.get('idConsulta')
+    id_paciente = datos.get('idPaciente')
+    
+    if 'entradaImagenes' not in request.files:
+        return jsonify({'mensaje': 'error en solicitud'}), 400
+
+    imagenes = request.files.getlist('entradaImagenes')
+    ruta_relativa = os.path.join('app', 'static', 'imagenes')
+    ruta = os.path.abspath(ruta_relativa)
+    fecha = datetime.now().date()
+    hora = datetime.now()
+    fecha_formateada = fecha.strftime('%Y%m%d')
+    hora_formateada = hora.strftime('%H%M%S')
+    carpeta_nombre = f"{codigo_paciente}_{id_consulta_estudio or 'vacio'}_{fecha_formateada}_{hora_formateada}"
+    carpeta_path = os.path.join(ruta, carpeta_nombre)
+    
+    if not os.path.exists(carpeta_path):
+        os.makedirs(carpeta_path)
+
+    resultados_imagenes = [] 
+    for imagen in imagenes:
+        if imagen.filename:
+            filename = secure_filename(imagen.filename)
+            ruta_imagen = os.path.join(carpeta_path, filename)
+            imagen.save(ruta_imagen)
+            ruta_relativa_imagen = os.path.join(carpeta_nombre, filename).replace("\\", "/")
+            imagen = Image.open(ruta_imagen)
+            opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
+            imagen = cv2.resize(opencvImage, (150, 150))
+            imagen = imagen.reshape(1, 150, 150, 3)
+            p = modelo.predict(imagen)
+            p = np.argmax(p, axis=1)[0]
+            resultado_ia = 1 if p != 3 else 0
+            resultados_imagenes.append(resultado_ia)
+
+  
+    resultado_final = 1 if 1 in resultados_imagenes else 0  
+    nuevo_diagnostico = ServiciosDiagnostico.crear(
+        fecha=fecha,
+        ruta=carpeta_nombre,  
+        doctor=doctor,
+        paciente=id_paciente,
+        consulta=id_consulta_estudio,
+        resultado=resultado_final
+    )
+
+    if nuevo_diagnostico:
+        for imagen in imagenes:
+            if imagen.filename:
+                ruta_imagen = os.path.join(carpeta_path, secure_filename(imagen.filename))
+                ruta_relativa_imagen = os.path.join(carpeta_nombre, secure_filename(imagen.filename)).replace("\\", "/")
+                
+                resultado = ServiciosResultadoEstudio.crear(
+                    fecha=fecha,
+                    ruta=ruta_relativa_imagen,
+                    doctor=doctor,
+                    paciente=id_paciente,
+                    consulta=id_consulta_estudio,
+                    resultado=resultado_ia,
+                    diagnostico=nuevo_diagnostico['id_diagnostico']  
+                )
+                if not resultado:
+                    return jsonify({'mensaje': f'Error al crear registro para {imagen.filename}'}), 400
+
+    return redirect(url_for('main.ver_pacientes', id=id_paciente))
+    
     
 ############ VISTA LISTADO ##################
 
@@ -725,3 +879,59 @@ def consultas_editar(datos_usuario, id):
         return redirect(url_for('main.consultas'))
     else:
         return jsonify({'codigo': 400})
+    
+@main_bp.route('/tomografia/generar_informe', methods=['POST'])
+def generar_informe_tomografia():
+    id_diagnostico = request.form['id_diagnostico']
+    id_paciente = request.form['id_paciente']
+    listado2 = ServiciosResultadoEstudio.obtener_lista_id(id_paciente)
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    y_position = height - 40  
+
+    for resultado in listado2:
+        if str(resultado['id_diagnostico']) != str(id_diagnostico):
+            continue  
+
+        c.setFont("Helvetica-Bold", 12)
+        if resultado['resultado_estudio'] == 1:
+            c.drawString(100, y_position, "CON TUMOR")
+        else:
+            c.drawString(100, y_position, "SIN TUMOR")
+        y_position -= 20
+
+        c.setFont("Helvetica", 10)
+        c.drawString(100, y_position, f"Paciente: {resultado['nombres_paciente']} {resultado['apellido_paterno_paciente']} {resultado['apellido_materno_paciente']}")
+        y_position -= 20
+        c.drawString(100, y_position, f"Fecha de Estudio: {resultado['fecha_estudio']}")
+        y_position -= 20
+
+        ruta_relativa = os.path.join('app', 'static', 'imagenes')
+        ruta = os.path.abspath(ruta_relativa)
+        imagen_path = os.path.join(ruta, resultado['ruta_carpeta_imagenes_estudio'])
+        
+        if os.path.exists(imagen_path):
+            c.drawString(100, y_position, f"Ruta de Imagen: {resultado['ruta_carpeta_imagenes_estudio']}")
+            y_position -= 20
+
+            try:
+                c.drawImage(imagen_path, 100, y_position - 150, width=200, height=150)
+                y_position -= 170
+            except Exception as e:
+                print(f"Error al cargar la imagen: {e}")
+                c.drawString(100, y_position, "no se pudo cargar la imagen")
+                y_position -= 20
+        else:
+            c.drawString(100, y_position, "imagen no encontrada")
+            y_position -= 20
+
+        if y_position < 50:
+            c.showPage()
+            y_position = height - 40
+
+    c.save()
+    buffer.seek(0)
+
+    return send_file(buffer, as_attachment=False, mimetype='application/pdf')

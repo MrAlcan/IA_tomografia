@@ -6,11 +6,12 @@ from app.modelos.usuario import Usuario
 from app.serializadores.serializadorResultadoEstudio import ResultadoEstudioSchema
 
 class ServiciosResultadoEstudio():
-    def crear(fecha, ruta, doctor, paciente, consulta, resultado):
-        nuevo_resultado = ResultadoEstudio(fecha, ruta, doctor, paciente, consulta, resultado)
+    def crear(fecha, ruta, doctor, paciente, consulta, resultado, diagnostico=None):
+        nuevo_resultado = ResultadoEstudio(fecha, ruta, doctor, paciente, consulta, resultado, diagnostico)
         db.session.add(nuevo_resultado)
         db.session.commit()
         respuesta = ResultadoEstudioSchema.serializar_unico(nuevo_resultado)
+
         if respuesta:
             return respuesta
         else:
@@ -68,3 +69,16 @@ class ServiciosResultadoEstudio():
         except Exception as e:
             print(f"Error al actualizar el resultado: {e}")
             return False
+        
+    def obtener_lista_id(id):
+        datos = db.session.query(Paciente, ResultadoEstudio, Usuario)\
+            .join(ResultadoEstudio, Paciente.id_paciente == ResultadoEstudio.id_paciente_estudio)\
+            .join(Usuario, ResultadoEstudio.id_doctor_estudio == Usuario.id_usuario)\
+            .filter(Paciente.id_paciente==id)
+        respuesta = ResultadoEstudioSchema.serializar_todos_vista(datos)
+        print(respuesta)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+        

@@ -1,16 +1,16 @@
-class ResultadoEstudioSchema:
+class SerializadorDiagnostico:
     def serializar(resultados):
         if resultados:
             lista_resultados = []
             for resultado in resultados:
                 cuerpo = {
-                    'id_resultado': resultado.id_resultado,
-                    'fecha_estudio': resultado.fecha_estudio,
-                    'ruta_carpeta_imagenes_estudio': resultado.ruta_carpeta_imagenes_estudio,
-                    'resultado_estudio': resultado.resultado_estudio,
-                    'id_doctor_estudio': resultado.id_doctor_estudio,
-                    'id_paciente_estudio': resultado.id_paciente_estudio,
-                    'id_consulta_estudio': resultado.id_consulta_estudio
+                    'id_diagnostico': resultado.id_diagnostico,
+                    'fecha_diagnostico': resultado.fecha_diagnostico,
+                    'ruta_carpeta_diagnostico': resultado.ruta_carpeta_diagnostico,
+                    'resultado_diagnostico': resultado.resultado_diagnostico,
+                    'id_doctor_diagnostico': resultado.id_doctor_diagnostico,
+                    'id_paciente_diagnostico': resultado.id_paciente_diagnostico,
+                    'id_consulta_diagnostico': resultado.id_consulta_diagnostico
                 }
                 lista_resultados.append(cuerpo)
             return lista_resultados
@@ -20,13 +20,13 @@ class ResultadoEstudioSchema:
     def serializar_unico(resultado):
         if resultado:
             cuerpo = {
-                'id_resultado': resultado.id_resultado,
-                'fecha_estudio': resultado.fecha_estudio,
-                'ruta_carpeta_imagenes_estudio': resultado.ruta_carpeta_imagenes_estudio,
-                'resultado_estudio': resultado.resultado_estudio,
-                'id_doctor_estudio': resultado.id_doctor_estudio,
-                'id_paciente_estudio': resultado.id_paciente_estudio,
-                'id_consulta_estudio': resultado.id_consulta_estudio
+                'id_diagnostico': resultado.id_diagnostico,
+                'fecha_diagnostico': resultado.fecha_diagnostico,
+                'ruta_carpeta_diagnostico': resultado.ruta_carpeta_diagnostico,
+                'resultado_diagnostico': resultado.resultado_diagnostico,
+                'id_doctor_diagnostico': resultado.id_doctor_diagnostico,
+                'id_paciente_diagnostico': resultado.id_paciente_diagnostico,
+                'id_consulta_diagnostico': resultado.id_consulta_diagnostico
             }
             return cuerpo
         else:
@@ -37,14 +37,14 @@ class ResultadoEstudioSchema:
             lista_consultas = []
             for paciente, registros, usuario in datos:
                 cuerpo = {
-                    'id_resultado': registros.id_resultado,
-                    'fecha_estudio': registros.fecha_estudio,
-                    'ruta_carpeta_imagenes_estudio': registros.ruta_carpeta_imagenes_estudio,
-                    'resultado_estudio': registros.resultado_estudio,
-                    'id_doctor_estudio': registros.id_doctor_estudio,
-                    'id_paciente_estudio': registros.id_paciente_estudio,
-                    'id_consulta_estudio': registros.id_consulta_estudio,
                     'id_diagnostico': registros.id_diagnostico,
+                    'fecha_diagnostico': registros.fecha_diagnostico,
+                    'ruta_carpeta_diagnostico': registros.ruta_carpeta_diagnostico,
+                    'resultado_diagnostico': registros.resultado_diagnostico,
+                    'id_doctor_diagnostico': registros.id_doctor_diagnostico,
+                    'id_paciente_diagnostico': registros.id_paciente_diagnostico,
+                    'id_consulta_diagnostico': registros.id_consulta_diagnostico,
+                
                     
                     'nombres_paciente' : paciente.nombres_paciente,
                     'apellido_paterno_paciente' : paciente.apellido_paterno_paciente,
