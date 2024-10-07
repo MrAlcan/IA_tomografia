@@ -17,9 +17,9 @@
         <div class="loader"></div>
     </div>
 
-    <!-- page container area start -->
+    
     <div class="page-container">
-        <!-- sidebar menu area start -->
+        
         <div class="sidebar-menu">
             <div class="sidebar-header">
                 <div class="logo">
@@ -40,18 +40,15 @@
                                     </span></a>
                                 <ul class="collapse">
                                     <li id="nav_usuarios"><a href="/usuarios">Usuarios</a></li>
-                                    <li id="nav_roles_usuarios"><a href="/roles">Roles de Usuario</a></li>
                                 </ul>
                             </li>
                             <li id="nav_gestion_pacientes">
                                 <a href="javascript:void(0)" aria-expanded="true"><i class="ti-wheelchair"></i><span>Gestion de Pacientes</span></a>
                                 <ul class="collapse">
                                     <li id="nav_pacientes"><a href="/pacientes">Pacientes</a></li>
-                                    <li id="nav_signos_vitales"><a href="/control_signos_vitales">Hoja de Signos Vitales</a></li>
-                                    <li id="nav_consultas"><a href="/consultas">Consultas</a></li>
-                                    <li id="nav_informacion"><a href="/">Informacion</a></li>
+                                    <!--li id="nav_signos_vitales"><a href="/control_signos_vitales">Hoja de Signos Vitales</a></li>
+                                    <li id="nav_consultas"><a href="/consultas">Consultas</a></li-->
                                     
-                                    <li id="nav_estados"><a href="/">Estados</a></li>
                                 </ul>
                             </li>
                             <li id="nav_gestion_consultas">
@@ -60,24 +57,23 @@
                                     
                                     <li id="nav_lista_tomografias"><a href="/tomografia_listar">Tomografia</a></li>
                                     <li id="nav_resultados_tomografias"><a href="/tomografia_resultados">Analizar Tomografias</a></li>
-                                    <li id="nav_indicaciones_doctor"><a href="/indicaciones_doctor">Indicaciones Doctor</a></li>
+                                    <!--li id="nav_indicaciones_doctor"><a href="/indicaciones_doctor">Indicaciones Doctor</a></li>
                                     <li id="nav_indicaciones_enfermera"><a href="/indicaciones_enfermeras">Indicaciones Enfermeras</a></li>
-                                    <li id="nav_historial_clinico"><a href="/">Historial clinico</a></li>
+                                    <li id="nav_historial_clinico"><a href="/">Historial clinico</a></li-->
                                 </ul>
                             </li>
-                            <li id="nav_reportes">
+                            <!--li id="nav_reportes">
                                 <a href="reportes" aria-expanded="true"><i class="ti-files"></i><span>Reportes</span></a>
         
-                            </li>
+                            </li-->
                         </ul>
                     </nav>
                 </div>
             </div>
         </div>
-        <!-- sidebar menu area end -->
-        <!-- main content area start -->
+        
         <div class="main-content">
-            <!-- header area start -->
+           
             <div class="header-area">
                 <div class="row align-items-center">
 
@@ -87,20 +83,15 @@
                             <span></span>
                             <span></span>
                         </div>
-                        <!--div class="search-box pull-left">
-                            <form action="#">
-                                <input type="text" name="search" placeholder="Buscar..." required>
-                                <i class="ti-search"></i>
-                            </form>
-                        </div-->
+                       
                     </div>
 
                     
                 </div>
             </div>
-            <!-- header area end -->
+           
             <div class="contenido">
-                <!-- page title area start -->
+               
                 <div class="page-title-area">
                     <div class="row align-items-center">
                         <div class="col-sm-6">
@@ -109,8 +100,6 @@
                         </div>
                         <div class="col-sm-6 clearfix">
                             <div class="user-profile pull-right">
-                                <!--img class="avatar user-thumb" src="{{url_for('static', filename='assets/images/author/avatar.png')}}" alt="avatar"-->
-                                <!--h4 id="perfil_nombre_usuario" class="user-name dropdown-toggle" data-toggle="dropdown"><span>Pepito Perez</span> <i class="fa fa-angle-down"></i></h4-->
                                 <h4 class="user-name dropdown-toggle" data-toggle="dropdown">{{identidad.nombres_usuario}} {{identidad.apellido_paterno}} <i class="fa fa-angle-down"></i></h4>
                                 <div class="dropdown-menu">
 
@@ -121,21 +110,20 @@
                         </div>
                     </div>
                 </div>
-                <!-- page title area end -->
+                
                 
                 {% block contenido %}{% endblock %}
             </div>
             
         </div>
-        <!-- main content area end -->
+        
          <div>
-            <!--La parte central del contenido ************************************************************ -->
+            
             
          </div>
         
     </div>
-    <!-- page container area end -->
-        <!--script src="{{ url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
+    
         
 
 </body>

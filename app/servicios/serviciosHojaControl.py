@@ -36,6 +36,16 @@ class ServiciosHojaControl():
         else:
             return None
     
+    def obtener_todos_paciente(id):
+        #hojas_controles = HojaControl.query.all()
+        #respuesta = SerializadorHojaControl.serializar(hojas_controles)
+        vista = db.session.query(Paciente, HojaControl).join(HojaControl).filter(Paciente.id_paciente==id)
+        respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+    
     def obtener_id(id):
         #hoja_control = HojaControl.query.get(id)
         #respuesta = SerializadorHojaControl.serializar_unico(hoja_control)

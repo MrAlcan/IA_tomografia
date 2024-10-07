@@ -1,0 +1,500 @@
+{% extends 'plantilla.html' %}
+
+{% block cabecera %}
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static',filename='assets/images/icon/favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/metisMenu.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/slicknav.min.css')}}">
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/typography.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+
+    <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+{% endblock %}
+
+{% block titulo_contenido %}
+    <div class="breadcrumbs-area clearfix">                  
+        <h4 class="page-title pull-left">Gestion de Pacientes</h4>
+        <ul class="breadcrumbs pull-left">
+            <li><a href="/inicio">Inicio</a></li>
+            <li><a href="/control_signos_vitales">Pacientes</a></li>
+            <li><a href="/pacientes/ver/{{hoja.id_paciente}}">Ver Paciente</a></li>
+            <li><span>Ver Hoja de Signos Vitales</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block contenido %}
+
+    <div class="main-content-inner">
+        <div class="row">
+
+            <div class="col-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title">Hojas de Control de los Signos Vitales</h4>
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>Nombres y Apellidos: </strong> {{hoja.nombres}} {{hoja.apellido_paterno}} {{hoja.apellido_materno}}</p>
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Servicio: </strong>{{hoja.servicio}}</p>
+                                <!--div class="grid-col">
+                                    PARA COLOCAR EN UN RECUADRO
+                                </div-->
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Pieza: </strong>{{hoja.pieza}}</p>
+                                
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Número de Hoja: </strong>{{hoja.numero_hoja}}</p>
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Peso: </strong>{{hoja.peso}} Kg.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Talla: </strong>{{hoja.talla}} cm.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Edad: </strong>{{hoja.edad}} años</p>
+                            </div>
+                        </div>
+                        <br>
+                        <!--a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-file-pdf-o"> Generar Informe</i></a>
+                        <button type="button" class="btn btn-outline-info mb-3"><a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></button-->
+
+                        <br>
+                        <br>
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a>
+                        <br>
+                        <br>
+                        <div class="modal fade" id="LongModalLongCrear">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Estado a la Hoja de Control</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        
+                                        <form id="crear_paciente_form" action="/control_signos_vitales/agregar_estado/{{hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                                
+                                                <div class="form-group">
+                                                    <label for="input_fecha" class="col-form-label">Fecha</label>
+                                                    <input class="form-control" name="input_fecha" type="date" value="" id="input_fecha">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_antibiotico" class="col-form-label">Antibiótico</label>
+                                                    <input class="form-control" type="text" value="" id="input_antibiotico" name="input_antibiotico">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_dias_internado" class="col-form-label">Días Internado</label>
+                                                    <input class="form-control" type="text" value="" id="input_dias_internado" name="input_dias_internado">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_dias_post" class="col-form-label">Días Post Operación</label>
+                                                    <input class="form-control" type="text" value="" id="input_dias_post" name="input_dias_post">
+                                                </div>      
+                                                <button id="boton_agregar_estado" type="submit" class="btn btn-success mb-3">Agregar Estado</button>
+                
+                                            </form>
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--button id="boton_agregar_hoja" type="button" class="btn btn-rounded btn-success mb-3">Agregar Hoja</button-->
+                        <div class="data-tables">
+                            <!--a href="/control_signos_vitales/agregar_estado/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-edit"> Agregar Estado</i></a-->
+                            <!--a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a-->
+                            
+                            <table id="dataTable" class="text-center">
+                                
+                                <thead class="bg-light text-capitalize">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Días Internado</th>
+                                        <th>Días Post Operatorio</th>
+                                        <th>Antibíoticos</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% if estados %}
+                                        {% for estado in estados %}
+                                            <tr>
+                                                <td>{{estado.fecha}}</td>
+                                                <td>{{estado.dias_internado}}</td>
+                                                <td>{{estado.dias_post}}</td>
+                                                <td>{{estado.antibiotico}}</td>
+                                                <td>
+                                                    <ul class="d-flex justify-content-center">
+                                                        <!--li class="mr-3"><a href="/control_signos_vitales/editar_estado/{{estado.id_control_estado}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarEstado{{estado.id_control_estado}}"><i class="fa fa-edit"></i></a></li>
+                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if estados %}
+                            {% for estado in estados %}
+                                <div class="modal fade" id="LongModalLongEditarEstado{{estado.id_control_estado}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Estado de la Hoja de Control</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar_estado/{{estado.id_control_estado}}/{{hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                        
+                                                        <div class="form-group">
+                                                            <label for="input_fecha" class="col-form-label">Fecha</label>
+                                                            <input class="form-control" name="input_fecha" type="date" value="{{estado.fecha}}" id="input_fecha">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_antibiotico" class="col-form-label">Antibiótico</label>
+                                                            <input class="form-control" type="text" value="{{estado.antibiotico}}" id="input_antibiotico" name="input_antibiotico">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_dias_internado" class="col-form-label">Días Internado</label>
+                                                            <input class="form-control" type="text" value="{{estado.dias_internado}}" id="input_dias_internado" name="input_dias_internado">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_dias_post" class="col-form-label">Días Post Operación</label>
+                                                            <input class="form-control" type="text" value="{{estado.dias_post}}" id="input_dias_post" name="input_dias_post">
+                                                        </div>      
+                                                        <button id="boton_agregar_estado" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
+                        
+                                                    </form>    
+                                                
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>     
+                            {% endfor %}
+                        {% endif %}
+
+
+
+                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearSigno"><i class="ti-plus"></i> Agregar Signos Vitales</a>
+                        <br>
+                        <br>
+                        <div class="modal fade" id="LongModalLongCrearSigno">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Signos Vitales a la Hoja de Control</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        
+                                        <form id="crear_paciente_form" action="/control_signos_vitales/agregar_signo/{{hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                            <!--form id="crear_usuario_form"-->
+                                                
+                                                <div class="form-group">
+                                                    <label for="input_fecha" class="col-form-label">Fecha</label>
+                                                    <input class="form-control" name="input_fecha" type="date" value="" id="input_fecha">
+                                                </div>
+                                                <!--div class="form-group">
+                                                    <label for="input_hora" class="col-form-label">Hora</label>
+                                                    <input class="form-control" name="input_hora" type="time" value="" id="input_hora">
+                                                </div-->
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Hora</label>
+                                                    <select class="custom-select" id="input_hora" name="input_hora">
+                                                        <option selected="selected">Selecciona la Hora</option>
+                                                        <option value="6">06:00</option>
+                                                        <option value="10">10:00</option>
+                                                        <option value="15">15:00</option>
+                                                        <option value="21">21:00</option>
+                           
+                                                    </select>
+                                                </div> 
+                                                <div class="form-group">
+                                                    <label for="input_presion_sistolica" class="col-form-label">Presión Sistolica</label>
+                                                    <input class="form-control" type="number" value="" id="input_presion_sistolica" name="input_presion_sistolica" min="0" max="250" step="1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_presion_diastolica" class="col-form-label">Presión Diastolica</label>
+                                                    <input class="form-control" type="number" value="" id="input_presion_diastolica" name="input_presion_diastolica" min="0" max="250" step="1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_respiracion" class="col-form-label">Respiración (%)</label>
+                                                    <input class="form-control" type="number" value="" id="input_respiracion" name="input_respiracion" min="0" max="150" step="1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="input_saturacion" class="col-form-label">Saturación de Óxigeno (%)</label>
+                                                    <input class="form-control" type="number" value="" id="input_saturacion" name="input_saturacion" min="0" max="150" step="1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Diuresis</label>
+                                                    <select class="custom-select" id="input_diuresis" name="input_diuresis">
+                                                        <option selected="selected">Selecciona la Diuresis</option>
+                                                        <option value="1">+</option>
+                                                        <option value="2">-</option>
+                           
+                                                    </select>
+                                                </div>   
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Catarsis</label>
+                                                    <select class="custom-select" id="input_catarsis" name="input_catarsis">
+                                                        <option selected="selected">Selecciona la Catarsis</option>
+                                                        <option value="1">+</option>
+                                                        <option value="2">-</option>
+                           
+                                                    </select>
+                                                </div>   
+                                                
+                                                <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Agregar Signos Vitales</button>
+                
+                                            </form>
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                        <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="data-tables">
+                            <!--a href="/control_signos_vitales/agregar_signo/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-edit"> Agregar Signos</i></a-->
+                            
+                            <table id="dataTable2" class="text-center">
+                                
+                                <thead class="bg-light text-capitalize">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                        <th>P.A.</th>
+                                        <th>Respiración</th>
+                                        <th>Saturación de Oxigeno</th>
+                                        <th>Diuresis</th>
+                                        <th>Catarsis</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% if signos %}
+                                        {% for signo in signos %}
+                                            <tr>
+                                                <td>{{signo.fecha}}</td>
+                                                <td>{{signo.hora}} :00</td>
+                                                <td>{{signo.presion_sistolica}} / {{signo.presion_diastolica}}</td>
+                                                <td>{{signo.respiracion}}</td>
+                                                <td>{{signo.saturacion}}</td>
+                                                {% if signo.diuresis==1 %}
+                                                    <td>+</td>
+                                                {% else %}
+                                                    <td>-</td>
+                                                {% endif %}
+                                                {% if signo.catarsis==1 %}
+                                                    <td>+</td>
+                                                {% else %}
+                                                    <td>-</td>
+                                                {% endif %}
+                                                
+                                                <!--td>{{signo.diuresis}}</td>
+                                                <td>{{signo.catarsis}}</td-->
+                                                <td>
+                                                    <ul class="d-flex justify-content-center">
+                                                        <!--li class="mr-3"><a href="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarSigno{{signo.id_control_signos}}"><i class="fa fa-edit"></i></a></li>
+                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if signos %}
+                            {% for signo in signos %}
+                                <div class="modal fade" id="LongModalLongEditarSigno{{signo.id_control_signos}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar los Signos Vitales de la Hoja de Control</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                
+                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}/{{hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                                    <!--form id="crear_usuario_form"-->
+                                                        
+                                                        <div class="form-group">
+                                                            <label for="input_fecha" class="col-form-label">Fecha</label>
+                                                            <input class="form-control" name="input_fecha" type="date" value="{{signo.fecha}}" id="input_fecha">
+                                                        </div>
+                                                        <!--div class="form-group">
+                                                            <label for="input_hora" class="col-form-label">Hora</label>
+                                                            <input class="form-control" name="input_hora" type="time" value="" id="input_hora">
+                                                        </div-->
+                                                        <div class="form-group">
+                                                            <label class="col-form-label">Hora</label>
+                                                            <select class="custom-select" id="input_hora" name="input_hora">
+                                                                {% if signo.hora == "6" %}
+                                                                    <option value="6" selected>06:00</option>
+                                                                {% else %}
+                                                                    <option value="6">06:00</option>
+                                                                {% endif %}
+                                                                {% if signo.hora == "10" %}
+                                                                    <option value="10" selected>10:00</option>
+                                                                {% else %}
+                                                                    <option value="10">10:00</option>
+                                                                {% endif %}
+                                                                {% if signo.hora == "15" %}
+                                                                    <option value="15" selected>15:00</option>
+                                                                {% else %}
+                                                                    <option value="15">15:00</option>
+                                                                {% endif %}
+                                                                {% if signo.hora == "21" %}
+                                                                    <option value="21" selected>21:00</option>
+                                                                {% else %}
+                                                                    <option value="21">21:00</option>
+                                                                {% endif %}
+                                                                
+                                
+                                                            </select>
+                                                        </div> 
+                                                        <div class="form-group">
+                                                            <label for="input_presion_sistolica" class="col-form-label">Presión Sistolica</label>
+                                                            <input class="form-control" type="number" value="{{signo.presion_sistolica}}" id="input_presion_sistolica" name="input_presion_sistolica" min="0" max="250" step="1">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_presion_diastolica" class="col-form-label">Presión Diastolica</label>
+                                                            <input class="form-control" type="number" value="{{signo.presion_diastolica}}" id="input_presion_diastolica" name="input_presion_diastolica" min="0" max="250" step="1">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_respiracion" class="col-form-label">Respiración (%)</label>
+                                                            <input class="form-control" type="number" value="{{signo.respiracion}}" id="input_respiracion" name="input_respiracion" min="0" max="150" step="1">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="input_saturacion" class="col-form-label">Saturación de Óxigeno (%)</label>
+                                                            <input class="form-control" type="number" value="{{signo.saturacion}}" id="input_saturacion" name="input_saturacion" min="0" max="150" step="1">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-form-label">Diuresis</label>
+                                                            <select class="custom-select" id="input_diuresis" name="input_diuresis">
+                                                                {% if signo.diuresis == 1 %}
+                                                                    <option value="1" selected>+</option>
+                                                                {% else %}
+                                                                    <option value="1">+</option>
+                                                                {% endif %}
+                                                                {% if signo.diuresis == 2 %}
+                                                                    <option value="2" selected>-</option>
+                                                                {% else %}
+                                                                    <option value="2">-</option>
+                                                                {% endif %}
+                                                                
+                                
+                                                            </select>
+                                                        </div>   
+                                                        <div class="form-group">
+                                                            <label class="col-form-label">Catarsis</label>
+                                                            <select class="custom-select" id="input_catarsis" name="input_catarsis">
+                                                                {% if signo.catarsis == 1 %}
+                                                                    <option value="1" selected>+</option>
+                                                                {% else %}
+                                                                    <option value="1">+</option>
+                                                                {% endif %}
+                                                                {% if signo.catarsis == 2 %}
+                                                                    <option value="2" selected>-</option>
+                                                                {% else %}
+                                                                    <option value="2">-</option>
+                                                                {% endif %}
+                                                                
+                                
+                                                            </select>
+                                                        </div>   
+                                                        
+                                                        <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Agregar Signos Vitales</button>
+                        
+                                                    </form>
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>        
+                            {% endfor %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='assets/js/pacientes.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+
+
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/responsive.bootstrap.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+
+    <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
+    
+{% endblock %}
