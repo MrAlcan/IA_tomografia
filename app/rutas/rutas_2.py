@@ -70,10 +70,7 @@ main_bp = Blueprint('main', __name__)
 
 
 @main_bp.route('/', methods=['GET'])
-=======
-@main_bp.route('/ingresar', methods=['GET'])
 @no_iniciar_sesion
->>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88
 def ingresar():
     current_time = datetime.now()
     print(request.headers)
@@ -452,7 +449,7 @@ def control_signo_agregar_post(datos_usuario, id):
     else:
         return jsonify({'codigo':400})
     
-<<<<<<< HEAD
+
 
 
 ############# SOLICITAR EVALUACION GUARDA ############
@@ -510,9 +507,7 @@ def tomografia_resultados_agregar(datos_usuario):
 def tomografia_listar():
     identidad = get_jwt_identity()
     listado = ServiciosResultadoEstudio.obtener_todos()
-    consultas = ServiciosConsultas.obtener_todos()
-    pacientes = ServiciosPaciente.obtener_todos()
-    return render_template('tomografia_listar.html', identidad=identidad, listado=listado, pacientes=pacientes, consultas=consultas)
+    return render_template('tomografia_listar.html', identidad=identidad, listado=listado)
 
 ############ VISTA LISTADO ENFERMERA INDIC##################
 
@@ -576,19 +571,16 @@ def obtener_resultado(id):
         return jsonify(data)
     else:
         return jsonify({'error': 'Resultado no encontrado'}), 404
-=======
+
 @main_bp.route('/control_signos_vitales/editar_signo/<id>/<hoja>', methods=['POST'])
 @token_requerido
-def resultados_editar(datos_usuario, id):
+def control_signo_editar_post(datos_usuario, id, hoja):
     identidad = datos_usuario
-   
     datos = request.form
-    print(datos)
-    fecha_actual = datetime.now().strftime('%Y-%m-%d')
-    datos_modificado = ServiciosResultadoEstudio.actualizar(id=id, paciente=datos['codigoModal2'],consulta=datos['consultaModal2'])
-    
-    if datos_modificado:
-        return redirect(url_for('main.tomografia_listar'))
+    print(id)
+    control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
+    if control_signo_editar:
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
     else:
         return jsonify({'codigo':400})
     
@@ -603,5 +595,66 @@ def control_signos_vitales_pdf(id):
     control_signos = ServiciosControlSignos.obtener_hoja(id)
     nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
     respueta = ServiciosHojaControl.generar_informe(hoja_control, control_estados, control_signos, nombre_usuario)
+
+    print('-'*50)
+    print('DEBUG')
+    print(respueta)
+    print(len(respueta.getvalue()))
+
+    response = make_response(respueta.read())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename="hoja_signos_vitales_{hoja_control["nombres"]}_{hoja_control["apellido_paterno"]}.pdf"'
+
+    return response
+    
+    #return redirect(url_for('main.control_signos_vitales_ver', id=id))
+
+@main_bp.route('/reportes', methods = ['GET'])
+@jwt_required()
+def reportes():
+    identidad = get_jwt_identity()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('reportes.html', identidad=identidad, pacientes=pacientes)
+
+@main_bp.route('/reportes/generar/<id>', methods=['GET'])
+@jwt_required()
+def generar_reporte_paciente(id):
+    
+    identidad = get_jwt_identity()
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario)
+
     return redirect(url_for('main.control_signos_vitales_ver', id=id))
->>>>>>> 049ce67d9d3c2a74057fc318933a6ef752fa6b88
+
+
+
+
+@main_bp.route('/consultas', methods = ['GET'])
+@jwt_required()
+def consultas():
+    identidad = get_jwt_identity()
+    consultas = ServiciosConsultas.obtener_todos_usuario_paciente()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('consultas.html', identidad = identidad, consultas = consultas, pacientes = pacientes)
+
+@main_bp.route('/consultas/agregar', methods = ['POST'])
+@token_requerido
+def consultas_agregar(datos_usuario):
+    identidad = datos_usuario
+    datos = request.form
+    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], doctor=identidad['id_usuario'], paciente=datos['codigoPaciente'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
+    if nueva_consulta:
+        return redirect(url_for('main.consultas'))
+    else:
+        return jsonify({'codigo': 400})
+
+@main_bp.route('/consultas/editar/<id>', methods=['POST'])
+@token_requerido
+def consultas_editar(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
+    if consulta_editar:
+        return redirect(url_for('main.consultas'))
+    else:
+        return jsonify({'codigo': 400})
