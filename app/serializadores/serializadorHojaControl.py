@@ -10,7 +10,8 @@ class SerializadorHojaControl():
                     'servicio' : hoja.servicio_paciente,
                     'numero_hoja' : hoja.numero_hoja,
                     'pieza' : hoja.pieza_paciente,
-                    'id_paciente' : hoja.id_paciente_hoja
+                    'id_paciente' : hoja.id_paciente_hoja,
+                    'id_consulta' : hoja.id_consulta_hoja
                 }
                 lista_hojas_control.append(cuerpo)
             return lista_hojas_control
@@ -26,7 +27,8 @@ class SerializadorHojaControl():
                 'servicio' : hoja.servicio_paciente,
                 'numero_hoja' : hoja.numero_hoja,
                 'pieza' : hoja.pieza_paciente,
-                'id_paciente' : hoja.id_paciente_hoja
+                'id_paciente' : hoja.id_paciente_hoja,
+                'id_consulta' : hoja.id_consulta_hoja
             }
             return cuerpo
         else:
@@ -35,7 +37,7 @@ class SerializadorHojaControl():
     def serializar_pacientes_hoja_control(datos):
         if datos:
             lista_datos = []
-            for paciente, hoja in datos:
+            for paciente, hoja, consulta in datos:
                 cuerpo = {
                     'id_hoja' : hoja.id_hoja_control,
                     'peso' : hoja.peso_paciente,
@@ -50,7 +52,21 @@ class SerializadorHojaControl():
                     'carnet' : paciente.carnet_paciente,
                     'seguro' : paciente.seguro_paciente,
                     'fecha_nacimiento' : paciente.fecha_nacimiento_paciente,
-                    'edad' : paciente.edad_paciente
+                    'edad' : paciente.edad_paciente,
+                    'id_consulta' : hoja.id_consulta_hoja,
+                    'motivo' : consulta.motivo_consulta,
+                    'historia_enfermedad' : consulta.historia_enfermedad_actual,
+                    'enfermedades' : consulta.enfermedades_consulta,
+                    'tabaco' : consulta.consumo_tabaco,
+                    'alcohol' : consulta.consumo_alcohol,
+                    'drogas' : consulta.consumo_drogas,
+                    'diagnostico' : consulta.diagnostico_consulta,
+                    'tratamiento' : consulta.tratamiento_consulta,
+                    'internacion' : consulta.internacion_consulta,
+                    'id_doctor' : consulta.id_doctor_tratante,
+                    'codigo_consulta' : consulta.codigo_consulta,
+                    'estado_consulta' : consulta.estado_consulta,
+                    'fecha' : consulta.fecha_consulta
                 }
                 lista_datos.append(cuerpo)
             return lista_datos
@@ -74,7 +90,21 @@ class SerializadorHojaControl():
                     'carnet' : datos[0].carnet_paciente,
                     'seguro' : datos[0].seguro_paciente,
                     'fecha_nacimiento' : datos[0].fecha_nacimiento_paciente,
-                    'edad' : datos[0].edad_paciente
+                    'edad' : datos[0].edad_paciente,
+                    'id_consulta' : datos[1].id_consulta_hoja,
+                    'motivo' : datos[2].motivo_consulta,
+                    'historia_enfermedad' : datos[2].historia_enfermedad_actual,
+                    'enfermedades' : datos[2].enfermedades_consulta,
+                    'tabaco' : datos[2].consumo_tabaco,
+                    'alcohol' : datos[2].consumo_alcohol,
+                    'drogas' : datos[2].consumo_drogas,
+                    'diagnostico' : datos[2].diagnostico_consulta,
+                    'tratamiento' : datos[2].tratamiento_consulta,
+                    'internacion' : datos[2].internacion_consulta,
+                    'id_doctor' : datos[2].id_doctor_tratante,
+                    'codigo_consulta' : datos[2].codigo_consulta,
+                    'estado_consulta' : datos[2].estado_consulta,
+                    'fecha' : datos[2].fecha_consulta
             }
 
             return cuerpo

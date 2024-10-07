@@ -34,14 +34,17 @@
                                 <a href="/inicio" aria-expanded="true"><i class="ti-dashboard"></i><span>Inicio</span></a>
         
                             </li>
-                            <li id="nav_gestion_usuarios">
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-group"></i><span>Gestion de Usuarios
-                                        
-                                    </span></a>
-                                <ul class="collapse">
-                                    <li id="nav_usuarios"><a href="/usuarios">Usuarios</a></li>
-                                </ul>
-                            </li>
+                            {% if identidad['id_rol']==1 %}
+                                <li id="nav_gestion_usuarios">
+                                    <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-group"></i><span>Gestion de Usuarios
+                                            
+                                        </span></a>
+                                    <ul class="collapse">
+                                        <li id="nav_usuarios"><a href="/usuarios">Usuarios</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            
                             <li id="nav_gestion_pacientes">
                                 <a href="javascript:void(0)" aria-expanded="true"><i class="ti-wheelchair"></i><span>Gestion de Pacientes</span></a>
                                 <ul class="collapse">
@@ -62,10 +65,10 @@
                                     <li id="nav_historial_clinico"><a href="/">Historial clinico</a></li-->
                                 </ul>
                             </li>
-                            <!--li id="nav_reportes">
-                                <a href="reportes" aria-expanded="true"><i class="ti-files"></i><span>Reportes</span></a>
+                            <li id="nav_reportes">
+                                <a href="/reportes" aria-expanded="true"><i class="ti-files"></i><span>Reportes</span></a>
         
-                            </li-->
+                            </li>
                         </ul>
                     </nav>
                 </div>

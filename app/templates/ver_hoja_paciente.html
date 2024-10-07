@@ -29,7 +29,7 @@
         <h4 class="page-title pull-left">Gestion de Pacientes</h4>
         <ul class="breadcrumbs pull-left">
             <li><a href="/inicio">Inicio</a></li>
-            <li><a href="/control_signos_vitales">Pacientes</a></li>
+            <li><a href="/pacientes">Pacientes</a></li>
             <li><a href="/pacientes/ver/{{hoja.id_paciente}}">Ver Paciente</a></li>
             <li><span>Ver Hoja de Signos Vitales</span></li>
         </ul>
@@ -79,12 +79,14 @@
                             </div>
                         </div>
                         <br>
-                        <!--a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-file-pdf-o"> Generar Informe</i></a>
-                        <button type="button" class="btn btn-outline-info mb-3"><a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></button-->
-
+                        <a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a>
+                        
                         <br>
                         <br>
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a>
+                        {% if identidad['id_rol']==3 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a>
+                        {% endif %}
+                        
                         <br>
                         <br>
                         <div class="modal fade" id="LongModalLongCrear">
@@ -141,7 +143,10 @@
                                         <th>Días Internado</th>
                                         <th>Días Post Operatorio</th>
                                         <th>Antibíoticos</th>
-                                        <th>Opciones</th>
+                                        {% if identidad['id_rol']==3 %}
+                                            <th>Opciones</th>
+                                        {% endif %}
+                                        
                                     </tr>
                                 </thead>
                                 
@@ -153,13 +158,17 @@
                                                 <td>{{estado.dias_internado}}</td>
                                                 <td>{{estado.dias_post}}</td>
                                                 <td>{{estado.antibiotico}}</td>
-                                                <td>
-                                                    <ul class="d-flex justify-content-center">
-                                                        <!--li class="mr-3"><a href="/control_signos_vitales/editar_estado/{{estado.id_control_estado}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
-                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarEstado{{estado.id_control_estado}}"><i class="fa fa-edit"></i></a></li>
-                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
-                                                    </ul>
-                                                </td>
+                                                {% if identidad['id_rol']==3 %}
+                                                    <td>
+                                                        <ul class="d-flex justify-content-center">
+                                                            <!--li class="mr-3"><a href="/control_signos_vitales/editar_estado/{{estado.id_control_estado}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                            <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarEstado{{estado.id_control_estado}}"><i class="fa fa-edit"></i></a></li>
+                                                            <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                        </ul>
+                                                    </td>
+                                                {% endif %}
+                                                
+                                                
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -214,8 +223,13 @@
                         {% endif %}
 
 
+                        {% if identidad['id_rol']==3 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearSigno"><i class="ti-plus"></i> Agregar Signos Vitales</a>                            
+                        {% endif %}
 
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearSigno"><i class="ti-plus"></i> Agregar Signos Vitales</a>
+
+
+                        
                         <br>
                         <br>
                         <div class="modal fade" id="LongModalLongCrearSigno">
@@ -311,7 +325,10 @@
                                         <th>Saturación de Oxigeno</th>
                                         <th>Diuresis</th>
                                         <th>Catarsis</th>
-                                        <th>Opciones</th>
+                                        {% if identidad['id_rol']==3 %}
+                                            <th>Opciones</th>
+                                        {% endif %}
+                                        
                                     </tr>
                                 </thead>
                                 
@@ -337,13 +354,16 @@
                                                 
                                                 <!--td>{{signo.diuresis}}</td>
                                                 <td>{{signo.catarsis}}</td-->
-                                                <td>
-                                                    <ul class="d-flex justify-content-center">
-                                                        <!--li class="mr-3"><a href="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
-                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarSigno{{signo.id_control_signos}}"><i class="fa fa-edit"></i></a></li>
-                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
-                                                    </ul>
-                                                </td>
+                                                    {% if identidad['id_rol']==3 %}
+                                                        <td>
+                                                            <ul class="d-flex justify-content-center">
+                                                                <!--li class="mr-3"><a href="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
+                                                                <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarSigno{{signo.id_control_signos}}"><i class="fa fa-edit"></i></a></li>
+                                                                <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                            </ul>
+                                                        </td>
+                                                    {% endif %}
+                                                
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -452,7 +472,7 @@
                                                             </select>
                                                         </div>   
                                                         
-                                                        <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Agregar Signos Vitales</button>
+                                                        <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Editar Signos Vitales</button>
                         
                                                     </form>
                                                 

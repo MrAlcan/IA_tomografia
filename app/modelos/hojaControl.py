@@ -10,11 +10,13 @@ class HojaControl(db.Model):
     numero_hoja = db.Column(db.Integer, nullable=True)
     pieza_paciente = db.Column(db.String(20), nullable=False)
     id_paciente_hoja = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
+    id_consulta_hoja = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
 
-    def __init__(self, peso, talla, servicio, numero, pieza, paciente):
+    def __init__(self, peso, talla, servicio, numero, pieza, paciente, consulta):
         self.peso_paciente = peso
         self.talla_paciente = talla
         self.servicio_paciente = servicio
         self.numero_hoja = numero
         self.pieza_paciente = pieza
         self.id_paciente_hoja = paciente
+        self.id_consulta_hoja = consulta

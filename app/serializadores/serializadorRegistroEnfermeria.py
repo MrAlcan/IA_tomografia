@@ -9,7 +9,8 @@ class SerializadorRegistroEnfermeria():
                     'observaciones' : registro.observaciones_enfermeria,
                     'fecha' : registro.fecha_registro,
                     'hora' : registro.hora_registro,
-                    'id_enfermera' : registro.id_enfermera_cargo
+                    'id_enfermera' : registro.id_enfermera_cargo,
+                    'id_consulta_registro' : registro.id_consulta_registro
                 }
                 lista_registros.append(cuerpo)
             return lista_registros
@@ -24,7 +25,8 @@ class SerializadorRegistroEnfermeria():
                 'observaciones' : registro.observaciones_enfermeria,
                 'fecha' : registro.fecha_registro,
                 'hora' : registro.hora_registro,
-                'id_enfermera' : registro.id_enfermera_cargo
+                'id_enfermera' : registro.id_enfermera_cargo,
+                'id_consulta_registro' : registro.id_consulta_registro
             }
             return cuerpo
         else:
