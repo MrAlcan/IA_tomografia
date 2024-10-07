@@ -23,6 +23,14 @@ from app.servicios.serviciosResultadoEstudio import ServiciosResultadoEstudio
 from flask import request, jsonify
 import jwt
 
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+ruta_modelo_relativa = os.path.join('app', 'ia', 'detec_tumor.keras')
+ruta_modelo = os.path.abspath(ruta_modelo_relativa)
+modelo = tf.keras.models.load_model(ruta_modelo)
+
 def no_iniciar_sesion(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -321,6 +329,26 @@ def agregar_pacientes_post(datos_usuario):
     else:
         return jsonify({'codigo': 400})
 
+@main_bp.route('/pacientes/ver/<id>', methods = ['GET'])
+@jwt_required()
+def ver_pacientes(id):
+    identidad = get_jwt_identity()
+    paciente = ServiciosPaciente.obtener_id(id)
+    consultas = ServiciosConsultas.obtener_usuario_paciente_id(id)
+    hojas_control = ServiciosHojaControl.obtener_todos_paciente(id)
+    return render_template('ver_pacientes.html', identidad = identidad, paciente = paciente, consultas = consultas, hojas_control = hojas_control)
+
+@main_bp.route('/pacientes/control_signos_vitales/ver/<id>', methods = ['GET'])
+@jwt_required()
+def ver_hoja_pacientes_control(id):
+    identidad = get_jwt_identity()
+    hoja_control = ServiciosHojaControl.obtener_id(id)
+    control_estados = ServiciosControlEstado.obtener_hoja(id)
+    control_signos = ServiciosControlSignos.obtener_hoja(id)
+    return render_template('ver_hoja_paciente.html', identidad=identidad, hoja=hoja_control, estados=control_estados, signos=control_signos)
+
+
+
 @main_bp.route('/pacientes/editar/<id>', methods=['GET'])
 
 @jwt_required()
@@ -357,6 +385,19 @@ def agregar_control_signos_vitales():
     identidad = get_jwt_identity()
     pacientes = ServiciosPaciente.obtener_todos()
     return render_template('crear_hoja_control.html', identidad=identidad, pacientes=pacientes)
+
+@main_bp.route('/pacientes/control_signos_vitales/agregar/<id>', methods=['POST'])
+@token_requerido
+def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    print(datos)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id)
+    print(nueva_hoja)
+    if nueva_hoja:
+        return redirect(url_for('main.ver_pacientes', id=id))
+    else:
+        return jsonify({'codigo': 400})
 
 @main_bp.route('/control_signos_vitales/agregar', methods=['POST'])
 @token_requerido
@@ -486,13 +527,28 @@ def tomografia_resultados_agregar(datos_usuario):
             imagen.save(ruta_imagen)
             ruta_relativa_imagen = os.path.join(carpeta_nombre, filename).replace("\\", "/")
 
+            imagen = Image.open(ruta_imagen)
+            opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
+            imagen = cv2.resize(opencvImage,(150,150))
+            imagen = imagen.reshape(1,150,150,3)
+            p = modelo.predict(imagen)
+            #print(p)
+            p = np.argmax(p,axis=1)[0]
+
+            resultado_ia = 0
+
+            if p == 3:
+                resultado_ia = 0
+            else:
+                resultado_ia = 1
+
             resultado = ServiciosResultadoEstudio.crear(
                 fecha=fecha,
                 ruta=ruta_relativa_imagen,  
                 doctor=doctor,
                 paciente=codigo_paciente,
                 consulta=id_consulta_estudio, 
-                resultado=1
+                resultado=resultado_ia
             )
             
             if not resultado:
@@ -645,6 +701,17 @@ def consultas_agregar(datos_usuario):
     nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], doctor=identidad['id_usuario'], paciente=datos['codigoPaciente'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
     if nueva_consulta:
         return redirect(url_for('main.consultas'))
+    else:
+        return jsonify({'codigo': 400})
+
+@main_bp.route('/pacientes/consultas/agregar/<id>', methods = ['POST'])
+@token_requerido
+def consultas_agregar_pacientes(datos_usuario, id):
+    identidad = datos_usuario
+    datos = request.form
+    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], doctor=identidad['id_usuario'], paciente=id, internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
+    if nueva_consulta:
+        return redirect(url_for('main.ver_pacientes', id=id))
     else:
         return jsonify({'codigo': 400})
 

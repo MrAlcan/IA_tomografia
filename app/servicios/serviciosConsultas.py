@@ -38,6 +38,20 @@ class ServiciosConsultas():
             return respuesta
         else:
             return None
+    
+    def obtener_usuario_paciente_id(id):
+        #vista = db.session.query(Paciente, Consulta, Usuario).join(Consulta).join(Usuario).all()
+        vista = db.session.query(Paciente, Consulta, Usuario)\
+            .join(Consulta, Paciente.id_paciente == Consulta.id_paciente_consulta)\
+            .join(Usuario, Consulta.id_doctor_tratante == Usuario.id_usuario)\
+            .filter(Paciente.id_paciente==id)
+        
+        respuesta = SerializadorConsulta.serializar_todos_vista(vista)
+        print(respuesta)
+        if respuesta:
+            return respuesta
+        else:
+            return None
 
     def crear(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta=None):
         nueva_consulta = Consulta(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta)
