@@ -17,9 +17,5 @@ class RegistroEnfermeria(db.Model):
         self.fecha_registro = fecha
         self.hora_registro = hora
         self.id_enfermera_cargo = enfermera
-<<<<<<< HEAD
         self.id_paciente = paciente
-=======
-        self.id_consulta_registro = consulta
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
 
