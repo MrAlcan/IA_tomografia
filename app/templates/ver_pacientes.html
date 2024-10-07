@@ -194,6 +194,7 @@
                                                     <ul class="d-flex justify-content-center">
                                                         <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
+                                                        <li class="mr-3"><a href="/consultas/pdf/{{consulta.id_consulta}}" target="_blank"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></li>
                                                         <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
                                                     </ul>
                                                 </td>
@@ -216,7 +217,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 
-                                                <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}" method="POST" enctype="multipart/form-data">
+                                                <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" method="POST" enctype="multipart/form-data">
                                                     <!--form id="crear_usuario_form"-->
                                                     <!--
                                                         
@@ -429,7 +430,7 @@
                                                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar/{{editar_hoja.id_hoja}}" method="POST" enctype="multipart/form-data">
+                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar/{{editar_hoja.id_hoja}}/{{editar_hoja.id_paciente}}" method="POST" enctype="multipart/form-data">
                                                     <!--form id="crear_usuario_form"-->
                                                         <div class="form-group">
                                                             <label class="col-form-label">Paciente de la clinica</label>

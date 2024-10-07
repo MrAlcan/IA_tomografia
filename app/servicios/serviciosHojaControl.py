@@ -196,8 +196,15 @@ class ServiciosHojaControl():
 
         cola_signos = queue.Queue()
 
-        for signo in signos:
-            cola_signos.put(signo)
+        if signos:
+            for signo in signos:
+                cola_signos.put(signo)
+        print('-'*100)
+        print('-'*100)
+        print(cola_signos)
+        print('-'*100)
+        print('-'*100)
+        
         
         lista_dias_int = ['Días Internado']
         lista_dias_post = ['Días Post Oper.']

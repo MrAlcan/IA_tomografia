@@ -29,7 +29,7 @@
         <h4 class="page-title pull-left">Gestion de Pacientes</h4>
         <ul class="breadcrumbs pull-left">
             <li><a href="/inicio">Inicio</a></li>
-            <li><a href="/control_signos_vitales">Pacientes</a></li>
+            <li><a href="/pacientes">Pacientes</a></li>
             <li><a href="/pacientes/ver/{{hoja.id_paciente}}">Ver Paciente</a></li>
             <li><span>Ver Hoja de Signos Vitales</span></li>
         </ul>
@@ -79,9 +79,8 @@
                             </div>
                         </div>
                         <br>
-                        <!--a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" class="text-secondary"><i class="fa fa-file-pdf-o"> Generar Informe</i></a>
-                        <button type="button" class="btn btn-outline-info mb-3"><a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></button-->
-
+                        <a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a>
+                        
                         <br>
                         <br>
                         <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="ti-plus"></i> Agregar Estado</a>
@@ -452,7 +451,7 @@
                                                             </select>
                                                         </div>   
                                                         
-                                                        <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Agregar Signos Vitales</button>
+                                                        <button id="boton_agregar_signo" type="submit" class="btn btn-success mb-3">Editar Signos Vitales</button>
                         
                                                     </form>
                                                 
