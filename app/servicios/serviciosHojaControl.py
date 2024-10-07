@@ -2,6 +2,7 @@ from app.configuraciones.extensiones import db
 from app.serializadores.serializadorHojaControl import SerializadorHojaControl
 from app.modelos.hojaControl import HojaControl
 from app.modelos.paciente import Paciente
+from app.modelos.consulta import Consulta
 from app.servicios.serviciosControlEstado import ServiciosControlEstado
 from app.servicios.serviciosControlSignos import ServiciosControlSignos
 import os
@@ -39,7 +40,21 @@ class ServiciosHojaControl():
     def obtener_todos_paciente(id):
         #hojas_controles = HojaControl.query.all()
         #respuesta = SerializadorHojaControl.serializar(hojas_controles)
-        vista = db.session.query(Paciente, HojaControl).join(HojaControl).filter(Paciente.id_paciente==id)
+        vista = db.session.query(Paciente, HojaControl, Consulta)\
+            .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
+            .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
+            .filter(Paciente.id_paciente==id)
+        respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+    
+    def obtener_todos_consulta(id):
+        vista = db.session.query(Paciente, HojaControl, Consulta)\
+            .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
+            .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
+            .filter(Consulta.id_consulta==id)
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
         if respuesta:
             return respuesta
@@ -49,17 +64,20 @@ class ServiciosHojaControl():
     def obtener_id(id):
         #hoja_control = HojaControl.query.get(id)
         #respuesta = SerializadorHojaControl.serializar_unico(hoja_control)
-        vista = db.session.query(Paciente, HojaControl).join(HojaControl).filter_by(id_hoja_control=id).first()
+        vista = db.session.query(Paciente, HojaControl, Consulta)\
+            .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
+            .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
+            .filter(HojaControl.id_hoja_control==id).first()
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control_unico(vista)
         if respuesta:
             return respuesta
         else:
             return None
     
-    def crear(peso, talla, servicio, pieza, paciente):
+    def crear(peso, talla, servicio, pieza, paciente, consulta):
         hojas_control = HojaControl.query.filter_by(id_paciente_hoja=paciente)
         numero_hoja = obtener_ultima_hoja(hojas_control)
-        nueva_hoja_control = HojaControl(peso, talla, servicio, numero_hoja, pieza, paciente)
+        nueva_hoja_control = HojaControl(peso, talla, servicio, numero_hoja, pieza, paciente, consulta)
         db.session.add(nueva_hoja_control)
         db.session.commit()
         respuesta = SerializadorHojaControl.serializar_unico(nueva_hoja_control)

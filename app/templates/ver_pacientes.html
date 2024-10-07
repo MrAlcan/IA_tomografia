@@ -73,7 +73,13 @@
                         <br>
                         <br>
 
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="fa fa-file-text"></i> Agregar Consulta</a>
+                        {% if identidad['id_rol']==2 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="fa fa-file-text"></i> Agregar Consulta</a>
+                        {% endif %}
+
+                        
+                        
+                        
                         <div class="modal fade" id="LongModalLongCrear">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -88,6 +94,11 @@
                                                 <div class="form-group">
                                                     <label for="nombrePaciente">Nombre del Paciente</label>
                                                     <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" value="{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}" readonly>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="input_fecha" class="col-form-label">Fecha Consulta</label>
+                                                    <input class="form-control" name="input_fecha" type="date" value="" id="input_fecha">
                                                 </div>
 
                                                 <div class="form-group">
@@ -193,7 +204,10 @@
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
-                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
+                                                        {% if identidad['id_rol']==2 %}
+                                                            <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
+                                                        {% endif %}
+                                                        
                                                         <li class="mr-3"><a href="/consultas/pdf/{{consulta.id_consulta}}" target="_blank"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></li>
                                                         <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
                                                     </ul>
@@ -227,6 +241,11 @@
                                                         <div class="form-group">
                                                             <label for="nombrePaciente">Nombre del Paciente</label>
                                                             <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly value="{{consulta.nombres_paciente}} {{consulta.apellido_paterno_paciente}} {{consulta.apellido_materno_paciente}}">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="input_fecha" class="col-form-label">Fecha Consulta</label>
+                                                            <input class="form-control" name="input_fecha" type="date" value="{{consulta.fecha}}" id="input_fecha">
                                                         </div>
         
                                                         <div class="form-group">
@@ -326,8 +345,12 @@
                             {% endfor %}
                         {% endif %}
 
+                        {% if identidad['id_rol']==3 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl"><i class="ti-plus"></i> Agregar Hoja de Control</a>
+                        {% endif %}
 
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl"><i class="ti-plus"></i> Agregar Hoja de Control</a>
+
+                        
 
                         <div class="modal fade" id="LongModalLongCrearHojaControl">
                             <div class="modal-dialog">
@@ -343,6 +366,19 @@
                                                 <div class="form-group">
                                                     <label for="nombrePaciente">Nombre del Paciente</label>
                                                     <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" value="{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}" readonly>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="consulta">Consulta</label>
+                                                    <select class="custom-select" id="input_consulta" name="input_consulta">
+                                                        <option selected>Seleccione una opcion</option>
+                                                        {% if consultas %}
+                                                            {% for consulta in consultas %}
+                                                                <option value="{{consulta.id_consulta}}">Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        
+                                                    </select>
                                                 </div>
                                                 
 
@@ -407,9 +443,12 @@
                                                 <td>{{hoja.edad}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>
+                                                        {% if identidad['id_rol']==3 %}
+                                                            <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>    
+                                                        {% endif %}
+                                                        <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>    
                                                         <!--li class="mr-3"><a href="/control_signos_vitales/editar/{{hoja.id_paciente}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
-                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>
+                                                        
                                                         <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
                                                     </ul>
                                                 </td>
@@ -443,6 +482,25 @@
                                                                         
                                                             </select-->
                                                         </div>
+
+                                                        <div class="form-group">
+                                                            <label for="consulta">Consulta</label>
+                                                            <select class="custom-select" id="input_consulta" name="input_consulta">
+                                                                {% if consultas %}
+                                                                    {% for consulta in consultas %}
+                                                                        {% if consulta.id_consulta==editar_hoja.id_consulta %}
+                                                                            <option value="{{consulta.id_consulta}}" selected>Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
+                                                                        {% else %}
+                                                                            <option value="{{consulta.id_consulta}}">Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
+                                                                        {% endif %}
+                                                                        
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                                
+                                                            </select>
+                                                        </div>
+
+
                                                         <div class="form-group">
                                                             <label for="input_peso" class="col-form-label">Peso</label>
                                                             <input class="form-control" name="input_peso" type="number" value="{{editar_hoja.peso}}" id="input_peso" min="0" max="400" step="0.01">

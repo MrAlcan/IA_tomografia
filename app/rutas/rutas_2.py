@@ -392,7 +392,7 @@ def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     print(datos)
-    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], datos['input_consulta'], id)
     print(nueva_hoja)
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -677,10 +677,57 @@ def reportes():
 def generar_reporte_paciente(id):
     
     identidad = get_jwt_identity()
-    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
-    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario)
 
-    return redirect(url_for('main.control_signos_vitales_ver', id=id))
+    datos = []
+
+    consultas = ServiciosConsultas.obtener_usuario_paciente_id(id)
+
+    if consultas:
+        for consulta in consultas:
+            id_consulta = consulta['id_consulta']
+            #indicaciones_medicas = obtener_indicaciones(id_consulta)
+            #indicaciones_enfermeras = obtener_indicaciones(id_consulta)
+            hojas_control = ServiciosHojaControl.obtener_todos_consulta(id_consulta)
+            datos_hojas = []
+
+            fecha_inicio = ''
+            fecha_final = ''
+
+            bandera_f_i = True
+
+            if hojas_control:
+                for hoja in hojas_control:
+                    id_hoja = hoja['id_hoja']
+                    estados = ServiciosControlEstado.obtener_hoja(id_hoja)
+                    signos = ServiciosControlSignos.obtener_hoja(id_hoja)
+                    if bandera_f_i:
+                        fecha_inicio = str(estados[0]['fecha'])
+                        bandera_f_i=False
+                    fecha_final = str(estados[len(estados)-1]['fecha'])
+                    cuerpo_hojas = {
+                        'hoja' : hoja,
+                        'estados' : estados,
+                        'signos' : signos
+                    }
+                    datos_hojas.append(cuerpo_hojas)
+
+            cuerpo = {
+                'consulta' : consulta,
+                'fecha_inicio' : fecha_inicio,
+                'fecha_final' : fecha_final,
+                'hojas' : datos_hojas
+            }
+            datos.append(cuerpo)
+
+    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
+    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario, datos)
+    response = make_response(respuesta.read())
+    response.headers['Content-Type'] = 'application/pdf'
+    #response.headers['Content-Disposition'] = f'inline; filename="hoja_signos_vitales_{hoja_control["nombres"]}_{hoja_control["apellido_paterno"]}.pdf"'
+
+    return response
+
+    #return redirect(url_for('main.control_signos_vitales_ver', id=id))
 
 
 
@@ -709,7 +756,7 @@ def consultas_agregar(datos_usuario):
 def consultas_agregar_pacientes(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
-    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], doctor=identidad['id_usuario'], paciente=id, internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
+    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], doctor=identidad['id_usuario'], paciente=id, internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'], fecha=datos['input_fecha'])
     if nueva_consulta:
         return redirect(url_for('main.ver_pacientes', id=id))
     else:
@@ -720,7 +767,7 @@ def consultas_agregar_pacientes(datos_usuario, id):
 def consultas_editar(datos_usuario, id, paciente):
     identidad = datos_usuario
     datos = request.form
-    consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
+    consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'], fecha=datos['input_fecha'])
     if consulta_editar:
         return redirect(url_for('main.ver_pacientes', id=paciente))
     else:

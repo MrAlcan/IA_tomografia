@@ -28,6 +28,7 @@ def iniciar_datos():
         nuevo_administrador = ServiciosUsuario.crear('administrador', 'administrador', 'administrador', 'administrador', 'administrador', 'administrador', 'Administrador', 1)
         print("usuario admin creado")
     
+    '''
     if not pacientes:
         paciente_nuevo = Paciente(
             nombres='1',
@@ -56,7 +57,8 @@ def iniciar_datos():
             paciente=1,  
             internacion=0,
             codigo_consulta=1001,
-            estado_consulta=1
+            estado_consulta=1,
+            fecha=date.today()
         )
         db.session.add(consulta_nueva)
         db.session.commit()
@@ -83,4 +85,4 @@ def iniciar_datos():
             paciente=1  
         )
         db.session.add(nueva_indicacion) 
-        db.session.commit() 
+        db.session.commit() '''

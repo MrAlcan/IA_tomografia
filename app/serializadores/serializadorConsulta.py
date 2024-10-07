@@ -17,7 +17,8 @@ class SerializadorConsulta():
                     'id_doctor' : consulta.id_doctor_tratante,
                     'id_paciente' : consulta.id_paciente_consulta,
                     'codigo_consulta' : consulta.codigo_consulta,
-                    'estado_consulta' : consulta.estado_consulta
+                    'estado_consulta' : consulta.estado_consulta,
+                    'fecha' : consulta.fecha_consulta
                 }
                 lista_consultas.append(cuerpo)
             return lista_consultas
@@ -40,7 +41,8 @@ class SerializadorConsulta():
                 'id_doctor' : consulta.id_doctor_tratante,
                 'id_paciente' : consulta.id_paciente_consulta,
                 'codigo_consulta' : consulta.codigo_consulta,
-                'estado_consulta' : consulta.estado_consulta
+                'estado_consulta' : consulta.estado_consulta,
+                'fecha' : consulta.fecha_consulta
             }
             return cuerpo
         else:
@@ -77,7 +79,8 @@ class SerializadorConsulta():
                     'apellido_materno_usuario' : usuario.apellido_materno_usuario,
                     'carnet_usuario' : usuario.carnet_usuario,
                     'cargo_usuario' : usuario.cargo_usuario,
-                    'id_rol_usuario' : usuario.id_rol_usuario
+                    'id_rol_usuario' : usuario.id_rol_usuario,
+                    'fecha' : consulta.fecha_consulta
                 }
                 lista_consultas.append(cuerpo)
             return lista_consultas
@@ -114,7 +117,8 @@ class SerializadorConsulta():
                     'apellido_materno_usuario' : datos[2].apellido_materno_usuario,
                     'carnet_usuario' : datos[2].carnet_usuario,
                     'cargo_usuario' : datos[2].cargo_usuario,
-                    'id_rol_usuario' : datos[2].id_rol_usuario
+                    'id_rol_usuario' : datos[2].id_rol_usuario,
+                    'fecha' : datos[1].fecha_consulta
             }
                 
             return cuerpo

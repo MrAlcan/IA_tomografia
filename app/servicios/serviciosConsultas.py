@@ -64,8 +64,8 @@ class ServiciosConsultas():
         else:
             return None
 
-    def crear(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta=None):
-        nueva_consulta = Consulta(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta)
+    def crear(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta=None, fecha=None):
+        nueva_consulta = Consulta(motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta, fecha)
         db.session.add(nueva_consulta)
         db.session.commit()
         respuesta = SerializadorConsulta.serializar_unico(nueva_consulta)
@@ -74,7 +74,7 @@ class ServiciosConsultas():
         else:
             return None
     
-    def actualizar(id, motivo=None, historia=None, enfermedades=None, tabaco=None, alcohol=None, drogas=None, diagnostico=None, tratamiento=None, doctor=None, paciente=None, internacion=None, codigo_consulta=None ,estado_consulta=None):
+    def actualizar(id, motivo=None, historia=None, enfermedades=None, tabaco=None, alcohol=None, drogas=None, diagnostico=None, tratamiento=None, doctor=None, paciente=None, internacion=None, codigo_consulta=None ,estado_consulta=None, fecha=None):
         consulta_editar = Consulta.query.get(id)
         if consulta_editar:
             if motivo:
@@ -103,6 +103,8 @@ class ServiciosConsultas():
                 consulta_editar.codigo_consulta = codigo_consulta
             if estado_consulta:
                 consulta_editar.estado_consulta = estado_consulta
+            if fecha:
+                consulta_editar.fecha_consulta = fecha
             db.session.commit()
             respuesta = SerializadorConsulta.serializar_unico(consulta_editar)
             return respuesta
@@ -121,6 +123,7 @@ class ServiciosConsultas():
         estilo_subtitulo = ParagraphStyle('Subtitulo', fontSize=10, alignment=0)  # Para el nombre de usuario y fecha
         estilo_tabla_paragrah = ParagraphStyle('Normala', fontSize=7, alignment=0)
         estilo_datos = estilos['Normal']
+        estilo_alineamiento_tablas = TableStyle()
 
         logo_direccion = os.path.join(os.getcwd(),'app', 'static', 'assets', 'images', 'logo.png')
         print(logo_direccion)
@@ -173,6 +176,11 @@ class ServiciosConsultas():
 
         # Espacio antes de la tabla
         elementos.append(Spacer(1, 20))
+
+        subtitulo_fecha_consulta = Paragraph(f"<b>Fecha Consulta: </b> {consulta['fecha']}", estilo_datos)
+        elementos.append(subtitulo_fecha_consulta)
+
+        elementos.append(Spacer(1,20))
 
         subtitulo_motivo_consulta = Paragraph(f"<b>Motivo de Consulta:</b>", estilo_subtitulo)
         elementos.append(subtitulo_motivo_consulta)

@@ -9,7 +9,8 @@ class SerializadorIndicacionesMedicas():
                     'hora' : indicacion.hora_indicaciones,
                     'descripcion' : indicacion.descripcion_indicaciones,
                     'id_doctor' : indicacion.id_doctor_cargo,
-                    'id_paciente' : indicacion.id_paciente_indicaciones
+                    'id_paciente' : indicacion.id_paciente_indicaciones,
+                    'id_consulta' : indicacion.id_consulta_indicaciones
                 }
                 lista_indicaciones.append(cuerpo)
             return lista_indicaciones
@@ -24,7 +25,8 @@ class SerializadorIndicacionesMedicas():
                 'hora' : indicacion.hora_indicaciones,
                 'descripcion' : indicacion.descripcion_indicaciones,
                 'id_doctor' : indicacion.id_doctor_cargo,
-                'id_paciente' : indicacion.id_paciente_indicaciones
+                'id_paciente' : indicacion.id_paciente_indicaciones,
+                'id_consulta' : indicacion.id_consulta_indicaciones
             }
             return cuerpo
         else:
