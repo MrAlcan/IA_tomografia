@@ -9,29 +9,19 @@ class RegistroEnfermeria(db.Model):
     fecha_registro = db.Column(db.Date, nullable=True)
     hora_registro = db.Column(db.Time, nullable=True)
     id_enfermera_cargo = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
-<<<<<<< HEAD
     id_consulta_registro = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
 
     def __init__(self, procedimiento, observaciones, fecha, hora, enfermera, consulta,paciente):
-=======
-    id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
-
-    def __init__(self, procedimiento, observaciones, fecha, hora, enfermera,paciente):
->>>>>>> 4347fdaf6bea3dddc3659d521bb45b9779f86abb
         self.procedimiento_enfermeria = procedimiento
         self.observaciones_enfermeria = observaciones
         self.fecha_registro = fecha
         self.hora_registro = hora
         self.id_enfermera_cargo = enfermera
-<<<<<<< HEAD
         self.id_consulta_registro = consulta
         self.id_paciente = paciente
 
 
 
 
-=======
-        self.id_paciente = paciente
->>>>>>> 4347fdaf6bea3dddc3659d521bb45b9779f86abb
 
