@@ -14,8 +14,8 @@ class ServiciosIndicaciones():
             return None
 
     
-    def crear(fecha, hora,descripcion, doctor, paciente):
-        nuevo_resultado = IndicacionesMedicas(fecha, hora,descripcion, doctor, paciente)
+    def crear(fecha, hora,descripcion, doctor,consulta, paciente):
+        nuevo_resultado = IndicacionesMedicas(fecha, hora,descripcion, doctor,consulta, paciente)
         db.session.add(nuevo_resultado)
         db.session.commit()
         respuesta = SerializadorIndicacionesMedicas.serializar_unico(nuevo_resultado)

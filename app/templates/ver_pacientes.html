@@ -73,21 +73,10 @@
                         <!--a href="/control_signos_vitales/pdf/{{paciente.id_paciente}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a-->
                         <br>
                         <br>
-<<<<<<< HEAD
                         
                         <h5 class="text-center">Consultas</h5>
                         <hr>
                         <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="fa fa-file-text"></i> Agregar Consulta</a>
-=======
-
-                        {% if identidad['id_rol']==2 %}
-                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrear"><i class="fa fa-file-text"></i> Agregar Consulta</a>
-                        {% endif %}
-
-                        
-                        
-                        
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
                         <div class="modal fade" id="LongModalLongCrear">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -102,11 +91,6 @@
                                                 <div class="form-group">
                                                     <label for="nombrePaciente">Nombre del Paciente</label>
                                                     <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" value="{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}" readonly>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="input_fecha" class="col-form-label">Fecha Consulta</label>
-                                                    <input class="form-control" name="input_fecha" type="date" value="" id="input_fecha">
                                                 </div>
 
                                                 <div class="form-group">
@@ -213,15 +197,7 @@
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
-<<<<<<< HEAD
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarCons{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
-=======
-                                                        {% if identidad['id_rol']==2 %}
-                                                            <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
-                                                        {% endif %}
-                                                        
-                                                        <li class="mr-3"><a href="/consultas/pdf/{{consulta.id_consulta}}" target="_blank"><i class="fa fa-file-pdf-o"> Generar Informe</i></a></li>
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
                                                         <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
                                                     </ul>
                                                 </td>
@@ -233,7 +209,6 @@
                             </table>
                         </div>
                         {% if consultas %}
-<<<<<<< HEAD
                                     {% for consulta in consultas%}
                                         <div class="modal fade" id="LongModalLongEditarCons{{consulta.id_consulta}}">
                                             <div class="modal-dialog">
@@ -243,21 +218,6 @@
                                                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                                     </div>
                                                     <div class="modal-body">
-=======
-                            {% for consulta in consultas%}
-                                <div class="modal fade" id="LongModalLongEditar{{consulta.id_consulta}}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Editar Consulta</h5>
-                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                
-                                                <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" method="POST" enctype="multipart/form-data">
-                                                    <!--form id="crear_usuario_form"-->
-                                                    <!--
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
                                                         
                                                         <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}" method="POST" enctype="multipart/form-data">
                                                             <!--form id="crear_usuario_form"-->
@@ -357,7 +317,6 @@
                             
                                                             </form>
                                                         
-<<<<<<< HEAD
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
@@ -378,123 +337,6 @@
                         <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl"><i class="ti-plus"></i> Agregar Hoja de Control</a>
                         <br>
                         <br>
-=======
-                                                        
-                                                        <div class="form-group">
-                                                            <label for="nombrePaciente">Nombre del Paciente</label>
-                                                            <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly value="{{consulta.nombres_paciente}} {{consulta.apellido_paterno_paciente}} {{consulta.apellido_materno_paciente}}">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="input_fecha" class="col-form-label">Fecha Consulta</label>
-                                                            <input class="form-control" name="input_fecha" type="date" value="{{consulta.fecha}}" id="input_fecha">
-                                                        </div>
-        
-                                                        <div class="form-group">
-                                                            <label for="input_motivo_consulta" class="col-form-label">Motivo de Consulta</label>
-                                                            <input class="form-control" name="input_motivo_consulta" type="text" value="{{consulta.motivo}}" id="input_motivo_consulta">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_historia_enfermedad" class="col-form-label">Descripción Enfermedad Actual</label>
-                                                            <input class="form-control" type="textarea" value="{{consulta.historia_enfermedad}}" id="input_historia_enfermedad" name="input_historia_enfermedad">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_enfermedades" class="col-form-label">Enfermedades</label>
-                                                            <input class="form-control" type="text" value="{{consulta.enfermedades}}" id="input_enfermedades" name="input_enfermedades">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_tabaco">Consulmo de Tabaco</label>
-                                                            <select class="custom-select" id="input_tabaco" name="input_tabaco">
-                                                                
-                                                                {% if consulta.tabaco == "Si" %}
-                                                                    <option value="Si" selected>Si</option>
-                                                                    <option value="No">No</option>
-                                                                {% else %}
-                                                                    <option value="Si">Si</option>
-                                                                    <option value="No" selected>No</option>
-                                                                {% endif %}
-                                                                
-                                                               
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_alcohol">Consulmo de Alcohol</label>
-                                                            <select class="custom-select" id="input_alcohol" name="input_alcohol">
-                                                                {% if consulta.alcohol == "Si" %}
-                                                                    <option value="Si" selected>Si</option>
-                                                                    <option value="No">No</option>
-                                                                {% else %}
-                                                                    <option value="Si">Si</option>
-                                                                    <option value="No" selected>No</option>
-                                                                {% endif %}
-                                                                
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_drogas">Consulmo de Drogas</label>
-                                                            <select class="custom-select" id="input_drogas" name="input_drogas">
-                                                                {% if consulta.drogas == "Si" %}
-                                                                    <option value="Si" selected>Si</option>
-                                                                    <option value="No">No</option>
-                                                                {% else %}
-                                                                    <option value="Si">Si</option>
-                                                                    <option value="No" selected>No</option>
-                                                                {% endif %}
-                                                                
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_diagnostico" class="col-form-label">Diagnostico</label>
-                                                            <input class="form-control" type="text" value="{{consulta.diagnostico}}" id="input_diagnostico" name="input_diagnostico">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_tratamiento" class="col-form-label">Tratamiento</label>
-                                                            <input class="form-control" type="text" value="{{consulta.tratamiento}}" id="input_tratamiento" name="input_tratamiento">
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label for="input_internacion_paciente">Internación del Paciente</label>
-                                                            <select class="custom-select" id="input_internacion_paciente" name="input_internacion_paciente">
-                                                                {% if consulta.internacion == 1 %}
-                                                                    <option value="1" selected>Si</option>
-                                                                    <option value="0">No</option>
-                                                                {% else %}
-                                                                    <option value="1">Si</option>
-                                                                    <option value="0" selected>No</option>
-                                                                {% endif %}
-                                                                
-                                                            </select>
-                                                        </div>
-        
-                                                        <div class="form-group">
-                                                            <label for="input_codigo_consulta" class="col-form-label">Código de Consulta</label>
-                                                            <input class="form-control" type="text" value="{{consulta.codigo_consulta}}" id="input_codigo_consulta" name="input_codigo_consulta">
-                                                        </div>
-                                                                
-                                                        
-                                                        <button id="boton_agregar_consulta" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
-                        
-                                                    </form>
-                                                
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                                                <!--button for="crear_usuario_form" type="submit" class="btn btn-success">Agregar Usuario</button-->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-
-                        {% if identidad['id_rol']==3 %}
-                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl"><i class="ti-plus"></i> Agregar Hoja de Control</a>
-                        {% endif %}
-
-
-                        
-
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
                         <div class="modal fade" id="LongModalLongCrearHojaControl">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -509,19 +351,6 @@
                                                 <div class="form-group">
                                                     <label for="nombrePaciente">Nombre del Paciente</label>
                                                     <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" value="{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}" readonly>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="consulta">Consulta</label>
-                                                    <select class="custom-select" id="input_consulta" name="input_consulta">
-                                                        <option selected>Seleccione una opcion</option>
-                                                        {% if consultas %}
-                                                            {% for consulta in consultas %}
-                                                                <option value="{{consulta.id_consulta}}">Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                        
-                                                    </select>
                                                 </div>
                                                 
 
@@ -585,12 +414,9 @@
                                                 <td>{{hoja.edad}}</td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        {% if identidad['id_rol']==3 %}
-                                                            <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>    
-                                                        {% endif %}
-                                                        <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>    
+                                                        <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>
                                                         <!--li class="mr-3"><a href="/control_signos_vitales/editar/{{hoja.id_paciente}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
-                                                        
+                                                        <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>
                                                         <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
                                                     </ul>
                                                 </td>
@@ -601,68 +427,6 @@
                                 </tbody>
                             </table>
                         </div>
-<<<<<<< HEAD
-=======
-                        {% if hojas_control %}
-                            {% for editar_hoja in hojas_control %}
-                                <div class="modal fade" id="LongModalLongEditarHojaControl{{editar_hoja.id_hoja}}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Editar Hoja de Control de Signos Vitales</h5>
-                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form id="crear_paciente_form" action="/control_signos_vitales/editar/{{editar_hoja.id_hoja}}/{{editar_hoja.id_paciente}}" method="POST" enctype="multipart/form-data">
-                                                    <!--form id="crear_usuario_form"-->
-                                                        <div class="form-group">
-                                                            <label class="col-form-label">Paciente de la clinica</label>
-                                                            <input class="form-control" value="{{editar_hoja.nombres}} {{editar_hoja.apellido_paterno}} {{editar_hoja.apellido_materno}}" type="text" disabled>
-                                                            <!--select class="custom-select" id="input_paciente" name="input_paciente">
-                                                                <option selected="selected">Selecciona un Paciente</option>
-                                                                {% for paciente in pacientes %}
-                                                                    <option value="{{paciente.id_paciente}}">{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}</option>
-                                                                {% endfor %}
-                                                                        
-                                                            </select-->
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="consulta">Consulta</label>
-                                                            <select class="custom-select" id="input_consulta" name="input_consulta">
-                                                                {% if consultas %}
-                                                                    {% for consulta in consultas %}
-                                                                        {% if consulta.id_consulta==editar_hoja.id_consulta %}
-                                                                            <option value="{{consulta.id_consulta}}" selected>Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
-                                                                        {% else %}
-                                                                            <option value="{{consulta.id_consulta}}">Consulta {{consulta.id_consulta}} en fecha {{consulta.fecha}}</option>
-                                                                        {% endif %}
-                                                                        
-                                                                    {% endfor %}
-                                                                {% endif %}
-                                                                
-                                                            </select>
-                                                        </div>
-
-
-                                                        <div class="form-group">
-                                                            <label for="input_peso" class="col-form-label">Peso</label>
-                                                            <input class="form-control" name="input_peso" type="number" value="{{editar_hoja.peso}}" id="input_peso" min="0" max="400" step="0.01">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_talla" class="col-form-label">Talla</label>
-                                                            <input class="form-control" type="number" value="{{editar_hoja.talla}}" id="input_talla" name="input_talla" min="0" max="250" step="0.01">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_servicio" class="col-form-label">Servicio</label>
-                                                            <input class="form-control" type="text" value="{{editar_hoja.servicio}}" id="input_servicio" name="input_servicio">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="input_pieza" class="col-form-label">Pieza del Paciente</label>
-                                                            <input class="form-control" type="text" value="{{editar_hoja.pieza}}" id="input_pieza" name="input_pieza">
-                                                        </div>      
-                                                        <button id="boton_agregar_hoja" type="submit" class="btn btn-success mb-3">Guardar Cambios</button>
->>>>>>> 8f8b8c3cad73f493ad3d7a27d17af9899ae332fb
                         
                         
                         
@@ -699,6 +463,20 @@
                                                 <div class="form-group">
                                                     <label for="input_servicio" class="col-form-label">Descripcion de Tratamiento</label>
                                                     <input class="form-control" type="text" value="" id="descripcionInd" name="descripcionInd">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="nombrePaciente">Consulta</label>
+                                                    {% if consultas and consultas|length > 0 %}
+                                                        <select class="custom-select" id="consultaInd" name="consultaInd">
+                                                            <option selected="selected">Selecciona el código de Consulta</option>
+                                                            {% for consulta in consultas %} 
+                                                                <option value="{{ consulta.id_consulta }}">{{ consulta.codigo_consulta }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% else %}
+                                                        <input type="text" class="form-control is-invalid danger" value="Cree una consulta primero" readonly>
+                                                    {% endif %}
+
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="input_pieza" class="col-form-label">Doctor</label>
@@ -796,6 +574,20 @@
                                                 <div class="form-group">
                                                     <label for="input_servicio" class="col-form-label">Observaciones</label>
                                                     <input class="form-control" type="text" value="" id="observacionesEnf" name="observacionesEnf">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="nombrePaciente">Consulta</label>
+                                                    {% if consultas and consultas|length > 0 %}
+                                                        <select class="custom-select" id="consultaEnf" name="consultaEnf">
+                                                            <option selected="selected">Selecciona el código de Consulta</option>
+                                                            {% for consulta in consultas %} 
+                                                                <option value="{{ consulta.id_consulta }}">{{ consulta.codigo_consulta }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% else %}
+                                                        <input type="text" class="form-control is-invalid danger" value="Cree una consulta primero" readonly>
+                                                    {% endif %}
+
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="input_pieza" class="col-form-label">Enfermera</label>
@@ -1086,11 +878,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <form action="/tomografia/generar_informe" method="post" target="_blank">
+                    <form action="/tomografia/generar_informe/{{ listamodal.id_diagnostico }}" method="get" target="_blank">
+                        <input type="hidden" name="nombre" value="{{paciente.nombres}} {{paciente.apellido_paterno}} {{paciente.apellido_materno}}">
                         <input type="hidden" name="id_diagnostico" value="{{ listamodal.id_diagnostico }}">
                         <input type="hidden" name="id_paciente" value="{{ listamodal.id_paciente_diagnostico }}">
                         <button id="boton_pdf" type="submit" class="btn btn-success">Generar Informe</button>
                     </form>
+                    
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
                 

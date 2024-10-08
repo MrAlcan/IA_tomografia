@@ -23,9 +23,12 @@ from app.servicios.serviciosResultadoEstudio import ServiciosResultadoEstudio
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Image, Paragraph
 
 
-from flask import request, jsonify
+
 import jwt
 
 import tensorflow as tf
@@ -402,7 +405,7 @@ def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     print(datos)
-    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], datos['input_consulta'], id)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id)
     print(nueva_hoja)
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -417,7 +420,7 @@ def agregar_indicaciones(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     
-    nueva_hoja = ServiciosIndicaciones.crear(datos['fechaInd'], datos['horaInd'], datos['descripcionInd'], datos['doctorInd'], id)
+    nueva_hoja = ServiciosIndicaciones.crear(datos['fechaInd'], datos['horaInd'], datos['descripcionInd'], datos['doctorInd'],datos['consultaInd'], id)
     print(nueva_hoja)
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -431,7 +434,7 @@ def agregar_control_enf(datos_usuario, id):
     datos = request.form
     
     nueva_hoja = ServiciosEnfermeras.crear(datos['procedimientoEnf'], datos['observacionesEnf'], 
-                                             datos['fechaEnf'], datos['horaEnf'], datos['EnfInd'], id)
+                                             datos['fechaEnf'], datos['horaEnf'], datos['EnfInd'] ,datos['consultaEnf'], id)
     
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -490,14 +493,14 @@ def control_signos_vitales_editar(id):
     paciente_control = ServiciosPaciente.obtener_id(editar_hoja_control['id_paciente'])
     return render_template('editar_hoja_control.html', identidad = identidad, editar_hoja = editar_hoja_control, paciente = paciente_control)
 
-@main_bp.route('/control_signos_vitales/editar/<id>/<paciente>', methods=['POST'])
+@main_bp.route('/control_signos_vitales/editar/<id>', methods=['POST'])
 @token_requerido
-def control_signos_vitales_editar_post(datos_usuario, id, paciente):
+def control_signos_vitales_editar_post(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     editar_hoja_control = ServiciosHojaControl.actualizar(id, datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'])
     if editar_hoja_control:
-        return redirect(url_for('main.ver_pacientes', id=paciente)) 
+        return redirect(url_for('main.control_signos_vitales')) 
     else:
         return jsonify({'codigo': 400})
 
@@ -525,7 +528,7 @@ def control_estado_agregar_post(datos_usuario, id):
     #print(datos)
     control_estado_nuevo = ServiciosControlEstado.crear(datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'], id)
     if control_estado_nuevo:
-        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
+        return redirect(url_for('main.control_signos_vitales_ver', id=id))
     else:
         return jsonify({'codigo': 400})
 
@@ -536,7 +539,7 @@ def control_estado_editar_post(datos_usuario, id, hoja):
     datos = request.form
     control_estado_editar = ServiciosControlEstado.actualizar(id, datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'])
     if control_estado_editar:
-        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
     else:
         return jsonify({'codigo': 400})
 
@@ -555,7 +558,7 @@ def control_signo_agregar_post(datos_usuario, id):
     datos = request.form
     control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
     if control_signo_nuevo:
-        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
+        return redirect(url_for('main.control_signos_vitales_ver', id=id))
     else:
         return jsonify({'codigo':400})
     
@@ -790,7 +793,7 @@ def control_signo_editar_post(datos_usuario, id, hoja):
     print(id)
     control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
     if control_signo_editar:
-        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
+        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
     else:
         return jsonify({'codigo':400})
     
@@ -831,57 +834,10 @@ def reportes():
 def generar_reporte_paciente(id):
     
     identidad = get_jwt_identity()
-
-    datos = []
-
-    consultas = ServiciosConsultas.obtener_usuario_paciente_id(id)
-
-    if consultas:
-        for consulta in consultas:
-            id_consulta = consulta['id_consulta']
-            #indicaciones_medicas = obtener_indicaciones(id_consulta)
-            #indicaciones_enfermeras = obtener_indicaciones(id_consulta)
-            hojas_control = ServiciosHojaControl.obtener_todos_consulta(id_consulta)
-            datos_hojas = []
-
-            fecha_inicio = ''
-            fecha_final = ''
-
-            bandera_f_i = True
-
-            if hojas_control:
-                for hoja in hojas_control:
-                    id_hoja = hoja['id_hoja']
-                    estados = ServiciosControlEstado.obtener_hoja(id_hoja)
-                    signos = ServiciosControlSignos.obtener_hoja(id_hoja)
-                    if bandera_f_i:
-                        fecha_inicio = str(estados[0]['fecha'])
-                        bandera_f_i=False
-                    fecha_final = str(estados[len(estados)-1]['fecha'])
-                    cuerpo_hojas = {
-                        'hoja' : hoja,
-                        'estados' : estados,
-                        'signos' : signos
-                    }
-                    datos_hojas.append(cuerpo_hojas)
-
-            cuerpo = {
-                'consulta' : consulta,
-                'fecha_inicio' : fecha_inicio,
-                'fecha_final' : fecha_final,
-                'hojas' : datos_hojas
-            }
-            datos.append(cuerpo)
-
     nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
-    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario, datos)
-    response = make_response(respuesta.read())
-    response.headers['Content-Type'] = 'application/pdf'
-    #response.headers['Content-Disposition'] = f'inline; filename="hoja_signos_vitales_{hoja_control["nombres"]}_{hoja_control["apellido_paterno"]}.pdf"'
+    respuesta = ServiciosPaciente.generar_reporte_completo(id, nombre_usuario)
 
-    return response
-
-    #return redirect(url_for('main.control_signos_vitales_ver', id=id))
+    return redirect(url_for('main.control_signos_vitales_ver', id=id))
 
 
 
@@ -910,100 +866,46 @@ def consultas_agregar(datos_usuario):
 def consultas_agregar_pacientes(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
-    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], doctor=identidad['id_usuario'], paciente=id, internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'], fecha=datos['input_fecha'])
+    nueva_consulta = ServiciosConsultas.crear(motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], doctor=identidad['id_usuario'], paciente=id, internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
     if nueva_consulta:
         return redirect(url_for('main.ver_pacientes', id=id))
     else:
         return jsonify({'codigo': 400})
 
-@main_bp.route('/consultas/editar/<id>/<paciente>', methods=['POST'])
+@main_bp.route('/consultas/editar/<id>', methods=['POST'])
 @token_requerido
-def consultas_editar(datos_usuario, id, paciente):
+def consultas_editar(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
-    consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=datos['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'], fecha=datos['input_fecha'])
+    consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
     if consulta_editar:
-        return redirect(url_for('main.ver_pacientes', id=paciente))
+        return redirect(url_for('main.consultas'))
     else:
         return jsonify({'codigo': 400})
     
-@main_bp.route('/tomografia/generar_informe', methods=['POST'])
-def generar_informe_tomografia():
-    id_diagnostico = request.form['id_diagnostico']
-    id_paciente = request.form['id_paciente']
+@main_bp.route('/tomografia/generar_informe/<id>', methods=['GET'])
+@jwt_required()  # Valida el token JWT
+def generar_informe_tomografia(id):  # Asegúrate de recibir 'id' como argumento
+    identidad = get_jwt_identity()  # Obtiene la identidad del token JWT
+
+    # Ahora accede a los datos del formulario a través de request.args
+    id_diagnostico = request.args.get('id_diagnostico')  # Cambia a request.args
+    id_paciente = request.args.get('id_paciente')
+    nombre_paciente = request.args.get('nombre')           # Cambia a request.args
+    
+    nombre_usuario = f"{identidad['nombres_completos']} {identidad['apellido_paterno']} {identidad['apellido_materno']}"
+    
+  
+
+    # Obtener el listado de estudios relacionados con el paciente
     listado2 = ServiciosResultadoEstudio.obtener_lista_id(id_paciente)
 
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    y_position = height - 40  
+    # Generar el informe PDF
+    buffer = ServiciosHojaControl.generar_informe_tomografia_pdf(id_diagnostico, id_paciente, listado2, nombre_usuario,nombre_paciente)
 
-    for resultado in listado2:
-        if str(resultado['id_diagnostico']) != str(id_diagnostico):
-            continue  
-
-        c.setFont("Helvetica-Bold", 12)
-        if resultado['resultado_estudio'] == 1:
-            c.drawString(100, y_position, "CON TUMOR")
-        else:
-            c.drawString(100, y_position, "SIN TUMOR")
-        y_position -= 20
-
-        c.setFont("Helvetica", 10)
-        c.drawString(100, y_position, f"Paciente: {resultado['nombres_paciente']} {resultado['apellido_paterno_paciente']} {resultado['apellido_materno_paciente']}")
-        y_position -= 20
-        c.drawString(100, y_position, f"Fecha de Estudio: {resultado['fecha_estudio']}")
-        y_position -= 20
-
-        ruta_relativa = os.path.join('app', 'static', 'imagenes')
-        ruta = os.path.abspath(ruta_relativa)
-        imagen_path = os.path.join(ruta, resultado['ruta_carpeta_imagenes_estudio'])
-        
-        if os.path.exists(imagen_path):
-            c.drawString(100, y_position, f"Ruta de Imagen: {resultado['ruta_carpeta_imagenes_estudio']}")
-            y_position -= 20
-
-            try:
-                c.drawImage(imagen_path, 100, y_position - 150, width=200, height=150)
-                y_position -= 170
-            except Exception as e:
-                print(f"Error al cargar la imagen: {e}")
-                c.drawString(100, y_position, "no se pudo cargar la imagen")
-                y_position -= 20
-        else:
-            c.drawString(100, y_position, "imagen no encontrada")
-            y_position -= 20
-
-        if y_position < 50:
-            c.showPage()
-            y_position = height - 40
-
-    c.save()
-    buffer.seek(0)
-
-    return send_file(buffer, as_attachment=False, mimetype='application/pdf')
-
-    
-@main_bp.route('/consultas/pdf/<id>', methods=['GET'])
-@jwt_required()
-def consultas_pdf(id):
-    identidad = get_jwt_identity()
-    consulta = ServiciosConsultas.obtener_usuario_paciente(id)
-
-    nombre_usuario = identidad['nombres_completos'] + ' ' + identidad['apellido_paterno'] + ' ' + identidad['apellido_materno']
-      
-    respuesta = ServiciosConsultas.generar_informe(consulta, nombre_usuario)
-
-
-    print('-'*50)
-    print('DEBUG')
-    print(respuesta)
-    print(len(respuesta.getvalue()))
-
-    response = make_response(respuesta.read())
+    # Crear la respuesta para que el PDF se abra en el navegador
+    response = make_response(buffer.getvalue())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename="consulta_{consulta["nombres_paciente"]}_{consulta["apellido_paterno_paciente"]}_{consulta["id_consulta"]}.pdf"'
+    response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
 
     return response
-    
-    #return redirect(url_for('main.control_signos_vitales_ver', id=id))

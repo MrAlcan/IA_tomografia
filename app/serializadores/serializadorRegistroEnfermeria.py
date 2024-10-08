@@ -42,6 +42,7 @@ class SerializadorRegistroEnfermeria():
                     'hora_enf' : registros.hora_registro,
                     'observaciones_enf' : registros.observaciones_enfermeria,
                     'procedimiento_enf' : registros.procedimiento_enfermeria,
+                    'id_consulta' : registros.id_consulta_registro,
                     'id_paciente': paciente.id_paciente,
                     'nombres_paciente' : paciente.nombres_paciente,
                     'apellido_paterno_paciente' : paciente.apellido_paterno_paciente,
@@ -102,6 +103,7 @@ class SerializadorRegistroEnfermeria():
                 'observaciones_enf' : consulta.observaciones_enfermeria,
                 'procedimiento_enf' : consulta.procedimiento_enfermeria,
                 'enfermera': consulta.id_enfermera_cargo,
+                'id_consulta': consulta.id_consulta_registro,
                 'id_pcaiente': consulta.id_paciente
             }
             return cuerpo

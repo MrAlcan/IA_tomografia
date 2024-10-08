@@ -14,8 +14,8 @@ class ServiciosEnfermeras():
         else:
             return None
         
-    def crear(procedimiento, observaciones, fecha, hora,id_enfermera, paciente):
-        nuevo_resultado = RegistroEnfermeria(procedimiento, observaciones, fecha, hora,id_enfermera, paciente)
+    def crear(procedimiento, observaciones, fecha, hora,id_enfermera,consulta, paciente):
+        nuevo_resultado = RegistroEnfermeria(procedimiento, observaciones, fecha, hora, id_enfermera,consulta, paciente)
         db.session.add(nuevo_resultado)
         db.session.commit()
         respuesta = SerializadorRegistroEnfermeria.serializar_unico(nuevo_resultado)

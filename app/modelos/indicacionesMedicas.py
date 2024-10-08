@@ -9,10 +9,13 @@ class IndicacionesMedicas(db.Model):
     descripcion_indicaciones = db.Column(db.Text, nullable = False)
     id_doctor_cargo = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
     id_consulta_indicaciones = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
+    id_paciente_indicaciones = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
 
-    def __init__(self, fecha, hora, descripcion, doctor_cargo, consulta):
+    def __init__(self, fecha, hora, descripcion, doctor_cargo, consulta,paciente):
         self.fecha_indicaciones = fecha
         self.hora_indicaciones = hora
         self.descripcion_indicaciones = descripcion
         self.id_doctor_cargo = doctor_cargo
         self.id_consulta_indicaciones = consulta
+        self.id_paciente_indicaciones = paciente
+        

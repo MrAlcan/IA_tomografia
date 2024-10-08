@@ -339,3 +339,111 @@ class ServiciosHojaControl():
         return buffer
 
         #return 200
+
+
+    def generar_informe_tomografia_pdf(id_diagnostico, id_paciente, listado2, nombre_usuario,nombre_paciente):
+        buffer = BytesIO()
+        pdf = SimpleDocTemplate(buffer, pagesize=letter)
+        elementos = []
+
+        estilos = getSampleStyleSheet()
+        estilo_titulo = ParagraphStyle('Titulo', fontSize=18, alignment=1, fontName="Helvetica-Bold", underline=True)
+        estilo_subtitulo_2 = ParagraphStyle('Subtitulo', fontSize=15, alignment=0)  
+        estilo_subtitulo = ParagraphStyle('Subtitulo', fontSize=10, alignment=0) 
+        estilo_datos = estilos['Normal']
+
+
+
+        logo_direccion = os.path.join(os.getcwd(), 'app', 'static', 'assets', 'images', 'logo.png')
+        imagen_logo = Image(logo_direccion, 2 * inch, 1 * inch)  
+
+        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        generado_por = Paragraph(f"<b>Generado por:</b> {nombre_usuario}<br/><b>Fecha de generación:</b> {fecha_actual}", estilo_subtitulo)
+        # Agregar elementos al PDF
+        elementos.append(Spacer(1, 55))
+       
+        elementos.append(Spacer(1, 20))
+
+        def add_header(canvas, doc):
+            width, height = letter
+            imagen_logo.drawOn(canvas, (0.5 * inch), height - (0.5 * inch) - imagen_logo.drawHeight)
+            titulo_x = width / 2  
+            titulo_y = height - (2.0 * inch) 
+            canvas.setFont("Helvetica-Bold", 18)
+            canvas.drawString(titulo_x - 120, titulo_y, "Informe de Estudio Realizado")
+            posicion_texto_x = (0.3*inch)
+            posicion_texto_y = (0.3*inch)
+            generado_por.wrapOn(canvas, width, height)
+            generado_por.drawOn(canvas, posicion_texto_x, posicion_texto_y)
+
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>Nombre del Paciente:</b> {nombre_paciente}", estilo_datos))
+        elementos.append(Spacer(1, 30))
+        conta=0
+        contaT=0
+        contaS=0
+        for resultado in listado2:
+            if str(resultado['id_diagnostico']) != str(id_diagnostico):
+                continue  
+
+            conta=conta+1
+            
+            if resultado['resultado_estudio'] == 1:
+                diagnostico_texto = "CON TUMOR" 
+                contaT=contaT+1
+            else:
+                diagnostico_texto = "SIN TUMOR" 
+                contaS=contaS+1
+
+            elementos.append(Paragraph(f"<b>Imagen Evaluada Nro:</b> {conta}", estilo_datos))
+            elementos.append(Spacer(1, 5))
+            elementos.append(Paragraph(f"<b>Diagnóstico:</b> {diagnostico_texto}", estilo_datos))
+            elementos.append(Spacer(1, 5))
+            info_paciente = (
+                f"Fecha de Estudio: {resultado['fecha_estudio']}"
+            )
+            elementos.append(Paragraph(info_paciente, estilo_datos))
+            elementos.append(Spacer(1, 5))
+
+            ruta_relativa = os.path.join('app', 'static', 'imagenes')
+            ruta = os.path.abspath(ruta_relativa)
+            imagen_path = os.path.join(ruta, resultado['ruta_carpeta_imagenes_estudio'])
+            
+            if os.path.exists(imagen_path):
+                elementos.append(Paragraph(f"<b>Ruta de Imagen:</b> {resultado['ruta_carpeta_imagenes_estudio']}", estilo_datos))
+                try:
+                    elementos.append(Spacer(1, 20))
+                    imagen = Image(imagen_path, 2 * inch, 2 * inch)
+                    elementos.append(imagen)
+                    if(conta%2==0):
+                        elementos.append(Spacer(1, 90))
+                    else:
+                        elementos.append(Spacer(1, 30))
+                except Exception as e:
+                    print(f"Error al cargar la imagen: {e}")
+                    elementos.append(Paragraph("Error al cargar la imagen", estilo_datos))
+            else:
+                elementos.append(Paragraph("Imagen no encontrada", estilo_datos))
+            
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>RESUMEN DIAGNOSTICO</b> ", estilo_subtitulo_2))
+        elementos.append(Spacer(1, 25))
+        elementos.append(Paragraph(f"<b>Nombre del Paciente:</b> {nombre_paciente}", estilo_datos))
+        elementos.append(Spacer(1, 5))
+        elementos.append(Paragraph(f"<b>Numero de Imagenes:</b> {conta}", estilo_datos))
+        elementos.append(Spacer(1, 5))
+        elementos.append(Paragraph(f"<b>Numero de Imagenes con Tumor:</b> {contaT}", estilo_datos))
+        elementos.append(Spacer(1, 5))
+        elementos.append(Paragraph(f"<b>Numero de Imagenes sin Tumor:</b> {contaS}", estilo_datos))
+        elementos.append(Spacer(1, 5))
+        
+            
+        elementos.append(Spacer(1, 5))
+        dato = (contaT * 100.0) / conta
+        elementos.append(Paragraph(f"<b>Probabilidad de Tumor:</b> {dato:.2f}%", estilo_datos))
+        
+        pdf.build(elementos, onFirstPage=add_header, onLaterPages=add_header)
+        buffer.seek(0)
+
+        return buffer
