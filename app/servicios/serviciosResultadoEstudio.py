@@ -19,7 +19,7 @@ class ServiciosResultadoEstudio():
         
     @staticmethod
     def obtener_todos():
-        datos = ResultadoEstudio.query.all()
+        datos = ResultadoEstudio.query.filter_by(activo = 1)
         resultados = []
         for resultado in datos:
             datos_resultado = {
@@ -74,7 +74,7 @@ class ServiciosResultadoEstudio():
         datos = db.session.query(Paciente, ResultadoEstudio, Usuario)\
             .join(ResultadoEstudio, Paciente.id_paciente == ResultadoEstudio.id_paciente_estudio)\
             .join(Usuario, ResultadoEstudio.id_doctor_estudio == Usuario.id_usuario)\
-            .filter(Paciente.id_paciente==id)
+            .filter(Paciente.id_paciente==id, ResultadoEstudio.activo==1)
         respuesta = ResultadoEstudioSchema.serializar_todos_vista(datos)
         print(respuesta)
         if respuesta:
@@ -82,3 +82,8 @@ class ServiciosResultadoEstudio():
         else:
             return None
         
+    def eliminar(id):
+        datos = ResultadoEstudio.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True

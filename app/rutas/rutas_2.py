@@ -405,7 +405,7 @@ def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     print(datos)
-    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id, datos['input_consulta'])
     print(nueva_hoja)
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -493,14 +493,14 @@ def control_signos_vitales_editar(id):
     paciente_control = ServiciosPaciente.obtener_id(editar_hoja_control['id_paciente'])
     return render_template('editar_hoja_control.html', identidad = identidad, editar_hoja = editar_hoja_control, paciente = paciente_control)
 
-@main_bp.route('/control_signos_vitales/editar/<id>', methods=['POST'])
+@main_bp.route('/control_signos_vitales/editar/<id>/<idPac>', methods=['POST'])
 @token_requerido
-def control_signos_vitales_editar_post(datos_usuario, id):
+def control_signos_vitales_editar_post(datos_usuario, id, idPac):
     identidad = datos_usuario
     datos = request.form
     editar_hoja_control = ServiciosHojaControl.actualizar(id, datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'])
     if editar_hoja_control:
-        return redirect(url_for('main.control_signos_vitales')) 
+        return redirect(url_for('main.ver_pacientes', id=idPac)) 
     else:
         return jsonify({'codigo': 400})
 
@@ -528,7 +528,7 @@ def control_estado_agregar_post(datos_usuario, id):
     #print(datos)
     control_estado_nuevo = ServiciosControlEstado.crear(datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'], id)
     if control_estado_nuevo:
-        return redirect(url_for('main.control_signos_vitales_ver', id=id))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
     else:
         return jsonify({'codigo': 400})
 
@@ -539,7 +539,7 @@ def control_estado_editar_post(datos_usuario, id, hoja):
     datos = request.form
     control_estado_editar = ServiciosControlEstado.actualizar(id, datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'])
     if control_estado_editar:
-        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
     else:
         return jsonify({'codigo': 400})
 
@@ -558,7 +558,7 @@ def control_signo_agregar_post(datos_usuario, id):
     datos = request.form
     control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
     if control_signo_nuevo:
-        return redirect(url_for('main.control_signos_vitales_ver', id=id))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
     else:
         return jsonify({'codigo':400})
     
@@ -793,7 +793,7 @@ def control_signo_editar_post(datos_usuario, id, hoja):
     print(id)
     control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
     if control_signo_editar:
-        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
     else:
         return jsonify({'codigo':400})
     
@@ -872,14 +872,14 @@ def consultas_agregar_pacientes(datos_usuario, id):
     else:
         return jsonify({'codigo': 400})
 
-@main_bp.route('/consultas/editar/<id>', methods=['POST'])
+@main_bp.route('/consultas/editar/<id>/<idPac>', methods=['POST'])
 @token_requerido
-def consultas_editar(datos_usuario, id):
+def consultas_editar(datos_usuario, id, idPac):
     identidad = datos_usuario
     datos = request.form
     consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
     if consulta_editar:
-        return redirect(url_for('main.consultas'))
+        return redirect(url_for('main.ver_pacientes', id = idPac))
     else:
         return jsonify({'codigo': 400})
     
@@ -909,3 +909,71 @@ def generar_informe_tomografia(id):  # Asegúrate de recibir 'id' como argumento
     response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
 
     return response
+
+
+
+@main_bp.route('/usuarios/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_usuario(id):
+    respuesta = ServiciosUsuario.eliminar(id)
+    return redirect(url_for('main.usuarios'))
+
+@main_bp.route('/pacientes/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_paciente(id):
+    respuesta = ServiciosPaciente.eliminar(id)
+    return redirect(url_for('main.pacientes'))
+
+@main_bp.route('/indicaciones/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_indicacion_medica(id, idPac):
+    respuesta = ServiciosIndicaciones.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/controles/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_controles_enf(id, idPac):
+    respuesta = ServiciosEnfermeras.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+@main_bp.route('/diagnosticos/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_diagnosticos(id, idPac):
+    respuesta = ServiciosDiagnostico.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/consultas/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_consultas(id, idPac):
+    respuesta = ServiciosConsultas.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+@main_bp.route('/hoja/control/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_hoja_control(id, idPac):
+    respuesta = ServiciosHojaControl.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/control/estados/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_control_estado(id, idPac):
+    respuesta = ServiciosControlEstado.eliminar(id)
+    return redirect(url_for('main.ver_hoja_pacientes_control', id=idPac))
+
+
+
+@main_bp.route('/control/signos/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_control_signos(id, idPac):
+    respuesta = ServiciosControlSignos.eliminar(id)
+    return redirect(url_for('main.ver_hoja_pacientes_control', id=idPac))
+
+
+@main_bp.route('/resultados/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_resultados(id):
+    respuesta = ServiciosResultadoEstudio.eliminar(id)
+    return redirect(url_for('main.tomografia_listar'))

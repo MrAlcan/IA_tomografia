@@ -11,6 +11,8 @@ class IndicacionesMedicas(db.Model):
     id_consulta_indicaciones = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
     id_paciente_indicaciones = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, fecha, hora, descripcion, doctor_cargo, consulta,paciente):
         self.fecha_indicaciones = fecha
         self.hora_indicaciones = hora

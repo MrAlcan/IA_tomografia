@@ -53,6 +53,7 @@ class SerializadorDiagnostico:
                     'seguro_paciente' : paciente.seguro_paciente,
                     'fecha_nacimiento_paciente' : paciente.fecha_nacimiento_paciente,
                     'edad_paciente' : paciente.edad_paciente,
+                    
                     'nombres_usuario' : usuario.nombres_usuario,
                     'apellido_paterno_usuario' : usuario.apellido_paterno_usuario,
                     'apellido_materno_usuario' : usuario.apellido_materno_usuario,

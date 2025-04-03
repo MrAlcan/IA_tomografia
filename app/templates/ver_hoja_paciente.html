@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <br>
-                        <a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a>
+                        <!--a href="/control_signos_vitales/pdf/{{hoja.id_hoja}}" target="_blank"><button type="button" class="btn btn-outline-info mb-3"><i class="fa fa-file-pdf-o"> Generar Informe</i></button></a-->
                         
                         <br>
                         <br>
@@ -163,7 +163,7 @@
                                                         <ul class="d-flex justify-content-center">
                                                             <!--li class="mr-3"><a href="/control_signos_vitales/editar_estado/{{estado.id_control_estado}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
                                                             <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarEstado{{estado.id_control_estado}}"><i class="fa fa-edit"></i></a></li>
-                                                            <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                            <li><a href="/control/estados/eliminar/{{estado.id_control_estado}}/{{estado.id_hoja}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                         </ul>
                                                     </td>
                                                 {% endif %}
@@ -359,7 +359,7 @@
                                                             <ul class="d-flex justify-content-center">
                                                                 <!--li class="mr-3"><a href="/control_signos_vitales/editar_signo/{{signo.id_control_signos}}" class="text-secondary"><i class="fa fa-edit"></i></a></li-->
                                                                 <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarSigno{{signo.id_control_signos}}"><i class="fa fa-edit"></i></a></li>
-                                                                <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                                <li><a href="/control/signos/eliminar/{{signo.id_control_signos}}/{{signo.id_hoja}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                             </ul>
                                                         </td>
                                                     {% endif %}

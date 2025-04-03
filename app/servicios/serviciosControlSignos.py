@@ -4,7 +4,7 @@ from app.serializadores.serializadorControlSignos import SerializadorControlSign
 
 class ServiciosControlSignos():
     def obtener_todos():
-        controles_signos = ControlSignos.query.all()
+        controles_signos = ControlSignos.query.filter_by(activo = 1)
         respuesta = SerializadorControlSignos.serializar(controles_signos)
         if respuesta:
             return respuesta
@@ -20,7 +20,7 @@ class ServiciosControlSignos():
             return None
     
     def obtener_hoja(id_hoja):
-        control_signo = ControlSignos.query.filter_by(id_hoja_signos=id_hoja)
+        control_signo = ControlSignos.query.filter_by(id_hoja_signos=id_hoja, activo = 1)
         respuesta = SerializadorControlSignos.serializar(control_signo)
         if respuesta:
             return respuesta
@@ -69,3 +69,9 @@ class ServiciosControlSignos():
                 return None
         else:
             return None
+
+    def eliminar(id):
+        datos = ControlSignos.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True

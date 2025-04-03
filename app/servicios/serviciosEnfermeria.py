@@ -7,7 +7,7 @@ from app.configuraciones.extensiones import db
 
 class ServiciosEnfermeras():
     def obtener_todos():
-        lista = RegistroEnfermeria.query.all()
+        lista = RegistroEnfermeria.query.filter_by(activo = 1)
         respuesta = SerializadorRegistroEnfermeria.serializar(lista)
         if respuesta:
             return respuesta
@@ -29,7 +29,7 @@ class ServiciosEnfermeras():
         datos = db.session.query(Paciente, RegistroEnfermeria, Usuario)\
             .join(RegistroEnfermeria, Paciente.id_paciente == RegistroEnfermeria.id_paciente)\
             .join(Usuario, RegistroEnfermeria.id_enfermera_cargo == Usuario.id_usuario)\
-            .filter(Paciente.id_paciente==id)
+            .filter(Paciente.id_paciente==id, RegistroEnfermeria.activo==1)
         respuesta = SerializadorRegistroEnfermeria.serializar_todos_vista(datos)
         print(respuesta)
         if respuesta:
@@ -60,3 +60,8 @@ class ServiciosEnfermeras():
             return None
         
 
+    def eliminar(id):
+        datos = RegistroEnfermeria.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True

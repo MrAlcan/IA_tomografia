@@ -13,6 +13,8 @@ class Usuario(db.Model):
     cargo_usuario = db.Column(db.String(30), nullable=False)
     id_rol_usuario = db.Column(db.Integer, db.ForeignKey('roles.id_rol'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, nombre_cuenta, contrasena, nombres, apellido_paterno, apellido_materno, carnet, cargo, rol):
         self.nombre_cuenta_usuario = nombre_cuenta
         self.contrasena_usuario = contrasena

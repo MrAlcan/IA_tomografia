@@ -12,6 +12,8 @@ class HojaControl(db.Model):
     id_paciente_hoja = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     id_consulta_hoja = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, peso, talla, servicio, numero, pieza, paciente, consulta):
         self.peso_paciente = peso
         self.talla_paciente = talla

@@ -51,9 +51,12 @@
                                     <label for="codigoPaciente">Código de Paciente</label>
                                     <select class="custom-select" id="codigoPaciente" name="codigoPaciente">
                                         <option selected="selected">Selecciona el codigo del Paciente</option>
-                                        {% for paciente in pacientes %}
-                                            <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
-                                        {% endfor %}
+                                        {% if pacientes %}
+                                            {% for paciente in pacientes %}
+                                                <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                        
                                     </select>
                                 </div>
                                 
@@ -65,9 +68,11 @@
                                     <label for="nombrePaciente">Consulta</label>
                                     <select class="custom-select" id="idConsulta" name="idConsulta">
                                         <option selected="selected">Selecciona el codigo de Consulta</option>
-                                        {% for consulta in consultas %}
-                                            <option value="{{consulta.id_consulta}}">{{consulta.codigo_consulta}}</option>
-                                        {% endfor %}
+                                        {% if consultas %}
+                                            {% for consulta in consultas %}
+                                                <option value="{{consulta.id_consulta}}">{{consulta.codigo_consulta}}</option>
+                                            {% endfor %}
+                                        {% endif %}
                                                 
                                     </select>
                                 </div>

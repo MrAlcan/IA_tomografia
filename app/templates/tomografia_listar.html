@@ -82,7 +82,7 @@
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
                                                         </li>
-                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                        <li><a href="/resultados/eliminar/{{lista.id_resultado}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                                 <td>
@@ -161,11 +161,13 @@
                                     
                                     <select class="custom-select" id="codigoModal2" name="codigoModal2">
                                         <option value="">{{lista.paciente.carnet}}</option>
-                                        {% for paciente in pacientes %}
-                                            <option value="{{ lista.paciente.id_paciente }}" {% if lista.paciente.id_paciente == lista.paciente.id_paciente %}selected{% endif %}>
-                                                {{ paciente.carnet }}
-                                            </option>
-                                        {% endfor %}
+                                        {% if pacientes %}
+                                            {% for paciente in pacientes %}
+                                                <option value="{{ lista.paciente.id_paciente }}" {% if lista.paciente.id_paciente == lista.paciente.id_paciente %}selected{% endif %}>
+                                                    {{ paciente.carnet }}
+                                                </option>
+                                            {% endfor %}
+                                        {% endif %}
                                     </select>
                                 </div>
                                 <div class="form-group">

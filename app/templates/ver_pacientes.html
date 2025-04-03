@@ -209,7 +209,7 @@
                                                         {% endif %}
                                                         <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
                                                         <!--li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarCons{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li-->
-                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                        <li><a href="/consultas/eliminar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                             </tr>
@@ -230,7 +230,7 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         
-                                                        <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}" method="POST" enctype="multipart/form-data">
+                                                        <form id="crear_paciente_form" action="/consultas/editar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" method="POST" enctype="multipart/form-data">
                                                             <!--form id="crear_usuario_form"-->
                                                             <!--
                                                                 
@@ -452,7 +452,7 @@
                                                         {% endif %}
                                                         <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>
                                                         
-                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
+                                                        <li><a href="/hoja/control/eliminar/{{hoja.id_hoja}}/{{hoja.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                             </tr>
@@ -541,7 +541,9 @@
                         <br>
                         <h5 class="text-center">Indicaciones Medicas</h5>
                         <hr>
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl2"><i class="ti-plus"></i> Agregar Indicacion</a>
+                        {% if identidad['id_rol']==2 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl2"><i class="ti-plus"></i> Agregar Indicacion</a>
+                        {% endif %}
                         <div class="modal fade" id="LongModalLongCrearHojaControl2">
                             <div class="modal-dialog">
                                 <form id="crear_indicacion" action="/pacientes/indicaciones/agregar/{{paciente.id_paciente}}" method="POST" enctype="multipart/form-data">
@@ -635,7 +637,7 @@
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlInd{{indicacion.id_indicacion}}"><i class="fa fa-edit"></i></a></li>
-                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                        <li><a href="/indicaciones/eliminar/{{indicacion.id_indicacion}}/{{indicacion.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                             </tr>
@@ -650,7 +652,9 @@
                         <br>
                         <h5 class="text-center">Control de Enfermeras</h5>
                         <hr>
-                        <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl5"><i class="ti-plus"></i> Agregar Control</a>
+                        {% if identidad['id_rol']==3 %}
+                            <a href="" class="text-success" type="button" data-toggle="modal" data-target="#LongModalLongCrearHojaControl5"><i class="ti-plus"></i> Agregar Control</a>
+                        {% endif %}
                         <div class="modal fade" id="LongModalLongCrearHojaControl5">
                             <div class="modal-dialog">
                                 <form id="crear_indicacion" action="/pacientes/enfermeras/agregar/{{paciente.id_paciente}}" method="POST" enctype="multipart/form-data">
@@ -749,7 +753,7 @@
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlEnf{{control.id_enf}}"><i class="fa fa-edit"></i></a></li>
-                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                        <li><a href="/controles/eliminar/{{control.id_enf}}/{{control.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                             </tr>
@@ -911,12 +915,12 @@
                                                 </td>
                                                 <td>
                                                     <ul class="d-flex justify-content-center">
-                                                        <li class="mr-3">
+                                                        <!--li class="mr-3">
                                                             <a href="#" class="text-secondary edit-button" data-toggle="modal" data-target="#LongModalLongEditar{{lista.id_resultado}}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
-                                                        </li>
-                                                        <li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                        </li-->
+                                                        <li><a href="/diagnosticos/eliminar/{{lista.id_diagnostico}}/{{lista.id_paciente_diagnostico}}" class="text-danger"><i class="ti-trash"></i></a></li>
                                                     </ul>
                                                 </td>
                                                 

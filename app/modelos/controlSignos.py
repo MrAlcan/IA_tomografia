@@ -13,6 +13,8 @@ class ControlSignos(db.Model):
     diuresis_control = db.Column(db.Integer, nullable=False)
     catarsis_control = db.Column(db.Integer, nullable=False)
     id_hoja_signos = db.Column(db.Integer, db.ForeignKey('hoja_control.id_hoja_control'), nullable=False)
+    
+    activo = db.Column(db.Integer, default=1)
     #id_registro_control = db.Column(db.Integer, db.ForeignKey('registro_enfermeria.id_registro_enfermeria', nullable=False))
 
     #def __init__(self, fecha, hora, presion_sistolica, presion_diastolica, respiracion, saturacion, diuresis, catarsis, hoja_control, registro_enfermeria):

@@ -12,6 +12,8 @@ class Paciente(db.Model):
     fecha_nacimiento_paciente = db.Column(db.Date, nullable=True)
     edad_paciente = db.Column(db.Integer, nullable=True)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, nombres, apellido_paterno, apellido_materno, carnet, seguro, fecha_nacimiento, edad):
         self.nombres_paciente = nombres
         self.apellido_paterno_paciente = apellido_paterno

@@ -7,6 +7,8 @@ class Rol(db.Model):
     nombre_rol = db.Column(db.String(50), nullable=False)
     descripcion_rol = db.Column(db.String(50), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, nombre, descripcion):
         self.nombre_rol = nombre
         self.descripcion_rol = descripcion

@@ -4,7 +4,7 @@ from app.serializadores.serializadorControlEstado import SerializadorControlEsta
 
 class ServiciosControlEstado():
     def obtener_todos():
-        controles_estado = ControlEstado.query.all()
+        controles_estado = ControlEstado.query.filter_by(activo = 1)
         respuesta = SerializadorControlEstado.serializar(controles_estado)
         if respuesta:
             return respuesta
@@ -20,7 +20,7 @@ class ServiciosControlEstado():
             return None
     
     def obtener_hoja(id_hoja):
-        control_estado = ControlEstado.query.filter_by(id_hoja_control_estado = id_hoja)
+        control_estado = ControlEstado.query.filter_by(id_hoja_control_estado = id_hoja, activo = 1)
         respuesta = SerializadorControlEstado.serializar(control_estado)
         if respuesta:
             return respuesta
@@ -65,3 +65,9 @@ class ServiciosControlEstado():
                 return None
         else:
             return None
+        
+    def eliminar(id):
+        datos = ControlEstado.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True

@@ -16,6 +16,8 @@ class ResultadoEstudio(db.Model):
     id_consulta_estudio = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
     id_diagnostico = db.Column(db.Integer, db.ForeignKey('diagnostico.id_diagnostico'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     # Relaciones
     doctor = db.relationship('Usuario', backref='resultados_estudios')  
     paciente = db.relationship('Paciente', backref='resultados_estudios')  

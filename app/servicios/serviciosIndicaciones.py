@@ -6,7 +6,7 @@ from app.configuraciones.extensiones import db
 
 class ServiciosIndicaciones():
     def obtener_todos():
-        lista = IndicacionesMedicas.query.all()
+        lista = IndicacionesMedicas.query.filter_by(activo = 1)
         respuesta = SerializadorIndicacionesMedicas.serializar(lista)
         if respuesta:
             return respuesta
@@ -30,7 +30,7 @@ class ServiciosIndicaciones():
         datos = db.session.query(Paciente, IndicacionesMedicas, Usuario)\
             .join(IndicacionesMedicas, Paciente.id_paciente == IndicacionesMedicas.id_paciente_indicaciones)\
             .join(Usuario, IndicacionesMedicas.id_doctor_cargo == Usuario.id_usuario)\
-            .filter(Paciente.id_paciente==id)
+            .filter(Paciente.id_paciente==id, IndicacionesMedicas.activo==1)
         respuesta = SerializadorIndicacionesMedicas.serializar_todos_vista(datos)
         print(respuesta)
         if respuesta:
@@ -59,3 +59,9 @@ class ServiciosIndicaciones():
             return respuesta
         else:
             return None
+        
+    def eliminar(id):
+        datos = IndicacionesMedicas.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True
