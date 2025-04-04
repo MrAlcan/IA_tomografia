@@ -203,14 +203,17 @@
                                                 <td>{{consulta.motivo}}</td>
                                                 <td>{{consulta.diagnostico}}</td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
+                                                    {% if identidad['id_rol']==2 %}
+                                                        <a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarCons{{consulta.id_consulta}}">Editar <i class="fa fa-edit"></i></a>
+                                                        <br>
+                                                    {% endif %}
+                                                    <a href="/consultas/eliminar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" class="text-danger">Eliminar <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center">
                                                         {% if identidad['id_rol']==2 %}
                                                             <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarCons{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li>
                                                         {% endif %}
-                                                        <!--li class="mr-3"><a href="/pacientes/editar/{{consulta.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{consulta.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
-                                                        <!--li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarCons{{consulta.id_consulta}}"><i class="fa fa-edit"></i></a></li-->
                                                         <li><a href="/consultas/eliminar/{{consulta.id_consulta}}/{{consulta.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
-                                                    </ul>
+                                                    </ul-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -446,14 +449,22 @@
                                                 <td>{{hoja.servicio}}</td>
                                                 <td>{{hoja.edad}}</td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
+                                                    {% if identidad['id_rol']==3 %}
+                                                        <a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}">Editar <i class="fa fa-edit"></i></a>
+                                                        <br>
+                                                    {% endif %}
+                                                    <a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary">Ver Detalles <i class="ti-eye"></i></a>
+                                                    <br>
+                                                        
+                                                    <a href="/hoja/control/eliminar/{{hoja.id_hoja}}/{{hoja.id_paciente}}" class="text-danger">Eliminar <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center">
                                                         {% if identidad['id_rol']==3 %}
                                                             <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControl{{hoja.id_hoja}}"><i class="fa fa-edit"></i></a></li>    
                                                         {% endif %}
                                                         <li class="mr-3"><a href="/pacientes/control_signos_vitales/ver/{{hoja.id_hoja}}" class="text-secondary"><i class="ti-eye"></i></a></li>
                                                         
                                                         <li><a href="/hoja/control/eliminar/{{hoja.id_hoja}}/{{hoja.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
-                                                    </ul>
+                                                    </ul-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -635,10 +646,13 @@
                                                 <td>{{indicacion.desc_ind}}</td>
                                                 <td>{{indicacion.nombres_usuario}} {{indicacion.apellido_paterno_usuario}} {{indicacion.apellido_materno_usuario}}</td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
+                                                    <a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlInd{{indicacion.id_indicacion}}">Editar <i class="fa fa-edit"></i></a>
+                                                    <br>
+                                                    <a href="/indicaciones/eliminar/{{indicacion.id_indicacion}}/{{indicacion.id_paciente}}" class="text-danger">Eliminar <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlInd{{indicacion.id_indicacion}}"><i class="fa fa-edit"></i></a></li>
                                                         <li><a href="/indicaciones/eliminar/{{indicacion.id_indicacion}}/{{indicacion.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
-                                                    </ul>
+                                                    </ul-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -751,10 +765,13 @@
                                                 <td>{{control.hora_enf}}</td>
                                                 <td>{{control.nombres_usuario}} {{control.apellido_paterno_usuario}} {{control.apellido_materno_usuario}}</td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
+                                                    <a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlEnf{{control.id_enf}}">Editar <i class="fa fa-edit"></i></a>
+                                                    <br>
+                                                    <a href="/controles/eliminar/{{control.id_enf}}/{{control.id_paciente}}" class="text-danger">Eliminar <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditarHojaControlEnf{{control.id_enf}}"><i class="fa fa-edit"></i></a></li>
                                                         <li><a href="/controles/eliminar/{{control.id_enf}}/{{control.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
-                                                    </ul>
+                                                    </ul-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -914,14 +931,15 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
+                                                    <a href="/diagnosticos/eliminar/{{lista.id_diagnostico}}/{{lista.id_paciente_diagnostico}}" class="text-danger">Eliminar <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center"-->
                                                         <!--li class="mr-3">
                                                             <a href="#" class="text-secondary edit-button" data-toggle="modal" data-target="#LongModalLongEditar{{lista.id_resultado}}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
                                                         </li-->
-                                                        <li><a href="/diagnosticos/eliminar/{{lista.id_diagnostico}}/{{lista.id_paciente_diagnostico}}" class="text-danger"><i class="ti-trash"></i></a></li>
-                                                    </ul>
+                                                        <!--li><a href="/diagnosticos/eliminar/{{lista.id_diagnostico}}/{{lista.id_paciente_diagnostico}}" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                    </ul-->
                                                 </td>
                                                 
                                                 
