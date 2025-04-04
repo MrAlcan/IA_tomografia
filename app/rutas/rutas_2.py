@@ -31,13 +31,13 @@ from reportlab.platypus import SimpleDocTemplate, Image, Paragraph
 
 import jwt
 
-import tensorflow as tf
+#import tensorflow as tf
 import numpy as np
 from PIL import Image
 
 ruta_modelo_relativa = os.path.join('app', 'ia', 'detec_tumor.keras')
 ruta_modelo = os.path.abspath(ruta_modelo_relativa)
-modelo = tf.keras.models.load_model(ruta_modelo)
+modelo = str(2)#modelo = tf.keras.models.load_model(ruta_modelo)
 
 def no_iniciar_sesion(f):
     @wraps(f)
@@ -603,8 +603,8 @@ def tomografia_resultados_agregar(datos_usuario):
             opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
-            p = modelo.predict(imagen)
-            p = np.argmax(p, axis=1)[0]
+            #p = modelo.predict(imagen)
+            p=1#p = np.argmax(p, axis=1)[0]
             resultado_ia = 1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
@@ -676,8 +676,8 @@ def tomografia_resultados_agregar_paciente(datos_usuario):
             opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
-            p = modelo.predict(imagen)
-            p = np.argmax(p, axis=1)[0]
+            #p = modelo.predict(imagen)
+            p = 1#p = np.argmax(p, axis=1)[0]
             resultado_ia = 1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
