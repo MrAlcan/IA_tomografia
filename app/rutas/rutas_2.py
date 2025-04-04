@@ -977,3 +977,28 @@ def eliminar_control_signos(id, idPac):
 def eliminar_resultados(id):
     respuesta = ServiciosResultadoEstudio.eliminar(id)
     return redirect(url_for('main.tomografia_listar'))
+
+
+@main_bp.route('/indicaciones/pdf/<id>', methods = ['GET'])
+def generar_pdf_indicaciones(id):
+    nombre_usuario = "Carlos Yujra Chambi"
+
+    buffer = ServiciosIndicaciones.generar_pdf_consulta(nombre_usuario, id)
+
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
+
+    return response
+
+@main_bp.route('/enfermeria/pdf/<id>', methods = ['GET'])
+def generar_pdf_enfermeria(id):
+    nombre_usuario = "Carlos Yujra Chambi"
+
+    buffer = ServiciosEnfermeras.generar_pdf_enfermeria(nombre_usuario, id)
+
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
+
+    return response
