@@ -17,6 +17,7 @@ class ResultadoEstudio(db.Model):
     id_diagnostico = db.Column(db.Integer, db.ForeignKey('diagnostico.id_diagnostico'), nullable=False)
 
     activo = db.Column(db.Integer, default=1)
+    probabilidad = db.Column(db.Float, default=0.0)
     
     # Relaciones
     doctor = db.relationship('Usuario', backref='resultados_estudios')  

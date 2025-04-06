@@ -574,7 +574,7 @@ def tomografia_resultados_agregar(datos_usuario):
     codigo_paciente = datos.get('codigoPaciente')
     doctor = datos.get('doctor')
     id_consulta_estudio = datos.get('idConsulta')
-    id_paciente = datos.get('idPaciente')
+    id_paciente = datos.get('idPaciente', codigo_paciente)
     
     if 'entradaImagenes' not in request.files:
         return jsonify({'mensaje': 'error en solicitud'}), 400
@@ -604,12 +604,17 @@ def tomografia_resultados_agregar(datos_usuario):
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
             #p = modelo.predict(imagen)
+            probabilidad = 0.9#probabilidad = np.max(p, axis=1)[0]
             p=1#p = np.argmax(p, axis=1)[0]
-            resultado_ia = 1 if p != 3 else 0
+            resultado_ia = p # 3 es sin tumor, los demas 0,1,2 son un tipo diferente de tumor #1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
   
-    resultado_final = 1 if 1 in resultados_imagenes else 0  
+    #resultado_final = 1 if 1 in resultados_imagenes else 0
+
+    resultado_final = 0
+    if 1 in resultados_imagenes or 0 in resultados_imagenes or 2 in resultados_imagenes:
+        resultado_final = 1  
     nuevo_diagnostico = ServiciosDiagnostico.crear(
         fecha=fecha,
         ruta=carpeta_nombre,  
@@ -632,7 +637,8 @@ def tomografia_resultados_agregar(datos_usuario):
                     paciente=id_paciente,
                     consulta=id_consulta_estudio,
                     resultado=resultado_ia,
-                    diagnostico=nuevo_diagnostico['id_diagnostico']  
+                    diagnostico=nuevo_diagnostico['id_diagnostico'],
+                    probabilidad=probabilidad  
                 )
                 if not resultado:
                     return jsonify({'mensaje': f'Error al crear registro para {imagen.filename}'}), 400
@@ -1002,3 +1008,33 @@ def generar_pdf_enfermeria(id):
     response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
 
     return response
+
+
+
+# ----------- NUEVAS VISTAS DOCTOR IMAGENOLOGO ---------------------------
+@main_bp.route('/estudios_pacientes', methods=['GET'])
+@jwt_required()
+def vista_lista_paciente_consultas():
+    identidad = get_jwt_identity()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('consultas_pacientes.html', identidad = identidad, pacientes = pacientes)
+
+@main_bp.route('/pacientes/estudios/ver/<id>', methods=['GET'])
+@jwt_required()
+def vista_lista_estudios_pacientes_consultas(id):
+    identidad = get_jwt_identity()
+
+    estudios = None
+    listado2 = None
+
+    if id=='0':
+        print("estudios en 0")
+        estudios = ServiciosDiagnostico.obtener_todos_pacientes()
+        listado2 = ServiciosResultadoEstudio.obtener_lista_todos()
+    else:
+        print("estudios en algun id")
+        print(id)
+        estudios = ServiciosDiagnostico.obtener_lista_id(id)
+        listado2 = ServiciosResultadoEstudio.obtener_lista_id(id)
+    
+    return render_template('pacientes_estudios_ver.html', identidad = identidad, estudios = estudios, listado2=listado2)

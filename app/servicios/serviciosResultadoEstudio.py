@@ -82,6 +82,18 @@ class ServiciosResultadoEstudio():
         else:
             return None
         
+    def obtener_lista_todos():
+        datos = db.session.query(Paciente, ResultadoEstudio, Usuario)\
+            .join(ResultadoEstudio, Paciente.id_paciente == ResultadoEstudio.id_paciente_estudio)\
+            .join(Usuario, ResultadoEstudio.id_doctor_estudio == Usuario.id_usuario)\
+            .filter(ResultadoEstudio.activo==1).all()
+        respuesta = ResultadoEstudioSchema.serializar_todos_vista(datos)
+        print(respuesta)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+        
     def eliminar(id):
         datos = ResultadoEstudio.query.get(id)
         datos.activo = 0

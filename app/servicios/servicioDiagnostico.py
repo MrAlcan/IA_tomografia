@@ -45,3 +45,23 @@ class ServiciosDiagnostico():
         datos.activo = 0
         db.session.commit()
         return True
+    
+    def obtener_todos_pacientes():
+        datos = db.session.query(Paciente, Diagnostico, Usuario)\
+            .join(Diagnostico, Paciente.id_paciente == Diagnostico.id_paciente_diagnostico)\
+            .join(Usuario, Diagnostico.id_doctor_diagnostico== Usuario.id_usuario)\
+            .filter(Diagnostico.activo == 1).all()
+        respuesta = SerializadorDiagnostico.serializar_todos_vista(datos)
+        print(respuesta)
+        if respuesta:
+            return respuesta
+        else:
+            return None
+    
+    def obtener_todos():
+        datos = Diagnostico.query.filter(Diagnostico.activo==1).all()
+        respuesta = SerializadorDiagnostico.serializar(datos)
+        if respuesta:
+            return respuesta
+        else:
+            return None

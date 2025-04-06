@@ -3,6 +3,8 @@ from app.serializadores.serializadorHojaControl import SerializadorHojaControl
 from app.modelos.hojaControl import HojaControl
 from app.modelos.paciente import Paciente
 from app.modelos.consulta import Consulta
+from app.modelos.diagnostico import Diagnostico
+from app.modelos.usuario import Usuario
 from app.servicios.serviciosControlEstado import ServiciosControlEstado
 from app.servicios.serviciosControlSignos import ServiciosControlSignos
 import os
@@ -342,6 +344,13 @@ class ServiciosHojaControl():
 
 
     def generar_informe_tomografia_pdf(id_diagnostico, id_paciente, listado2, nombre_usuario,nombre_paciente):
+        
+        diagnostico = Diagnostico.query.get(id_diagnostico)
+
+        id_doctor = diagnostico.id_doctor_diagnostico
+
+        doctor = Usuario.query.get(id_doctor)
+        
         buffer = BytesIO()
         pdf = SimpleDocTemplate(buffer, pagesize=letter)
         elementos = []
@@ -352,6 +361,8 @@ class ServiciosHojaControl():
         estilo_subtitulo = ParagraphStyle('Subtitulo', fontSize=10, alignment=0) 
         estilo_datos = estilos['Normal']
 
+        estilo_firma = ParagraphStyle('Firma', fontSize=12, alignment=1) 
+
 
 
         logo_direccion = os.path.join(os.getcwd(), 'app', 'static', 'assets', 'images', 'logo.png')
@@ -360,9 +371,9 @@ class ServiciosHojaControl():
         fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         generado_por = Paragraph(f"<b>Generado por:</b> {nombre_usuario}<br/><b>Fecha de generación:</b> {fecha_actual}", estilo_subtitulo)
         # Agregar elementos al PDF
-        elementos.append(Spacer(1, 55))
+        #Selementos.append(Spacer(1, 55))
        
-        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 15))
 
         def add_header(canvas, doc):
             width, height = letter
@@ -370,14 +381,18 @@ class ServiciosHojaControl():
             titulo_x = width / 2  
             titulo_y = height - (2.0 * inch) 
             canvas.setFont("Helvetica-Bold", 18)
-            canvas.drawString(titulo_x - 120, titulo_y, "Informe de Estudio Realizado")
+            #canvas.drawString(titulo_x - 120, titulo_y, "Informe de Estudio Realizado")
             posicion_texto_x = (0.3*inch)
             posicion_texto_y = (0.3*inch)
             generado_por.wrapOn(canvas, width, height)
             generado_por.drawOn(canvas, posicion_texto_x, posicion_texto_y)
 
         elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>Informe de Estudios Realizados</b>", estilo_titulo))
+        elementos.append(Spacer(1, 40))
         elementos.append(Paragraph(f"<b>Nombre del Paciente:</b> {nombre_paciente}", estilo_datos))
+        elementos.append(Spacer(1, 10))
+        elementos.append(Paragraph(f"<b>Fecha del Diagnostico:</b> {diagnostico.fecha_diagnostico}", estilo_datos))
         elementos.append(Spacer(1, 30))
         conta=0
         contaT=0
@@ -442,6 +457,18 @@ class ServiciosHojaControl():
         elementos.append(Spacer(1, 5))
         dato = (contaT * 100.0) / conta
         elementos.append(Paragraph(f"<b>Probabilidad de Tumor:</b> {dato:.2f}%", estilo_datos))
+
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"______________________________________", estilo_firma))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>Dr. {doctor.nombres_usuario} {doctor.apellido_paterno_usuario} {doctor.apellido_materno_usuario}</b>", estilo_firma))
+        elementos.append(Spacer(1, 10))
+        elementos.append(Paragraph(f"<b>Doctor Imagenologo</b>", estilo_firma))
+
         
         pdf.build(elementos, onFirstPage=add_header, onLaterPages=add_header)
         buffer.seek(0)
