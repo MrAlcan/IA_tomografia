@@ -2,6 +2,7 @@ from app.servicios.serviciosUsuario import ServiciosUsuario
 from app.modelos.rol import Rol
 from app.modelos.paciente import Paciente
 from app.modelos.consulta import Consulta
+from app.modelos.usuario import Usuario
 from app.modelos.registroEnfermeria import RegistroEnfermeria
 from app.configuraciones.extensiones import db
 from datetime import date, time
@@ -13,22 +14,32 @@ def iniciar_datos():
     pacientes = Paciente.query.all()
     enfermeria_registros = RegistroEnfermeria.query.all()
     consultas = Consulta.query.all()
+    doctores = ServiciosUsuario.obtener_nombre(nombre='doctor')
     administrador = ServiciosUsuario.obtener_nombre(nombre='administrador')
    
     indicaciones_medicas = IndicacionesMedicas.query.all()
     if not roles:
         roles_nuevos = []
         roles_nuevos.append(Rol('Administrador','Administrador total del sistema'))
-        roles_nuevos.append(Rol('Doctor (a)','Perito investigador encargado de recabar las imagenes'))
-        roles_nuevos.append(Rol('Enfermero (a)','Experto en balistica'))
+        roles_nuevos.append(Rol('Doctor(a) Imagenologo','Doctor encargado de recabar las imagenes'))
+        roles_nuevos.append(Rol('Enfermero (a)','Enfermero de la clinica'))
         db.session.add_all(roles_nuevos)
         db.session.commit()
 
     if not administrador:
         nuevo_administrador = ServiciosUsuario.crear('administrador', 'administrador', 'administrador', 'administrador', 'administrador', 'administrador', 'Administrador', 1)
         print("usuario admin creado")
+
+    if not doctores:
+        nuevo_doctor = Usuario('doctor', 'doctor', 'doctor', 'doctor', 'doctor', 'doctor', 'doctor', 2)
+        db.session.add(nuevo_doctor)
+        nuevo_doctor.activo = 0
+        db.session.commit()
+        print("usuario admin creado")
+
+
     
-    '''
+    
     if not pacientes:
         paciente_nuevo = Paciente(
             nombres='1',
@@ -40,6 +51,7 @@ def iniciar_datos():
             edad=1
         )
         db.session.add(paciente_nuevo)
+        paciente_nuevo.activo=0
         db.session.commit()
 
 
@@ -64,7 +76,7 @@ def iniciar_datos():
         db.session.commit()
 
     
-
+    '''
     if not enfermeria_registros:
         registro_nuevo = RegistroEnfermeria(
             procedimiento='Primer Procedimiento', 

@@ -397,18 +397,21 @@ class ServiciosHojaControl():
         conta=0
         contaT=0
         contaS=0
+        prob_tumor = 0
         for resultado in listado2:
             if str(resultado['id_diagnostico']) != str(id_diagnostico):
                 continue  
 
             conta=conta+1
             
-            if resultado['resultado_estudio'] == 1:
-                diagnostico_texto = "CON TUMOR" 
-                contaT=contaT+1
-            else:
+            if resultado['resultado_estudio'] == 3:
                 diagnostico_texto = "SIN TUMOR" 
                 contaS=contaS+1
+
+            else:
+                diagnostico_texto = "CON TUMOR" 
+                contaT=contaT+1
+                prob_tumor = prob_tumor + float(resultado['probabilidad'])
 
             elementos.append(Paragraph(f"<b>Imagen Evaluada Nro:</b> {conta}", estilo_datos))
             elementos.append(Spacer(1, 5))
@@ -417,15 +420,24 @@ class ServiciosHojaControl():
             info_paciente = (
                 f"Fecha de Estudio: {resultado['fecha_estudio']}"
             )
-            elementos.append(Paragraph(info_paciente, estilo_datos))
+            tipo_tumor = 'Ninguno'
+            if int(resultado['resultado_estudio'])==0:
+                tipo_tumor = 'Pituitaria'
+            elif int(resultado['resultado_estudio'])==1:
+                tipo_tumor = 'Meningioma'
+            elif int(resultado['resultado_estudio'])==2:
+                tipo_tumor = 'Glioma'
+            elementos.append(Paragraph(f"<b>Tipo de Tumor: {tipo_tumor}</b>", estilo_datos))
             elementos.append(Spacer(1, 5))
 
             ruta_relativa = os.path.join('app', 'static', 'imagenes')
             ruta = os.path.abspath(ruta_relativa)
             imagen_path = os.path.join(ruta, resultado['ruta_carpeta_imagenes_estudio'])
+
+            elementos.append(Paragraph(f"<b>Probabilidad:</b> {resultado['probabilidad']:.2f} %", estilo_datos))
             
             if os.path.exists(imagen_path):
-                elementos.append(Paragraph(f"<b>Ruta de Imagen:</b> {resultado['ruta_carpeta_imagenes_estudio']}", estilo_datos))
+                #elementos.append(Paragraph(f"<b>Ruta de Imagen:</b> {resultado['ruta_carpeta_imagenes_estudio']}", estilo_datos))
                 try:
                     elementos.append(Spacer(1, 20))
                     imagen = Image(imagen_path, 2 * inch, 2 * inch)
@@ -455,8 +467,14 @@ class ServiciosHojaControl():
         
             
         elementos.append(Spacer(1, 5))
-        dato = (contaT * 100.0) / conta
+        #dato = (contaT * 100.0) / conta
+        dato = prob_tumor / conta
         elementos.append(Paragraph(f"<b>Probabilidad de Tumor:</b> {dato:.2f}%", estilo_datos))
+        elementos.append(Spacer(1, 20))
+
+        elementos.append(Paragraph(f"<b>Observaciones:</b> {diagnostico.observaciones}", estilo_datos))
+
+        
 
         elementos.append(Spacer(1, 20))
         elementos.append(Spacer(1, 20))

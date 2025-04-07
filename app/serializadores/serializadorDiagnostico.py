@@ -44,6 +44,7 @@ class SerializadorDiagnostico:
                     'id_doctor_diagnostico': registros.id_doctor_diagnostico,
                     'id_paciente_diagnostico': registros.id_paciente_diagnostico,
                     'id_consulta_diagnostico': registros.id_consulta_diagnostico,
+                    'observaciones': registros.observaciones,
                 
                     
                     'nombres_paciente' : paciente.nombres_paciente,

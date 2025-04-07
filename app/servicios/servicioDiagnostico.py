@@ -65,3 +65,10 @@ class ServiciosDiagnostico():
             return respuesta
         else:
             return None
+    
+    def modificar_observacion(id, observacion):
+        diagnostico = Diagnostico.query.get(id)
+        diagnostico.observaciones = observacion
+        db.session.commit()
+        return True
+

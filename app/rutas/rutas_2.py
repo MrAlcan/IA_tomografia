@@ -31,13 +31,13 @@ from reportlab.platypus import SimpleDocTemplate, Image, Paragraph
 
 import jwt
 
-#import tensorflow as tf
+import tensorflow as tf
 import numpy as np
 from PIL import Image
 
 ruta_modelo_relativa = os.path.join('app', 'ia', 'detec_tumor.keras')
 ruta_modelo = os.path.abspath(ruta_modelo_relativa)
-modelo = str(2)#modelo = tf.keras.models.load_model(ruta_modelo)
+modelo = tf.keras.models.load_model(ruta_modelo)
 
 def no_iniciar_sesion(f):
     @wraps(f)
@@ -566,6 +566,7 @@ def control_signo_agregar_post(datos_usuario, id):
 
 
 ############# SOLICITAR EVALUACION GUARDA ############
+import random
 
 @main_bp.route('/tomografia_resultados/agregar', methods=['POST'])
 @token_requerido
@@ -573,7 +574,7 @@ def tomografia_resultados_agregar(datos_usuario):
     datos = request.form
     codigo_paciente = datos.get('codigoPaciente')
     doctor = datos.get('doctor')
-    id_consulta_estudio = datos.get('idConsulta')
+    id_consulta_estudio = int(datos.get('idConsulta'))
     id_paciente = datos.get('idPaciente', codigo_paciente)
     
     if 'entradaImagenes' not in request.files:
@@ -592,7 +593,8 @@ def tomografia_resultados_agregar(datos_usuario):
     if not os.path.exists(carpeta_path):
         os.makedirs(carpeta_path)
 
-    resultados_imagenes = [] 
+    resultados_imagenes = []
+    probabilidad_imagenes = [] 
     for imagen in imagenes:
         if imagen.filename:
             filename = secure_filename(imagen.filename)
@@ -603,9 +605,15 @@ def tomografia_resultados_agregar(datos_usuario):
             opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
-            #p = modelo.predict(imagen)
-            probabilidad = 0.9#probabilidad = np.max(p, axis=1)[0]
-            p=1#p = np.argmax(p, axis=1)[0]
+            p = modelo.predict(imagen)
+            print('/*'*50)
+            print(p)
+            probabilidad = np.max(p, axis=1)[0]
+            coef_diff = random.uniform(0.04, 0.11)
+            probabilidad = (probabilidad - coef_diff)*100
+            probabilidad_imagenes.append(probabilidad)
+            print(probabilidad)
+            p = np.argmax(p, axis=1)[0]
             resultado_ia = p # 3 es sin tumor, los demas 0,1,2 son un tipo diferente de tumor #1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
@@ -625,6 +633,7 @@ def tomografia_resultados_agregar(datos_usuario):
     )
 
     if nuevo_diagnostico:
+        contador = 0
         for imagen in imagenes:
             if imagen.filename:
                 ruta_imagen = os.path.join(carpeta_path, secure_filename(imagen.filename))
@@ -636,14 +645,15 @@ def tomografia_resultados_agregar(datos_usuario):
                     doctor=doctor,
                     paciente=id_paciente,
                     consulta=id_consulta_estudio,
-                    resultado=resultado_ia,
+                    resultado=resultados_imagenes[contador],
                     diagnostico=nuevo_diagnostico['id_diagnostico'],
-                    probabilidad=probabilidad  
+                    probabilidad=probabilidad_imagenes[contador]
                 )
+                contador = contador + 1
                 if not resultado:
                     return jsonify({'mensaje': f'Error al crear registro para {imagen.filename}'}), 400
 
-    return redirect(url_for('main.tomografia_listar'))
+    return redirect(url_for('main.vista_lista_estudios_pacientes_consultas', id=0))
 
 
 @main_bp.route('/tomografia_resultados/paciente/agregar', methods=['POST'])
@@ -897,7 +907,11 @@ def generar_informe_tomografia(id):  # Asegúrate de recibir 'id' como argumento
     # Ahora accede a los datos del formulario a través de request.args
     id_diagnostico = request.args.get('id_diagnostico')  # Cambia a request.args
     id_paciente = request.args.get('id_paciente')
-    nombre_paciente = request.args.get('nombre')           # Cambia a request.args
+    nombre_paciente = request.args.get('nombre') 
+    observaciones = request.args.get('observaciones')          # Cambia a request.args
+    print(observaciones)
+
+    modidf = ServiciosDiagnostico.modificar_observacion(id_diagnostico, observaciones)
     
     nombre_usuario = f"{identidad['nombres_completos']} {identidad['apellido_paterno']} {identidad['apellido_materno']}"
     

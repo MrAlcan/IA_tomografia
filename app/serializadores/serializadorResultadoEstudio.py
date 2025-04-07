@@ -45,6 +45,7 @@ class ResultadoEstudioSchema:
                     'id_paciente_estudio': registros.id_paciente_estudio,
                     'id_consulta_estudio': registros.id_consulta_estudio,
                     'id_diagnostico': registros.id_diagnostico,
+                    'probabilidad': registros.probabilidad,
                     
                     'nombres_paciente' : paciente.nombres_paciente,
                     'apellido_paterno_paciente' : paciente.apellido_paterno_paciente,

@@ -82,7 +82,7 @@
                                             <tr>
                                                 <td>{{estudio.id_diagnostico}}</td>
                                                 <td>{{estudio.nombres_paciente}} {{estudio.apellido_paterno_paciente}} {{estudio.apellido_materno_paciente}}</td>
-                                                <td>{{estudio.carnet}}</td>
+                                                <td>{{estudio.carnet_paciente}}</td>
                                                 <td>{{estudio.fecha_diagnostico}}</td>
                                                 <td>
                                                     {% if estudio.resultado_diagnostico == 1 %}
@@ -93,7 +93,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="" class="text-secondary edit-button" data-toggle="modal" data-target="#LongModalLongMostrar{{estudio.id_diagnostico}}">
-                                                        <i class="fa fa-eye"></i>
+                                                        Ver Detalles Estudio <i class="fa fa-eye"></i>
                                                     </a>
                                                     
                                                     
@@ -131,8 +131,8 @@
                                                             {% for resultado in listado2 %}
                                                                 {% if resultado.id_diagnostico == listamodal.id_diagnostico %}
                                                                     <div class="col-md-6">
-                                                                        <div class="alert {% if resultado.resultado_estudio == 1 %}alert-danger{% else %}alert-primary{% endif %}" role="alert">
-                                                                            <h4 class="text-center alert-heading">{% if resultado.resultado_estudio == 1 %}CON TUMOR{% else %}SIN TUMOR{% endif %}</h4>
+                                                                        <div class="alert {% if resultado.resultado_estudio == 3 %}alert-primary{% else %}alert-danger{% endif %}" role="alert">
+                                                                            <h4 class="text-center alert-heading">{% if resultado.resultado_estudio == 3 %}SIN TUMOR{% else %}CON TUMOR{% endif %}</h4>
                                                                             <div class="d-flex justify-content-center">
                                                                                 <img src="{{ url_for('static', filename='/imagenes/'+ resultado.ruta_carpeta_imagenes_estudio) }}" style="height: 200px;" alt="Imagen de Estudio" class="img-fluid">
                                                                             </div>
@@ -140,7 +140,18 @@
                                                                             <hr>
                                                                             <p>Fecha de Estudio: {{ resultado.fecha_estudio }}</p>
                                                                             <p>Paciente: {{resultado.nombres_paciente}} {{resultado.apellido_paterno_paciente}} {{resultado.apellido_materno_paciente}}</p>
-                                                                            <p>Ruta de Imagen: {{ resultado.ruta_carpeta_imagenes_estudio }}</p>
+                                                                            <p>Probabilidad: {{ resultado.probabilidad }} %</p>
+                                                                            <p>Probable Tipo de Tumor: 
+                                                                                {% if resultado.resultado_estudio==0 %}
+                                                                                    Pituitaria
+                                                                                {% elif resultado.resultado_estudio==1 %}
+                                                                                    Meningioma
+                                                                                {% elif resultado.resultado_estudio==2 %}
+                                                                                    Glioma
+                                                                                {% else %}
+                                                                                    Ninguno
+                                                                                {% endif %}
+                                                                            </p>
                                                                         </div>
                                                                     </div>
                                                                 
@@ -156,15 +167,25 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 col-ml-12">
+                                    <form action="/tomografia/generar_informe/{{ listamodal.id_diagnostico }}" method="get" target="_blank">
+                                        <label class="row">Observaciones</label>
+                                        <textarea name="observaciones" class="row" style="width: max-content;">{{listamodal.observaciones}}</textarea>
+                                        <input type="hidden" name="nombre" value="{{listamodal.nombres_paciente}} {{listamodal.apellido_paterno_paciente}} {{listamodal.apellido_materno_paciente}}">
+                                        <input type="hidden" name="id_diagnostico" value="{{ listamodal.id_diagnostico }}">
+                                        <input type="hidden" name="id_paciente" value="{{ listamodal.id_paciente_diagnostico }}">
+                                        
+                                        <br>
+                                        
+                                        <button id="boton_pdf" type="submit" class="btn btn-success">Generar Informe</button>
+                                    </form>
+                                </div>
                             </div>
 
+                            
+
                             <div class="modal-footer">
-                                <form action="/tomografia/generar_informe/{{ listamodal.id_diagnostico }}" method="get" target="_blank">
-                                    <input type="hidden" name="nombre" value="{{listamodal.nombres_paciente}} {{listamodal.apellido_paterno_paciente}} {{listamodal.apellido_materno_paciente}}">
-                                    <input type="hidden" name="id_diagnostico" value="{{ listamodal.id_diagnostico }}">
-                                    <input type="hidden" name="id_paciente" value="{{ listamodal.id_paciente_diagnostico }}">
-                                    <button id="boton_pdf" type="submit" class="btn btn-success">Generar Informe</button>
-                                </form>
+                                
                                 
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                             </div>

@@ -25,7 +25,7 @@ class ResultadoEstudio(db.Model):
     consulta = db.relationship('Consulta', backref='resultados_estudios') 
     diagnostico = db.relationship('Diagnostico', backref='resultados_estudios')  
 
-    def __init__(self, fecha, ruta, doctor, paciente, consulta, resultado=None, diagnostico=None):
+    def __init__(self, fecha, ruta, doctor, paciente, consulta, resultado=None, diagnostico=None, probabilidad = 0.0):
         self.fecha_estudio = fecha
         self.ruta_carpeta_imagenes_estudio = ruta
         self.resultado_estudio = resultado
@@ -33,3 +33,4 @@ class ResultadoEstudio(db.Model):
         self.id_paciente_estudio = paciente
         self.id_consulta_estudio = consulta
         self.id_diagnostico = diagnostico
+        self.probabilidad = probabilidad
