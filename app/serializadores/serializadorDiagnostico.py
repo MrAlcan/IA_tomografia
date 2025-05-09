@@ -44,6 +44,7 @@ class SerializadorDiagnostico:
                     'id_doctor_diagnostico': registros.id_doctor_diagnostico,
                     'id_paciente_diagnostico': registros.id_paciente_diagnostico,
                     'id_consulta_diagnostico': registros.id_consulta_diagnostico,
+                    'observaciones': registros.observaciones,
                 
                     
                     'nombres_paciente' : paciente.nombres_paciente,
@@ -53,6 +54,7 @@ class SerializadorDiagnostico:
                     'seguro_paciente' : paciente.seguro_paciente,
                     'fecha_nacimiento_paciente' : paciente.fecha_nacimiento_paciente,
                     'edad_paciente' : paciente.edad_paciente,
+                    
                     'nombres_usuario' : usuario.nombres_usuario,
                     'apellido_paterno_usuario' : usuario.apellido_paterno_usuario,
                     'apellido_materno_usuario' : usuario.apellido_materno_usuario,

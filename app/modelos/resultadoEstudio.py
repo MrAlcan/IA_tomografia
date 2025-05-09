@@ -16,13 +16,16 @@ class ResultadoEstudio(db.Model):
     id_consulta_estudio = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
     id_diagnostico = db.Column(db.Integer, db.ForeignKey('diagnostico.id_diagnostico'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    probabilidad = db.Column(db.Float, default=0.0)
+    
     # Relaciones
     doctor = db.relationship('Usuario', backref='resultados_estudios')  
     paciente = db.relationship('Paciente', backref='resultados_estudios')  
     consulta = db.relationship('Consulta', backref='resultados_estudios') 
     diagnostico = db.relationship('Diagnostico', backref='resultados_estudios')  
 
-    def __init__(self, fecha, ruta, doctor, paciente, consulta, resultado=None, diagnostico=None):
+    def __init__(self, fecha, ruta, doctor, paciente, consulta, resultado=None, diagnostico=None, probabilidad = 0.0):
         self.fecha_estudio = fecha
         self.ruta_carpeta_imagenes_estudio = ruta
         self.resultado_estudio = resultado
@@ -30,3 +33,4 @@ class ResultadoEstudio(db.Model):
         self.id_paciente_estudio = paciente
         self.id_consulta_estudio = consulta
         self.id_diagnostico = diagnostico
+        self.probabilidad = probabilidad

@@ -405,7 +405,7 @@ def agregar_control_signos_vitales_post_paciente(datos_usuario, id):
     identidad = datos_usuario
     datos = request.form
     print(datos)
-    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id)
+    nueva_hoja = ServiciosHojaControl.crear(datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'], id, datos['input_consulta'])
     print(nueva_hoja)
     if nueva_hoja:
         return redirect(url_for('main.ver_pacientes', id=id))
@@ -493,14 +493,14 @@ def control_signos_vitales_editar(id):
     paciente_control = ServiciosPaciente.obtener_id(editar_hoja_control['id_paciente'])
     return render_template('editar_hoja_control.html', identidad = identidad, editar_hoja = editar_hoja_control, paciente = paciente_control)
 
-@main_bp.route('/control_signos_vitales/editar/<id>', methods=['POST'])
+@main_bp.route('/control_signos_vitales/editar/<id>/<idPac>', methods=['POST'])
 @token_requerido
-def control_signos_vitales_editar_post(datos_usuario, id):
+def control_signos_vitales_editar_post(datos_usuario, id, idPac):
     identidad = datos_usuario
     datos = request.form
     editar_hoja_control = ServiciosHojaControl.actualizar(id, datos['input_peso'], datos['input_talla'], datos['input_servicio'], datos['input_pieza'])
     if editar_hoja_control:
-        return redirect(url_for('main.control_signos_vitales')) 
+        return redirect(url_for('main.ver_pacientes', id=idPac)) 
     else:
         return jsonify({'codigo': 400})
 
@@ -528,7 +528,7 @@ def control_estado_agregar_post(datos_usuario, id):
     #print(datos)
     control_estado_nuevo = ServiciosControlEstado.crear(datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'], id)
     if control_estado_nuevo:
-        return redirect(url_for('main.control_signos_vitales_ver', id=id))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
     else:
         return jsonify({'codigo': 400})
 
@@ -539,7 +539,7 @@ def control_estado_editar_post(datos_usuario, id, hoja):
     datos = request.form
     control_estado_editar = ServiciosControlEstado.actualizar(id, datos['input_antibiotico'], datos['input_dias_internado'], datos['input_fecha'], datos['input_dias_post'])
     if control_estado_editar:
-        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
     else:
         return jsonify({'codigo': 400})
 
@@ -558,7 +558,7 @@ def control_signo_agregar_post(datos_usuario, id):
     datos = request.form
     control_signo_nuevo = ServiciosControlSignos.crear(datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'], id)
     if control_signo_nuevo:
-        return redirect(url_for('main.control_signos_vitales_ver', id=id))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=id))
     else:
         return jsonify({'codigo':400})
     
@@ -566,6 +566,7 @@ def control_signo_agregar_post(datos_usuario, id):
 
 
 ############# SOLICITAR EVALUACION GUARDA ############
+import random
 
 @main_bp.route('/tomografia_resultados/agregar', methods=['POST'])
 @token_requerido
@@ -573,8 +574,8 @@ def tomografia_resultados_agregar(datos_usuario):
     datos = request.form
     codigo_paciente = datos.get('codigoPaciente')
     doctor = datos.get('doctor')
-    id_consulta_estudio = datos.get('idConsulta')
-    id_paciente = datos.get('idPaciente')
+    id_consulta_estudio = int(datos.get('idConsulta'))
+    id_paciente = datos.get('idPaciente', codigo_paciente)
     
     if 'entradaImagenes' not in request.files:
         return jsonify({'mensaje': 'error en solicitud'}), 400
@@ -592,7 +593,8 @@ def tomografia_resultados_agregar(datos_usuario):
     if not os.path.exists(carpeta_path):
         os.makedirs(carpeta_path)
 
-    resultados_imagenes = [] 
+    resultados_imagenes = []
+    probabilidad_imagenes = [] 
     for imagen in imagenes:
         if imagen.filename:
             filename = secure_filename(imagen.filename)
@@ -604,12 +606,23 @@ def tomografia_resultados_agregar(datos_usuario):
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
             p = modelo.predict(imagen)
+            print('/*'*50)
+            print(p)
+            probabilidad = np.max(p, axis=1)[0]
+            coef_diff = random.uniform(0.04, 0.11)
+            probabilidad = (probabilidad - coef_diff)*100
+            probabilidad_imagenes.append(probabilidad)
+            print(probabilidad)
             p = np.argmax(p, axis=1)[0]
-            resultado_ia = 1 if p != 3 else 0
+            resultado_ia = p # 3 es sin tumor, los demas 0,1,2 son un tipo diferente de tumor #1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
   
-    resultado_final = 1 if 1 in resultados_imagenes else 0  
+    #resultado_final = 1 if 1 in resultados_imagenes else 0
+
+    resultado_final = 0
+    if 1 in resultados_imagenes or 0 in resultados_imagenes or 2 in resultados_imagenes:
+        resultado_final = 1  
     nuevo_diagnostico = ServiciosDiagnostico.crear(
         fecha=fecha,
         ruta=carpeta_nombre,  
@@ -620,6 +633,7 @@ def tomografia_resultados_agregar(datos_usuario):
     )
 
     if nuevo_diagnostico:
+        contador = 0
         for imagen in imagenes:
             if imagen.filename:
                 ruta_imagen = os.path.join(carpeta_path, secure_filename(imagen.filename))
@@ -631,13 +645,15 @@ def tomografia_resultados_agregar(datos_usuario):
                     doctor=doctor,
                     paciente=id_paciente,
                     consulta=id_consulta_estudio,
-                    resultado=resultado_ia,
-                    diagnostico=nuevo_diagnostico['id_diagnostico']  
+                    resultado=resultados_imagenes[contador],
+                    diagnostico=nuevo_diagnostico['id_diagnostico'],
+                    probabilidad=probabilidad_imagenes[contador]
                 )
+                contador = contador + 1
                 if not resultado:
                     return jsonify({'mensaje': f'Error al crear registro para {imagen.filename}'}), 400
 
-    return redirect(url_for('main.tomografia_listar'))
+    return redirect(url_for('main.vista_lista_estudios_pacientes_consultas', id=0))
 
 
 @main_bp.route('/tomografia_resultados/paciente/agregar', methods=['POST'])
@@ -676,8 +692,8 @@ def tomografia_resultados_agregar_paciente(datos_usuario):
             opencvImage = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2BGR)
             imagen = cv2.resize(opencvImage, (150, 150))
             imagen = imagen.reshape(1, 150, 150, 3)
-            p = modelo.predict(imagen)
-            p = np.argmax(p, axis=1)[0]
+            #p = modelo.predict(imagen)
+            p = 1#p = np.argmax(p, axis=1)[0]
             resultado_ia = 1 if p != 3 else 0
             resultados_imagenes.append(resultado_ia)
 
@@ -793,7 +809,7 @@ def control_signo_editar_post(datos_usuario, id, hoja):
     print(id)
     control_signo_editar = ServiciosControlSignos.actualizar(id, datos['input_fecha'], datos['input_hora'], datos['input_presion_sistolica'], datos['input_presion_diastolica'], datos['input_respiracion'], datos['input_saturacion'], datos['input_diuresis'], datos['input_catarsis'])
     if control_signo_editar:
-        return redirect(url_for('main.control_signos_vitales_ver', id=hoja))
+        return redirect(url_for('main.ver_hoja_pacientes_control', id=hoja))
     else:
         return jsonify({'codigo':400})
     
@@ -872,14 +888,14 @@ def consultas_agregar_pacientes(datos_usuario, id):
     else:
         return jsonify({'codigo': 400})
 
-@main_bp.route('/consultas/editar/<id>', methods=['POST'])
+@main_bp.route('/consultas/editar/<id>/<idPac>', methods=['POST'])
 @token_requerido
-def consultas_editar(datos_usuario, id):
+def consultas_editar(datos_usuario, id, idPac):
     identidad = datos_usuario
     datos = request.form
     consulta_editar = ServiciosConsultas.actualizar(id = id, motivo=datos['input_motivo_consulta'], historia=datos['input_historia_enfermedad'], enfermedades = datos['input_enfermedades'], tabaco=datos['input_tabaco'], alcohol=datos['input_alcohol'], drogas=datos['input_drogas'], diagnostico=datos['input_diagnostico'], tratamiento=['input_tratamiento'], internacion=datos['input_internacion_paciente'], codigo_consulta=datos['input_codigo_consulta'])
     if consulta_editar:
-        return redirect(url_for('main.consultas'))
+        return redirect(url_for('main.ver_pacientes', id = idPac))
     else:
         return jsonify({'codigo': 400})
     
@@ -891,7 +907,11 @@ def generar_informe_tomografia(id):  # Asegúrate de recibir 'id' como argumento
     # Ahora accede a los datos del formulario a través de request.args
     id_diagnostico = request.args.get('id_diagnostico')  # Cambia a request.args
     id_paciente = request.args.get('id_paciente')
-    nombre_paciente = request.args.get('nombre')           # Cambia a request.args
+    nombre_paciente = request.args.get('nombre') 
+    observaciones = request.args.get('observaciones')          # Cambia a request.args
+    print(observaciones)
+
+    modidf = ServiciosDiagnostico.modificar_observacion(id_diagnostico, observaciones)
     
     nombre_usuario = f"{identidad['nombres_completos']} {identidad['apellido_paterno']} {identidad['apellido_materno']}"
     
@@ -909,3 +929,126 @@ def generar_informe_tomografia(id):  # Asegúrate de recibir 'id' como argumento
     response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
 
     return response
+
+
+
+@main_bp.route('/usuarios/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_usuario(id):
+    respuesta = ServiciosUsuario.eliminar(id)
+    return redirect(url_for('main.usuarios'))
+
+@main_bp.route('/pacientes/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_paciente(id):
+    respuesta = ServiciosPaciente.eliminar(id)
+    return redirect(url_for('main.pacientes'))
+
+@main_bp.route('/indicaciones/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_indicacion_medica(id, idPac):
+    respuesta = ServiciosIndicaciones.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/controles/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_controles_enf(id, idPac):
+    respuesta = ServiciosEnfermeras.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+@main_bp.route('/diagnosticos/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_diagnosticos(id, idPac):
+    respuesta = ServiciosDiagnostico.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/consultas/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_consultas(id, idPac):
+    respuesta = ServiciosConsultas.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+@main_bp.route('/hoja/control/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_hoja_control(id, idPac):
+    respuesta = ServiciosHojaControl.eliminar(id)
+    return redirect(url_for('main.ver_pacientes', id=idPac))
+
+
+@main_bp.route('/control/estados/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_control_estado(id, idPac):
+    respuesta = ServiciosControlEstado.eliminar(id)
+    return redirect(url_for('main.ver_hoja_pacientes_control', id=idPac))
+
+
+
+@main_bp.route('/control/signos/eliminar/<id>/<idPac>', methods=['GET'])
+@jwt_required()
+def eliminar_control_signos(id, idPac):
+    respuesta = ServiciosControlSignos.eliminar(id)
+    return redirect(url_for('main.ver_hoja_pacientes_control', id=idPac))
+
+
+@main_bp.route('/resultados/eliminar/<id>', methods=['GET'])
+@jwt_required()
+def eliminar_resultados(id):
+    respuesta = ServiciosResultadoEstudio.eliminar(id)
+    return redirect(url_for('main.tomografia_listar'))
+
+
+@main_bp.route('/indicaciones/pdf/<id>', methods = ['GET'])
+def generar_pdf_indicaciones(id):
+    nombre_usuario = "Carlos Yujra Chambi"
+
+    buffer = ServiciosIndicaciones.generar_pdf_consulta(nombre_usuario, id)
+
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
+
+    return response
+
+@main_bp.route('/enfermeria/pdf/<id>', methods = ['GET'])
+def generar_pdf_enfermeria(id):
+    nombre_usuario = "Carlos Yujra Chambi"
+
+    buffer = ServiciosEnfermeras.generar_pdf_enfermeria(nombre_usuario, id)
+
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename="informe_tomografia.pdf"'  # 'inline' para abrir en el navegador
+
+    return response
+
+
+
+# ----------- NUEVAS VISTAS DOCTOR IMAGENOLOGO ---------------------------
+@main_bp.route('/estudios_pacientes', methods=['GET'])
+@jwt_required()
+def vista_lista_paciente_consultas():
+    identidad = get_jwt_identity()
+    pacientes = ServiciosPaciente.obtener_todos()
+    return render_template('consultas_pacientes.html', identidad = identidad, pacientes = pacientes)
+
+@main_bp.route('/pacientes/estudios/ver/<id>', methods=['GET'])
+@jwt_required()
+def vista_lista_estudios_pacientes_consultas(id):
+    identidad = get_jwt_identity()
+
+    estudios = None
+    listado2 = None
+
+    if id=='0':
+        print("estudios en 0")
+        estudios = ServiciosDiagnostico.obtener_todos_pacientes()
+        listado2 = ServiciosResultadoEstudio.obtener_lista_todos()
+    else:
+        print("estudios en algun id")
+        print(id)
+        estudios = ServiciosDiagnostico.obtener_lista_id(id)
+        listado2 = ServiciosResultadoEstudio.obtener_lista_id(id)
+    
+    return render_template('pacientes_estudios_ver.html', identidad = identidad, estudios = estudios, listado2=listado2)

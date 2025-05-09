@@ -3,6 +3,8 @@ from app.serializadores.serializadorHojaControl import SerializadorHojaControl
 from app.modelos.hojaControl import HojaControl
 from app.modelos.paciente import Paciente
 from app.modelos.consulta import Consulta
+from app.modelos.diagnostico import Diagnostico
+from app.modelos.usuario import Usuario
 from app.servicios.serviciosControlEstado import ServiciosControlEstado
 from app.servicios.serviciosControlSignos import ServiciosControlSignos
 import os
@@ -30,7 +32,7 @@ class ServiciosHojaControl():
     def obtener_todos():
         #hojas_controles = HojaControl.query.all()
         #respuesta = SerializadorHojaControl.serializar(hojas_controles)
-        vista = db.session.query(Paciente, HojaControl).join(HojaControl).all()
+        vista = db.session.query(Paciente, HojaControl).join(HojaControl).filter(HojaControl.activo==1).all()
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
         if respuesta:
             return respuesta
@@ -43,7 +45,7 @@ class ServiciosHojaControl():
         vista = db.session.query(Paciente, HojaControl, Consulta)\
             .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
             .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
-            .filter(Paciente.id_paciente==id)
+            .filter(Paciente.id_paciente==id, HojaControl.activo==1)
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
         if respuesta:
             return respuesta
@@ -54,7 +56,7 @@ class ServiciosHojaControl():
         vista = db.session.query(Paciente, HojaControl, Consulta)\
             .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
             .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
-            .filter(Consulta.id_consulta==id)
+            .filter(Consulta.id_consulta==id, HojaControl.activo==1)
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control(vista)
         if respuesta:
             return respuesta
@@ -67,7 +69,7 @@ class ServiciosHojaControl():
         vista = db.session.query(Paciente, HojaControl, Consulta)\
             .join(HojaControl, HojaControl.id_consulta_hoja==Consulta.id_consulta)\
             .join(Paciente, Consulta.id_paciente_consulta==Paciente.id_paciente)\
-            .filter(HojaControl.id_hoja_control==id).first()
+            .filter(HojaControl.id_hoja_control==id, HojaControl.activo==1).first()
         respuesta = SerializadorHojaControl.serializar_pacientes_hoja_control_unico(vista)
         if respuesta:
             return respuesta
@@ -91,7 +93,7 @@ class ServiciosHojaControl():
             if talla:
                 hoja_control_editar.talla_paciente = talla
             if servicio:
-                hoja_control_editar.fecha_control = servicio
+                hoja_control_editar.servicio_paciente = servicio
             if pieza:
                 hoja_control_editar.pieza_paciente = pieza
             db.session.commit()
@@ -103,7 +105,7 @@ class ServiciosHojaControl():
     def obtener_hojas_paciente(id):
         print(id)
         lista_hojas = []
-        hojas = db.session.query(Paciente, HojaControl).join(HojaControl).filter_by(id_paciente_hoja=id).all()
+        hojas = db.session.query(Paciente, HojaControl).join(HojaControl).filter_by(id_paciente_hoja=id, activo = 1).all()
         hojas = SerializadorHojaControl.serializar_pacientes_hoja_control(hojas)
 
         if hojas:
@@ -125,9 +127,6 @@ class ServiciosHojaControl():
         else:
             return None
     
-
-
-        
 
 
     def generar_informe(hoja, estados, signos, nombre_usuario):
@@ -341,7 +340,17 @@ class ServiciosHojaControl():
         #return 200
 
 
+    
+
+
     def generar_informe_tomografia_pdf(id_diagnostico, id_paciente, listado2, nombre_usuario,nombre_paciente):
+        
+        diagnostico = Diagnostico.query.get(id_diagnostico)
+
+        id_doctor = diagnostico.id_doctor_diagnostico
+
+        doctor = Usuario.query.get(id_doctor)
+        
         buffer = BytesIO()
         pdf = SimpleDocTemplate(buffer, pagesize=letter)
         elementos = []
@@ -352,6 +361,8 @@ class ServiciosHojaControl():
         estilo_subtitulo = ParagraphStyle('Subtitulo', fontSize=10, alignment=0) 
         estilo_datos = estilos['Normal']
 
+        estilo_firma = ParagraphStyle('Firma', fontSize=12, alignment=1) 
+
 
 
         logo_direccion = os.path.join(os.getcwd(), 'app', 'static', 'assets', 'images', 'logo.png')
@@ -360,9 +371,9 @@ class ServiciosHojaControl():
         fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         generado_por = Paragraph(f"<b>Generado por:</b> {nombre_usuario}<br/><b>Fecha de generación:</b> {fecha_actual}", estilo_subtitulo)
         # Agregar elementos al PDF
-        elementos.append(Spacer(1, 55))
+        #Selementos.append(Spacer(1, 55))
        
-        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 15))
 
         def add_header(canvas, doc):
             width, height = letter
@@ -370,30 +381,37 @@ class ServiciosHojaControl():
             titulo_x = width / 2  
             titulo_y = height - (2.0 * inch) 
             canvas.setFont("Helvetica-Bold", 18)
-            canvas.drawString(titulo_x - 120, titulo_y, "Informe de Estudio Realizado")
+            #canvas.drawString(titulo_x - 120, titulo_y, "Informe de Estudio Realizado")
             posicion_texto_x = (0.3*inch)
             posicion_texto_y = (0.3*inch)
             generado_por.wrapOn(canvas, width, height)
             generado_por.drawOn(canvas, posicion_texto_x, posicion_texto_y)
 
         elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>Informe de Estudios Realizados</b>", estilo_titulo))
+        elementos.append(Spacer(1, 40))
         elementos.append(Paragraph(f"<b>Nombre del Paciente:</b> {nombre_paciente}", estilo_datos))
+        elementos.append(Spacer(1, 10))
+        elementos.append(Paragraph(f"<b>Fecha del Diagnostico:</b> {diagnostico.fecha_diagnostico}", estilo_datos))
         elementos.append(Spacer(1, 30))
         conta=0
         contaT=0
         contaS=0
+        prob_tumor = 0
         for resultado in listado2:
             if str(resultado['id_diagnostico']) != str(id_diagnostico):
                 continue  
 
             conta=conta+1
             
-            if resultado['resultado_estudio'] == 1:
-                diagnostico_texto = "CON TUMOR" 
-                contaT=contaT+1
-            else:
+            if resultado['resultado_estudio'] == 3:
                 diagnostico_texto = "SIN TUMOR" 
                 contaS=contaS+1
+
+            else:
+                diagnostico_texto = "CON TUMOR" 
+                contaT=contaT+1
+                prob_tumor = prob_tumor + float(resultado['probabilidad'])
 
             elementos.append(Paragraph(f"<b>Imagen Evaluada Nro:</b> {conta}", estilo_datos))
             elementos.append(Spacer(1, 5))
@@ -402,15 +420,24 @@ class ServiciosHojaControl():
             info_paciente = (
                 f"Fecha de Estudio: {resultado['fecha_estudio']}"
             )
-            elementos.append(Paragraph(info_paciente, estilo_datos))
+            tipo_tumor = 'Ninguno'
+            if int(resultado['resultado_estudio'])==0:
+                tipo_tumor = 'Pituitaria'
+            elif int(resultado['resultado_estudio'])==1:
+                tipo_tumor = 'Meningioma'
+            elif int(resultado['resultado_estudio'])==2:
+                tipo_tumor = 'Glioma'
+            elementos.append(Paragraph(f"<b>Tipo de Tumor: {tipo_tumor}</b>", estilo_datos))
             elementos.append(Spacer(1, 5))
 
             ruta_relativa = os.path.join('app', 'static', 'imagenes')
             ruta = os.path.abspath(ruta_relativa)
             imagen_path = os.path.join(ruta, resultado['ruta_carpeta_imagenes_estudio'])
+
+            elementos.append(Paragraph(f"<b>Probabilidad:</b> {resultado['probabilidad']:.2f} %", estilo_datos))
             
             if os.path.exists(imagen_path):
-                elementos.append(Paragraph(f"<b>Ruta de Imagen:</b> {resultado['ruta_carpeta_imagenes_estudio']}", estilo_datos))
+                #elementos.append(Paragraph(f"<b>Ruta de Imagen:</b> {resultado['ruta_carpeta_imagenes_estudio']}", estilo_datos))
                 try:
                     elementos.append(Spacer(1, 20))
                     imagen = Image(imagen_path, 2 * inch, 2 * inch)
@@ -440,10 +467,35 @@ class ServiciosHojaControl():
         
             
         elementos.append(Spacer(1, 5))
-        dato = (contaT * 100.0) / conta
+        #dato = (contaT * 100.0) / conta
+        dato = prob_tumor / conta
         elementos.append(Paragraph(f"<b>Probabilidad de Tumor:</b> {dato:.2f}%", estilo_datos))
+        elementos.append(Spacer(1, 20))
+
+        elementos.append(Paragraph(f"<b>Observaciones:</b> {diagnostico.observaciones}", estilo_datos))
+
+        
+
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"______________________________________", estilo_firma))
+        elementos.append(Spacer(1, 20))
+        elementos.append(Paragraph(f"<b>Dr. {doctor.nombres_usuario} {doctor.apellido_paterno_usuario} {doctor.apellido_materno_usuario}</b>", estilo_firma))
+        elementos.append(Spacer(1, 10))
+        elementos.append(Paragraph(f"<b>Doctor Imagenologo</b>", estilo_firma))
+
         
         pdf.build(elementos, onFirstPage=add_header, onLaterPages=add_header)
         buffer.seek(0)
 
         return buffer
+
+
+    def eliminar(id):
+        datos = HojaControl.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True

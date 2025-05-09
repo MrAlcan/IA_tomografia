@@ -13,6 +13,9 @@ class Diagnostico(db.Model):
     id_doctor_diagnostico= db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
     id_paciente_diagnostico = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     id_consulta_diagnostico  = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
+    
+    activo = db.Column(db.Integer, default=1)
+    observaciones = db.Column(db.Text, default='Ninguna')
     # Relaciones
     doctor = db.relationship('Usuario', backref='resultados')
     paciente = db.relationship('Paciente', backref='resultados')

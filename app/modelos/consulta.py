@@ -19,6 +19,8 @@ class Consulta(db.Model):
     estado_consulta = db.Column(db.Integer, default=1, nullable=True)
     fecha_consulta = db.Column(db.Date, nullable = True)
 
+    activo = db.Column(db.Integer, default=1)
+
     def __init__(self, motivo, historia, enfermedades, tabaco, alcohol, drogas, diagnostico, tratamiento, doctor, paciente, internacion, codigo_consulta ,estado_consulta, fecha):
         self.motivo_consulta = motivo
         self.historia_enfermedad_actual = historia

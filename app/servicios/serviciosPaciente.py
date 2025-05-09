@@ -19,7 +19,7 @@ from io import BytesIO
 
 class ServiciosPaciente():
     def obtener_todos():
-        pacientes = Paciente.query.all()
+        pacientes = Paciente.query.filter_by(activo = 1)
         respuesta = SerializadorPaciente.serializar(pacientes)
         if respuesta:
             return respuesta
@@ -67,6 +67,12 @@ class ServiciosPaciente():
         else:
             return None
 
+    def eliminar(id):
+        datos = Paciente.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True
+    
     def generar_reporte_completo(id, nombre_usuario, datos):
 
 

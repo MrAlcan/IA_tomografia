@@ -1,0 +1,177 @@
+{% extends 'plantilla.html' %}
+
+{% block cabecera %}
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static',filename='assets/images/icon/favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/metisMenu.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/slicknav.min.css')}}">
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/typography.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/default-css.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
+
+    <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            let formularios = document.querySelectorAll('form');
+            formularios.forEach(function(formul){
+                formul.addEventListener('keypress', function(event){
+                    if(event.key == 'Enter'){
+                        event.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block titulo_contenido %}
+    <div class="breadcrumbs-area clearfix">                  
+        <h4 class="page-title pull-left">Evaluaciones</h4>
+        <ul class="breadcrumbs pull-left">
+            <li><a href="/inicio">Inicio</a></li>
+            <li><span>Lista Pacientes</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block contenido %}
+
+    <div class="main-content-inner">
+        <div class="row">
+
+            <div class="col-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title">Pacientes</h4>
+                        
+                        
+                        
+                        <br>
+                        <br>
+                        <div class="data-tables">
+                            
+                            <table id="dataTable" class="text-center">
+                                
+                                <thead class="bg-light text-capitalize">
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Nombres</th>
+                                        <th>Apellidos</th>
+                                        <th>Carnet</th>
+                                        <th>Fecha de Nacimiento</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% if pacientes %}
+                                        {% for paciente in pacientes %}
+                                            <tr>
+                                                <td>{{paciente.id_paciente}}</td>
+                                                <td>{{paciente.nombres}}</td>
+                                                <td>{{paciente.apellido_paterno}} {{paciente.apellido_materno}}</td>
+                                                <td>{{paciente.carnet}}</td>
+                                                <td>{{paciente.fecha_nacimiento}}</td>
+                                                <td>
+                                                    <a href="/pacientes/estudios/ver/{{paciente.id_paciente}}" class="text-secondary">Ver Estudios Paciente <i class="ti-eye"></i></a>
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+        const nav_gestion = document.getElementById('nav_gestion_consultas');
+        const nav_pacientes = document.getElementById('nav_consultas_pacientes');
+        nav_gestion.classList.add('active');
+        nav_pacientes.classList.add('active');
+        const lista_gestion = document.querySelector('#nav_gestion_consultas ul');
+        console.log(lista_gestion);
+        lista_gestion.classList.add('in');
+
+        /*const botonAgregar = document.getElementById('boton_agregar_paciente');
+        botonAgregar.addEventListener('click', function() {
+            window.location.href = `/pacientes/agregar`;
+        });*/
+
+        });
+    </script>
+    
+
+    <script src="{{url_for('static', filename='assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.slicknav.min.js')}}"></script>
+
+
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/responsive.bootstrap.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+
+    <script>
+        const selects = document.querySelectorAll('select[name="select_seguro"]');
+        selects.forEach(select_f => {
+            select_f.addEventListener('change', function() {
+                const selectedValue = select_f.value;
+                const idPac = select_f.getAttribute('data-id-pac');
+                const divInput = document.getElementById(`form-input-seguro-${idPac}`);
+                const inputSeguro = divInput ? divInput.querySelector('input') : null;
+
+                if(divInput){
+                    if(selectedValue=='Si'){
+                        if(inputSeguro){
+                            inputSeguro.value = '';
+                        }
+                        divInput.removeAttribute('hidden');
+                    }else if(selectedValue=='No'){
+                        divInput.setAttribute('hidden', true);
+                        if(inputSeguro){
+                            inputSeguro.value = 'No';
+                        }
+                    }
+                }
+            });
+            const valor_select = select_f.value;
+        });
+    </script>
+    <!--propios-->
+    <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
+    
+{% endblock %}

@@ -22,6 +22,19 @@
     <link rel="stylesheet" href="{{url_for('static',filename='assets/css/responsive.css')}}">
 
     <script src="{{url_for('static',filename='assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            let formularios = document.querySelectorAll('form');
+            formularios.forEach(function(formul){
+                formul.addEventListener('keypress', function(event){
+                    if(event.key == 'Enter'){
+                        event.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block titulo_contenido %}
@@ -72,7 +85,15 @@
                                                     <input class="form-control" type="text" value="" id="input_carnet" name="input_carnet">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="input_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                    <label for="select_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                    <select class="form-control" id="select_seguro" name="select_seguro" data-id-pac="0">
+                                                        <option value="selecciona" selected>Seleccione una opción</option>
+                                                        <option value="Si">Si</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group" id="form-input-seguro-0" hidden>
+                                                    <label for="input_seguro" class="col-form-label">Hospital donde tiene seguro</label>
                                                     <input class="form-control" type="text" value="" id="input_seguro" name="input_seguro">
                                                 </div>
                                                 <div class="form-group">
@@ -131,12 +152,16 @@
                                                 <td>{{paciente.fecha_nacimiento}}</td>
                                                 <td>{{paciente.edad}}</td>
                                                 <td>
-                                                    <ul class="d-flex justify-content-center">
-                                                        <!--li class="mr-3"><a href="/pacientes/editar/{{paciente.id_paciente}}" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{paciente.id_paciente}}"><i class="fa fa-edit"></i></a></li-->
+                                                    <!--a href="/pacientes/ver/{{paciente.id_paciente}}" class="text-secondary">Ver Detalles Paciente <i class="ti-eye"></i></a>
+                                                    <br-->
+                                                    <a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{paciente.id_paciente}}">Editar Paciente <i class="fa fa-edit"></i></a>
+                                                    <br>
+                                                    <a href="/pacientes/eliminar/{{paciente.id_paciente}}" class="text-danger">Eliminar Paciente <i class="ti-trash"></i></a>
+                                                    <!--ul class="d-flex justify-content-center">
                                                         <li class="mr-3"><a href="/pacientes/ver/{{paciente.id_paciente}}" class="text-secondary"><i class="ti-eye"></i></a></li>
                                                         <li class="mr-3"><a href="" class="text-secondary" type="button" data-toggle="modal" data-target="#LongModalLongEditar{{paciente.id_paciente}}"><i class="fa fa-edit"></i></a></li>
-                                                        <!--li><a href="#" class="text-danger"><i class="ti-trash"></i></a></li-->
-                                                    </ul>
+                                                        <li><a href="/pacientes/eliminar/{{paciente.id_paciente}}" class="text-danger"><i class="ti-trash"></i></a></li>
+                                                    </ul-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -175,7 +200,16 @@
                                                             <input class="form-control" type="text" value="{{paciente_editar.carnet}}" id="input_carnet" name="input_carnet">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="input_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                            <label for="select_seguro" class="col-form-label">Seguro de Paciente</label>
+                                                            <select class="form-control" id="select_seguro" name="select_seguro" data-id-pac="{{paciente_editar.id_paciente}}">
+                                                                <!--option value="selecciona">Seleccione una opción</option-->
+                                                                
+                                                                <option value="Si" {% if paciente_editar.seguro != 'No' %} selected {% endif %}>Si</option>
+                                                                <option value="No" {% if paciente_editar.seguro == 'No' %} selected {% endif %}>No</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group" id="form-input-seguro-{{paciente_editar.id_paciente}}" {% if paciente_editar.seguro == 'No' %} hidden {% endif %}>
+                                                            <label for="input_seguro" class="col-form-label">Hospital donde tiene seguro</label>
                                                             <input class="form-control" type="text" value="{{paciente_editar.seguro}}" id="input_seguro" name="input_seguro">
                                                         </div>
                                                         <div class="form-group">
@@ -230,6 +264,33 @@
 
     <script src="{{url_for('static', filename='assets/js/plugins.js')}}"></script>
     <script src="{{url_for('static', filename='assets/js/scripts.js')}}"></script>
+
+    <script>
+        const selects = document.querySelectorAll('select[name="select_seguro"]');
+        selects.forEach(select_f => {
+            select_f.addEventListener('change', function() {
+                const selectedValue = select_f.value;
+                const idPac = select_f.getAttribute('data-id-pac');
+                const divInput = document.getElementById(`form-input-seguro-${idPac}`);
+                const inputSeguro = divInput ? divInput.querySelector('input') : null;
+
+                if(divInput){
+                    if(selectedValue=='Si'){
+                        if(inputSeguro){
+                            inputSeguro.value = '';
+                        }
+                        divInput.removeAttribute('hidden');
+                    }else if(selectedValue=='No'){
+                        divInput.setAttribute('hidden', true);
+                        if(inputSeguro){
+                            inputSeguro.value = 'No';
+                        }
+                    }
+                }
+            });
+            const valor_select = select_f.value;
+        });
+    </script>
     <!--propios-->
     <!--script src="{{url_for('static', filename='assets/js/consultar_datos.js')}}"></script-->
     

@@ -18,7 +18,7 @@ import os
 
 class ServiciosConsultas():
     def obtener_todos():
-        lista = Consulta.query.all()
+        lista = Consulta.query.filter_by(activo = 1)
         respuesta = SerializadorConsulta.serializar(lista)
         if respuesta:
             return respuesta
@@ -30,7 +30,7 @@ class ServiciosConsultas():
         vista = db.session.query(Paciente, Consulta, Usuario)\
             .join(Consulta, Paciente.id_paciente == Consulta.id_paciente_consulta)\
             .join(Usuario, Consulta.id_doctor_tratante == Usuario.id_usuario)\
-            .all()
+            .filter(Consulta.activo == 1).all()
         respuesta = SerializadorConsulta.serializar_todos_vista(vista)
         print(respuesta)
         if respuesta:
@@ -42,7 +42,7 @@ class ServiciosConsultas():
         vista = db.session.query(Paciente, Consulta, Usuario)\
             .join(Consulta, Paciente.id_paciente == Consulta.id_paciente_consulta)\
             .join(Usuario, Consulta.id_doctor_tratante == Usuario.id_usuario)\
-            .filter(Consulta.id_consulta == id).first()
+            .filter(Consulta.id_consulta == id, Consulta.activo == 1).first()
         respuesta = SerializadorConsulta.serializar_unica_vista(vista)
         print(respuesta)
         if respuesta:
@@ -55,7 +55,7 @@ class ServiciosConsultas():
         vista = db.session.query(Paciente, Consulta, Usuario)\
             .join(Consulta, Paciente.id_paciente == Consulta.id_paciente_consulta)\
             .join(Usuario, Consulta.id_doctor_tratante == Usuario.id_usuario)\
-            .filter(Paciente.id_paciente==id)
+            .filter(Paciente.id_paciente==id, Consulta.activo == 1)
         
         respuesta = SerializadorConsulta.serializar_todos_vista(vista)
         print(respuesta)
@@ -110,6 +110,12 @@ class ServiciosConsultas():
             return respuesta
         else:
             return None
+    
+    def eliminar(id):
+        datos = Consulta.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True
     
     def generar_informe(consulta, nombre_usuario):
         buffer = BytesIO()

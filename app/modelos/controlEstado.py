@@ -10,6 +10,8 @@ class ControlEstado(db.Model):
     dias_post_operatorio = db.Column(db.String(20), nullable=True)
     id_hoja_control_estado = db.Column(db.Integer, db.ForeignKey('hoja_control.id_hoja_control'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+
     def __init__(self, antibiotico, dias_internado, fecha, dias_post_operatorio, hoja_control):
         self.antibiotico_estado = antibiotico
         self.dias_internado = dias_internado

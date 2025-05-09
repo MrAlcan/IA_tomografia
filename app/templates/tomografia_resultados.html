@@ -48,12 +48,15 @@
                             <h4 class="header-title">Evaluar Tomografías</h4>
                             <form id="formularioImagenes" action="/tomografia_resultados/agregar" method="POST" enctype="multipart/form-data" class="formulario-centro">
                                 <div class="form-group">
-                                    <label for="codigoPaciente">Código de Paciente</label>
+                                    <label for="codigoPaciente">Carnet de Paciente</label>
                                     <select class="custom-select" id="codigoPaciente" name="codigoPaciente">
-                                        <option selected="selected">Selecciona el codigo del Paciente</option>
-                                        {% for paciente in pacientes %}
-                                            <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
-                                        {% endfor %}
+                                        <option selected="selected">Selecciona el carnet del Paciente</option>
+                                        {% if pacientes %}
+                                            {% for paciente in pacientes %}
+                                                <option value="{{paciente.id_paciente}}">{{paciente.carnet}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                        
                                     </select>
                                 </div>
                                 
@@ -61,16 +64,20 @@
                                     <label for="nombrePaciente">Nombre del Paciente</label>
                                     <input class="form-control" type="text" id="nombrePaciente" name="nombrePaciente" readonly>
                                 </div>
-                                <div class="form-group">
+                                <input class="custom-select" id="idConsulta" name="idConsulta" value="1" hidden>
+                                <!--ESTO ESTABA, SE QUITO A SOLICITUD PORQUE NO EXISTEN CONSULTAS-->
+                                <!--div class="form-group">
                                     <label for="nombrePaciente">Consulta</label>
                                     <select class="custom-select" id="idConsulta" name="idConsulta">
                                         <option selected="selected">Selecciona el codigo de Consulta</option>
-                                        {% for consulta in consultas %}
-                                            <option value="{{consulta.id_consulta}}">{{consulta.codigo_consulta}}</option>
-                                        {% endfor %}
+                                        {% if consultas %}
+                                            {% for consulta in consultas %}
+                                                <option value="{{consulta.id_consulta}}">{{consulta.codigo_consulta}}</option>
+                                            {% endfor %}
+                                        {% endif %}
                                                 
                                     </select>
-                                </div>
+                                </div-->
                               
                                 
                                 <div class="form-group">

@@ -12,6 +12,8 @@ class RegistroEnfermeria(db.Model):
     id_consulta_registro = db.Column(db.Integer, db.ForeignKey('consultas.id_consulta'), nullable=False)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
 
+    activo = db.Column(db.Integer, default=1)
+    
     def __init__(self, procedimiento, observaciones, fecha, hora, enfermera, consulta,paciente):
         self.procedimiento_enfermeria = procedimiento
         self.observaciones_enfermeria = observaciones

@@ -7,7 +7,7 @@ from app.modelos.hojaControl import HojaControl
 
 class ServiciosVistas:
     def obtener_usuarios_roles():
-        vista = db.session.query(Rol, Usuario).join(Usuario).all()
+        vista = db.session.query(Rol, Usuario).join(Usuario).filter(Usuario.activo==1).all()
         print(vista)
         #rol = vista.roles
         #usuario = vista.usuarios
@@ -20,6 +20,6 @@ class ServiciosVistas:
         return respuesta
 
     def obtener_pacientes_hojas_control():
-        vista = db.session.query(Paciente, HojaControl).join(HojaControl).all()
+        vista = db.session.query(Paciente, HojaControl).join(HojaControl).filter(Paciente.activo==1, HojaControl.activo==1).all()
         respuesta = SerializadorVistas.serializar_pacientes_hoja_control(vista)
         return respuesta

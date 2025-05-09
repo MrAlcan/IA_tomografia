@@ -43,7 +43,7 @@ class ServiciosUsuario():
         
     
     def obtener_todos():
-        usuarios = Usuario.query.all()
+        usuarios = Usuario.query.filter_by(activo = 1)
         respuesta = SerializadorUsuario.serializar(usuarios)
         return respuesta
     
@@ -53,7 +53,7 @@ class ServiciosUsuario():
         return respuesta
     
     def obtener_nombre(nombre):
-        usuario = Usuario.query.filter_by(nombre_cuenta_usuario = nombre).first()
+        usuario = Usuario.query.filter_by(nombre_cuenta_usuario = nombre, activo = 1).first()
         respuesta = SerializadorUsuario.serializar_unico(usuario)
         return respuesta
     
@@ -88,3 +88,9 @@ class ServiciosUsuario():
             return respuesta
         except:
             return None
+    
+    def eliminar(id):
+        datos = Usuario.query.get(id)
+        datos.activo = 0
+        db.session.commit()
+        return True
